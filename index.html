@@ -3,32 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Türkçe, local-first kişisel araçlar. Veriler mümkün olduğunca cihazınızda işlenir." />
-  <title>Kişisel Araçlar</title>
+  <meta name="theme-color" content="#f5f6f8" />
+  <meta name="description" content="PDF, görsel, OCR, QR, arşiv, veri ve geliştirici araçları. Türkçe ve local-first: dosyalar mümkün olduğunca cihazında işlenir." />
+  <meta name="robots" content="index,follow" />
+  <title>Kişisel Araçlar — Local-first araç kutusu</title>
   <link rel="stylesheet" href="./src/styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#mainContent">İçeriğe geç</a>
   <div class="app-shell">
     <header class="topbar">
       <div>
         <span class="eyebrow">KİŞİSEL ARAÇLAR</span>
-        <h1>İşini tarayıcıda hallet.</h1>
-        <p>Türkçe, hızlı ve mümkün olduğunca cihazında çalışan küçük araçlar.</p>
+        <h1>Dosyanı ver, işini bitir.</h1>
+        <p>PDF, görsel, OCR, QR, arşiv ve veri araçları. Türkçe, hızlı ve mümkün olduğunca cihazında.</p>
+        <span id="toolCountSummary" class="tool-count-summary"></span>
       </div>
-      <div class="privacy-badge" title="Bu ilk araçlar tamamen tarayıcıda çalışır">
+      <div class="privacy-badge" title="Dosya tabanlı araçlar tarayıcıda çalışır">
         <span aria-hidden="true">●</span>
         Local-first
       </div>
     </header>
 
-    <main class="workspace">
+    <main class="workspace" id="mainContent">
       <aside class="sidebar">
-        <label class="search-label" for="toolSearch">Araç ara</label>
-        <input id="toolSearch" class="search-input" type="search" placeholder="PDF, JSON, Base64, metin..." autocomplete="off" />
+        <label class="search-label" for="toolSearch">
+          <span>Araç ara</span>
+          <kbd>/</kbd>
+        </label>
+        <input id="toolSearch" class="search-input" type="search" placeholder="PDF, OCR, sıkıştır, QR..." autocomplete="off" />
         <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
         <div class="side-note">
-          <strong>Gizlilik</strong>
-          <span>Bu çekirdek sürümde veri sunucuya gönderilmez.</span>
+          <strong>Dosyalar sende kalır</strong>
+          <span>Dosya araçları tarayıcıda çalışır. Masaüstünde dosyayı seçim kutusuna sürükleyip bırakabilirsin.</span>
         </div>
       </aside>
 

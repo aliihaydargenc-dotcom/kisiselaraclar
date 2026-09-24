@@ -111,9 +111,26 @@ Local-first mimari:
 - Görsel sınırı 20 MB, PDF sınırı 25 MB, PDF render üst sınırı 18 megapikseldir.
 - OCR runtime varlıkları ana uygulama JS bütçesinden ayrı, açıkça izlenen 40 MB runtime bütçesine tabidir.
 
+## Release readiness — ürünleştirme paketi
+
+Amaç yeni araç eklemek değil, P1-P5 çekirdeğinin gerçek ürün olarak kullanılabilirliğini doğrulamak.
+
+Eklenenler:
+- URL hash ile doğrudan araç linkleme (`#tool=<id>`)
+- son kullanılanlara göre kişiselleşen hızlı erişim
+- tüm mevcut `.file-drop` alanlarına ortak drag & drop davranışı
+- `/` arama kısayolu ve Escape ile araçtan çıkış
+- lazy tool açılışında loading/error state
+- mobil kategori satırını yatay kaydırılabilir kompakt yapıya çevirme
+- focus-visible ve reduced-motion erişilebilirlik desteği
+- Vercel production build ve güvenlik header yapılandırması
+- release smoke test checklist'i
+
 ## Sıradaki anlamlı paket
 
-**P6 — Medya araçları: ses/video dönüştürme ve kırpma**
+**P6 — İlk production release + gerçek dosya smoke testleri**
+
+Medya araçları production doğrulamasından sonraya ertelendi.
 
 ## Backlog
 
@@ -124,4 +141,4 @@ Local-first mimari:
 
 ## Release
 
-Henüz production release yok. Vercel son aşamadır.
+Kod tabanı release-readiness aşamasındadır. `docs/RELEASE_CHECKLIST.md` kritik kullanıcı akışlarını tanımlar. İlk production deploy bu paket doğrulandıktan sonra yapılacaktır.

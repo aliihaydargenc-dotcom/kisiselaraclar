@@ -1,13 +1,32 @@
 import { categories, searchTools, tools } from "./catalog.js";
 import { getIntegration } from "./integrations.js";
+import {
+  enhanceFileDrops,
+  loadRecentToolIds,
+  parseToolHash,
+  quickToolIds,
+  rememberRecentTool,
+  toolHash
+} from "./product-ux.js";
 import { runEngine } from "./tool-engines.js";
 
 const searchInput = document.querySelector("#toolSearch");
 const categoryList = document.querySelector("#categoryList");
 const catalogView = document.querySelector("#catalogView");
 const toolView = document.querySelector("#toolView");
+const toolCountSummary = document.querySelector("#toolCountSummary");
+const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
+let currentToolId = "";
+
+function safeStorage() {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return null;
+  }
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -22,12 +41,20 @@ function categoryLabel(id) {
   return categories.find((category) => category.id === id)?.label || id;
 }
 
+function setDocumentTitle(tool = null) {
+  document.title = tool ? `${tool.title} | Kişisel Araçlar` : "Kişisel Araçlar — Local-first araç kutusu";
+}
+
 function renderCategories() {
   const items = [{ id: "all", label: "Tüm araçlar" }, ...categories];
   categoryList.innerHTML = items
     .map(
       (item) => `
-        <button class="category-button ${item.id === activeCategory ? "active" : ""}" data-category="${item.id}">
+        <button
+          class="category-button ${item.id === activeCategory ? "active" : ""}"
+          data-category="${item.id}"
+          aria-pressed="${item.id === activeCategory ? "true" : "false"}"
+        >
           <span>${item.label}</span>
           <span class="count">${item.id === "all" ? tools.length : tools.filter((tool) => tool.category === item.id).length}</span>
         </button>
@@ -36,9 +63,53 @@ function renderCategories() {
     .join("");
 }
 
+function toolCard(tool, compact = false) {
+  const integration = getIntegration(tool.integration);
+  return `
+    <button class="${compact ? "quick-tool" : "tool-card"}" data-tool="${tool.id}" aria-label="${escapeHtml(tool.title)} aracını aç">
+      ${compact ? "" : `
+        <div class="tool-card-top">
+          <span class="tool-category">${categoryLabel(tool.category)}</span>
+          <span class="local-dot" title="Tarayıcıda çalışır" aria-hidden="true">●</span>
+        </div>
+      `}
+      <strong>${escapeHtml(tool.title)}</strong>
+      ${compact ? `<span>${categoryLabel(tool.category)}</span>` : `
+        <span>${escapeHtml(tool.description)}</span>
+        <small class="engine-label">${escapeHtml(integration.name)}</small>
+      `}
+    </button>
+  `;
+}
+
 function renderCatalog() {
-  const list = searchTools(searchInput.value, activeCategory);
+  currentToolId = "";
+  setDocumentTitle();
+  const query = searchInput.value;
+  const list = searchTools(query, activeCategory);
+  const recentIds = loadRecentToolIds(safeStorage(), validToolIds);
+  const quickIds = activeCategory === "all" && !query.trim()
+    ? quickToolIds(recentIds, validToolIds)
+    : [];
+  const quickTools = quickIds
+    .map((id) => tools.find((tool) => tool.id === id))
+    .filter(Boolean);
+
   catalogView.innerHTML = `
+    ${quickTools.length ? `
+      <section class="quick-section" aria-labelledby="quickTitle">
+        <div class="quick-head">
+          <div>
+            <span class="eyebrow">HIZLI ERİŞİM</span>
+            <h2 id="quickTitle">Sık kullanılan işler</h2>
+          </div>
+          <span>Son kullandıkların burada öne çıkar.</span>
+        </div>
+        <div class="quick-grid">
+          ${quickTools.map((tool) => toolCard(tool, true)).join("")}
+        </div>
+      </section>
+    ` : ""}
     <div class="catalog-head">
       <div>
         <span class="eyebrow">${activeCategory === "all" ? "ARAÇ KATALOĞU" : categoryLabel(activeCategory).toLocaleUpperCase("tr-TR")}</span>
@@ -47,27 +118,13 @@ function renderCatalog() {
       <span class="catalog-note">Local-first • Türkçe</span>
     </div>
     <div class="tool-grid">
-      ${list
-        .map((tool) => {
-          const integration = getIntegration(tool.integration);
-          return `
-            <button class="tool-card" data-tool="${tool.id}">
-              <div class="tool-card-top">
-                <span class="tool-category">${categoryLabel(tool.category)}</span>
-                <span class="local-dot" title="Tarayıcıda çalışır">●</span>
-              </div>
-              <strong>${tool.title}</strong>
-              <span>${tool.description}</span>
-              <small class="engine-label">${integration.name}</small>
-            </button>
-          `;
-        })
-        .join("")}
+      ${list.map((tool) => toolCard(tool)).join("")}
     </div>
     ${list.length ? "" : '<div class="empty-state">Bu aramayla eşleşen araç bulunamadı.</div>'}
   `;
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
+  if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç • ${categories.length} kategori`;
 }
 
 function csvTable(result) {
@@ -97,74 +154,77 @@ function csvTable(result) {
   `;
 }
 
-async function openTool(id) {
-  const tool = tools.find((item) => item.id === id);
-  if (!tool) return;
+function loadingPanel(label) {
+  return `
+    <div class="tool-panel loading-panel" role="status">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <strong>${escapeHtml(label)}</strong>
+    </div>
+  `;
+}
 
+function finalizeToolOpen() {
+  enhanceFileDrops(toolView);
+  toolView.querySelector("#backToCatalog")?.focus({ preventScroll: true });
+}
+
+function navigateCatalog({ replace = false } = {}) {
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({ tool: null }, "", `${location.pathname}${location.search}`);
+  renderCatalog();
+}
+
+async function openTool(id, { record = true } = {}) {
+  const tool = tools.find((item) => item.id === id);
+  if (!tool) {
+    navigateCatalog({ replace: true });
+    return;
+  }
+
+  currentToolId = id;
+  setDocumentTitle(tool);
+  if (record) rememberRecentTool(safeStorage(), id, validToolIds);
   const integration = getIntegration(tool.integration);
+  const onBack = () => navigateCatalog();
+
+  async function renderLazy(label, importer, rendererName, fallback) {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = loadingPanel(label);
+    try {
+      const module = await importer();
+      module[rendererName]({ tool, toolView, integration, onBack });
+      finalizeToolOpen();
+    } catch (error) {
+      toolView.innerHTML = `
+        <button class="back-button" id="backToCatalog">← Araçlara dön</button>
+        <div class="tool-panel error-panel">
+          <strong>Bu araç açılamadı.</strong>
+          <p>${escapeHtml(error instanceof Error ? error.message : fallback)}</p>
+        </div>
+      `;
+      toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
+    }
+  }
 
   if (tool.inputType === "ocr") {
-    catalogView.classList.add("hidden");
-    toolView.classList.remove("hidden");
-    toolView.innerHTML = '<div class="tool-panel"><p>OCR aracı yükleniyor...</p></div>';
-    try {
-      const { renderOcrTool } = await import("./ocr-ui.js");
-      renderOcrTool({ tool, toolView, integration, onBack: renderCatalog });
-    } catch (error) {
-      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "OCR aracı yüklenemedi.")}</p></div>`;
-    }
+    await renderLazy("OCR aracı yükleniyor", () => import("./ocr-ui.js"), "renderOcrTool", "OCR aracı yüklenemedi.");
     return;
   }
-
   if (tool.inputType === "code") {
-    catalogView.classList.add("hidden");
-    toolView.classList.remove("hidden");
-    toolView.innerHTML = '<div class="tool-panel"><p>QR / barkod aracı yükleniyor...</p></div>';
-    try {
-      const { renderCodeTool } = await import("./code-ui.js");
-      renderCodeTool({ tool, toolView, integration, onBack: renderCatalog });
-    } catch (error) {
-      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "QR / barkod aracı yüklenemedi.")}</p></div>`;
-    }
+    await renderLazy("QR / barkod aracı yükleniyor", () => import("./code-ui.js"), "renderCodeTool", "QR / barkod aracı yüklenemedi.");
     return;
   }
-
   if (tool.inputType === "archive") {
-    catalogView.classList.add("hidden");
-    toolView.classList.remove("hidden");
-    toolView.innerHTML = '<div class="tool-panel"><p>Arşiv aracı yükleniyor...</p></div>';
-    try {
-      const { renderArchiveTool } = await import("./archive-ui.js");
-      renderArchiveTool({ tool, toolView, integration, onBack: renderCatalog });
-    } catch (error) {
-      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "Arşiv aracı yüklenemedi.")}</p></div>`;
-    }
+    await renderLazy("Arşiv aracı yükleniyor", () => import("./archive-ui.js"), "renderArchiveTool", "Arşiv aracı yüklenemedi.");
     return;
   }
-
   if (tool.inputType === "image") {
-    catalogView.classList.add("hidden");
-    toolView.classList.remove("hidden");
-    toolView.innerHTML = '<div class="tool-panel"><p>Görsel aracı yükleniyor...</p></div>';
-    try {
-      const { renderImageTool } = await import("./image-ui.js");
-      renderImageTool({ tool, toolView, integration, onBack: renderCatalog });
-    } catch (error) {
-      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "Görsel aracı yüklenemedi.")}</p></div>`;
-    }
+    await renderLazy("Görsel aracı yükleniyor", () => import("./image-ui.js"), "renderImageTool", "Görsel aracı yüklenemedi.");
     return;
   }
-
   if (tool.inputType === "pdf") {
-    catalogView.classList.add("hidden");
-    toolView.classList.remove("hidden");
-    toolView.innerHTML = '<div class="tool-panel"><p>PDF aracı yükleniyor...</p></div>';
-    try {
-      const { renderPdfTool } = await import("./pdf-ui.js");
-      renderPdfTool({ tool, toolView, integration, onBack: renderCatalog });
-    } catch (error) {
-      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "PDF aracı yüklenemedi.")}</p></div>`;
-    }
+    await renderLazy("PDF aracı yükleniyor", () => import("./pdf-ui.js"), "renderPdfTool", "PDF aracı yüklenemedi.");
     return;
   }
 
@@ -172,7 +232,7 @@ async function openTool(id) {
     tool.inputType === "csv-file"
       ? `
         <label class="file-drop" for="csvFile">
-          <strong>CSV dosyası seç</strong>
+          <strong>CSV dosyası seç veya buraya bırak</strong>
           <span>Dosya yalnızca bu tarayıcıda okunur.</span>
           <input id="csvFile" type="file" accept=".csv,text/csv,text/plain" />
         </label>
@@ -187,8 +247,8 @@ async function openTool(id) {
       <div class="tool-title-row">
         <div>
           <span class="eyebrow">${categoryLabel(tool.category).toLocaleUpperCase("tr-TR")}</span>
-          <h2>${tool.title}</h2>
-          <p>${tool.description}</p>
+          <h2>${escapeHtml(tool.title)}</h2>
+          <p>${escapeHtml(tool.description)}</p>
         </div>
         <span class="privacy-badge compact">● Tarayıcıda</span>
       </div>
@@ -227,11 +287,11 @@ async function openTool(id) {
     if (!file) return;
     const maxBytes = 20 * 1024 * 1024;
     if (file.size > maxBytes) {
-      result.textContent = "Hata: Bu ilk sürümde CSV dosyası en fazla 20 MB olabilir.";
+      result.textContent = "Hata: CSV dosyası en fazla 20 MB olabilir.";
       return;
     }
     input.value = await file.text();
-    result.textContent = `${file.name} yüklendi. Önizle veya JSON'a dönüştür.`;
+    result.textContent = `${file.name} hazır. Önizle veya JSON'a dönüştür.`;
   });
 
   toolView.querySelectorAll("[data-action]").forEach((button) => {
@@ -270,12 +330,30 @@ async function openTool(id) {
     await navigator.clipboard.writeText(value);
   });
 
-  toolView.querySelector("#backToCatalog").addEventListener("click", renderCatalog);
+  toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
+  finalizeToolOpen();
+}
+
+function navigateTool(id, { replace = false, record = true } = {}) {
+  if (!validToolIds.includes(id)) return navigateCatalog({ replace: true });
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({ tool: id }, "", toolHash(id));
+  openTool(id, { record });
+}
+
+function syncRoute() {
+  const id = parseToolHash(location.hash);
+  if (id && validToolIds.includes(id)) {
+    openTool(id, { record: false });
+  } else {
+    renderCatalog();
+  }
 }
 
 categoryList.addEventListener("click", (event) => {
   const button = event.target.closest("[data-category]");
   if (!button) return;
+  if (currentToolId) navigateCatalog({ replace: true });
   activeCategory = button.dataset.category;
   renderCategories();
   renderCatalog();
@@ -283,10 +361,31 @@ categoryList.addEventListener("click", (event) => {
 
 catalogView.addEventListener("click", (event) => {
   const card = event.target.closest("[data-tool]");
-  if (card) openTool(card.dataset.tool);
+  if (card) navigateTool(card.dataset.tool);
 });
 
-searchInput.addEventListener("input", renderCatalog);
+searchInput.addEventListener("input", () => {
+  if (currentToolId) navigateCatalog({ replace: true });
+  renderCatalog();
+});
+
+document.addEventListener("keydown", (event) => {
+  const tag = event.target?.tagName?.toLowerCase();
+  const isTyping = ["input", "textarea", "select"].includes(tag) || event.target?.isContentEditable;
+
+  if (event.key === "/" && !isTyping) {
+    event.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+
+  if (event.key === "Escape" && currentToolId && !isTyping) {
+    navigateCatalog();
+  }
+});
+
+window.addEventListener("popstate", syncRoute);
 
 renderCategories();
-renderCatalog();
+history.replaceState({ tool: parseToolHash(location.hash) || null }, "", location.href);
+syncRoute();
