@@ -1,14 +1,14 @@
 export const categories = [
+  { id: "gorsel", label: "Görsel" },
+  { id: "tasarim", label: "Tasarım" },
+  { id: "gelistirici", label: "Geliştirici" },
+  { id: "veri", label: "Veri" },
+  { id: "pdf", label: "PDF" },
   { id: "medya", label: "Medya" },
   { id: "ocr", label: "OCR" },
   { id: "kod", label: "QR & Barkod" },
   { id: "arsiv", label: "Arşiv" },
-  { id: "gorsel", label: "Görsel" },
-  { id: "tasarim", label: "Tasarım" },
-  { id: "pdf", label: "PDF" },
   { id: "metin", label: "Metin" },
-  { id: "veri", label: "Veri" },
-  { id: "gelistirici", label: "Geliştirici" },
   { id: "zaman", label: "Tarih & Saat" }
 ];
 
@@ -509,6 +509,336 @@ export const tools = [
     actions: [{ id: "sha256", label: "SHA-256 hesapla" }],
     privacy: "browser",
     integration: "native"
+  },
+  {
+    "id": "image-palette",
+    "category": "gorsel",
+    "title": "Görselden Renk Paleti",
+    "description": "Bir görselin baskın renklerini cihazında çıkar; HEX değerlerini kopyala veya renk sistemine aktar.",
+    "aliases": [
+      "görsel palet",
+      "renk paleti",
+      "dominant color",
+      "image palette",
+      "hex"
+    ],
+    "inputType": "p15",
+    "p15Mode": "image-palette",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "site-color-system",
+        "label": "Site Renk Sistemi"
+      },
+      {
+        "id": "color-harmony",
+        "label": "Renk Armonisi"
+      }
+    ]
+  },
+  {
+    "id": "image-color-picker",
+    "category": "gorsel",
+    "title": "Görsel Renk Seçici",
+    "description": "Görsel üzerinde bir noktaya dokun; o pikselin HEX, RGB ve alfa değerini al.",
+    "aliases": [
+      "color picker",
+      "damlalık",
+      "piksel renk",
+      "hex",
+      "rgb"
+    ],
+    "inputType": "p15",
+    "p15Mode": "image-color-picker",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "color-harmony",
+        "label": "Renk Armonisi"
+      }
+    ]
+  },
+  {
+    "id": "svg-inspector",
+    "category": "gorsel",
+    "title": "SVG İncele & Temizle",
+    "description": "SVG kaynak kodunu incele, riskli aktif içerikleri temizle, ölçü ve öğe özetini gör.",
+    "aliases": [
+      "svg",
+      "svg temizle",
+      "svg inspect",
+      "vektör",
+      "sanitize"
+    ],
+    "inputType": "p15",
+    "p15Mode": "svg-inspector",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "svg-to-png",
+        "label": "SVG → PNG"
+      }
+    ]
+  },
+  {
+    "id": "svg-to-png",
+    "category": "gorsel",
+    "title": "SVG → PNG",
+    "description": "SVG kaynağını seçtiğin genişlikte şeffaf veya renkli arka planlı PNG'ye dönüştür.",
+    "aliases": [
+      "svg png",
+      "svg dönüştür",
+      "vector png",
+      "rasterize"
+    ],
+    "inputType": "p15",
+    "p15Mode": "svg-png",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "favicon-pack",
+        "label": "Favicon / App Icon Paketi"
+      }
+    ]
+  },
+  {
+    "id": "favicon-pack",
+    "category": "gorsel",
+    "title": "Favicon / App Icon Paketi",
+    "description": "Tek logodan 16, 32, 48, 180, 192 ve 512 px ikonları ve web manifestini ZIP olarak üret.",
+    "aliases": [
+      "favicon",
+      "app icon",
+      "ikon",
+      "manifest",
+      "pwa",
+      "logo",
+      "zip"
+    ],
+    "inputType": "p15",
+    "p15Mode": "favicon-pack",
+    "privacy": "browser",
+    "integration": "fflate",
+    "related": [
+      {
+        "id": "image-resize",
+        "label": "Görsel Boyutlandır"
+      }
+    ]
+  },
+  {
+    "id": "aspect-ratio",
+    "category": "gorsel",
+    "title": "En-Boy Oranı Hesaplayıcı",
+    "description": "Genişlik ve yükseklikten sadeleştirilmiş oranı, ondalık oranı ve yönü hesapla.",
+    "aliases": [
+      "aspect ratio",
+      "en boy",
+      "oran",
+      "16:9",
+      "9:16",
+      "4:5"
+    ],
+    "inputType": "p15",
+    "p15Mode": "aspect-ratio",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "image-crop",
+        "label": "Görsel Kırp"
+      },
+      {
+        "id": "image-resize",
+        "label": "Görsel Boyutlandır"
+      }
+    ]
+  },
+  {
+    "id": "transparency-check",
+    "category": "gorsel",
+    "title": "Şeffaflık Analizi",
+    "description": "PNG veya WebP görselde tam şeffaf, yarı şeffaf ve opak piksellerin oranını ölç.",
+    "aliases": [
+      "şeffaf",
+      "alpha",
+      "transparency",
+      "png",
+      "webp",
+      "opak"
+    ],
+    "inputType": "p15",
+    "p15Mode": "transparency-check",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "image-convert",
+        "label": "Görsel Dönüştür"
+      }
+    ]
+  },
+  {
+    "id": "json-diff",
+    "category": "gelistirici",
+    "title": "JSON Diff",
+    "description": "İki JSON'u path bazında karşılaştır; eklenen, silinen ve değişen değerleri ayrı göster.",
+    "aliases": [
+      "json diff",
+      "json karşılaştır",
+      "compare json",
+      "path",
+      "fark"
+    ],
+    "inputType": "p15",
+    "p15Mode": "json-diff",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "json",
+        "label": "JSON Düzenleyici"
+      }
+    ]
+  },
+  {
+    "id": "regex-playground",
+    "category": "gelistirici",
+    "title": "Regex Playground",
+    "description": "Regex pattern ve flag'leri canlı test et; eşleşmeleri ve capture group'ları gör.",
+    "aliases": [
+      "regex",
+      "regexp",
+      "regular expression",
+      "pattern",
+      "capture group"
+    ],
+    "inputType": "p15",
+    "p15Mode": "regex-playground",
+    "privacy": "browser",
+    "integration": "native"
+  },
+  {
+    "id": "uuid-generator",
+    "category": "gelistirici",
+    "title": "UUID v4 Üretici",
+    "description": "Tek seferde 1-100 adet kriptografik rastgele UUID v4 üret ve kopyala.",
+    "aliases": [
+      "uuid",
+      "guid",
+      "v4",
+      "random id"
+    ],
+    "inputType": "p15",
+    "p15Mode": "uuid-generator",
+    "privacy": "browser",
+    "integration": "native"
+  },
+  {
+    "id": "jwt-reader",
+    "category": "gelistirici",
+    "title": "JWT Payload Okuyucu",
+    "description": "JWT header ve payload alanlarını cihazında aç; imza doğrulaması yapmadan içeriği incele.",
+    "aliases": [
+      "jwt",
+      "token",
+      "payload",
+      "header",
+      "base64url",
+      "decode"
+    ],
+    "inputType": "p15",
+    "p15Mode": "jwt-reader",
+    "privacy": "browser",
+    "integration": "native"
+  },
+  {
+    "id": "markdown-html",
+    "category": "gelistirici",
+    "title": "Markdown → HTML",
+    "description": "Markdown metnini canlı önizlemeyle güvenli temel HTML çıktısına dönüştür.",
+    "aliases": [
+      "markdown",
+      "md",
+      "html",
+      "preview",
+      "dönüştür"
+    ],
+    "inputType": "p15",
+    "p15Mode": "markdown-html",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "html-minify",
+        "label": "HTML Minify"
+      }
+    ]
+  },
+  {
+    "id": "html-minify",
+    "category": "gelistirici",
+    "title": "HTML Temizle / Minify",
+    "description": "HTML yorumlarını ve gereksiz boşlukları kaldırarak daha küçük çıktı üret.",
+    "aliases": [
+      "html minify",
+      "html küçült",
+      "html temizle",
+      "sıkıştır"
+    ],
+    "inputType": "p15",
+    "p15Mode": "html-minify",
+    "privacy": "browser",
+    "integration": "native"
+  },
+  {
+    "id": "css-minify",
+    "category": "gelistirici",
+    "title": "CSS Minify",
+    "description": "CSS yorumlarını ve gereksiz boşlukları kaldırarak sıkıştırılmış CSS üret.",
+    "aliases": [
+      "css minify",
+      "css küçült",
+      "css sıkıştır",
+      "minifier"
+    ],
+    "inputType": "p15",
+    "p15Mode": "css-minify",
+    "privacy": "browser",
+    "integration": "native",
+    "related": [
+      {
+        "id": "gradient-generator",
+        "label": "CSS Gradient"
+      },
+      {
+        "id": "shadow-generator",
+        "label": "Shadow Tasarımcısı"
+      }
+    ]
+  },
+  {
+    "id": "html-entities",
+    "category": "gelistirici",
+    "title": "HTML Entity Encode / Decode",
+    "description": "HTML özel karakterlerini entity biçimine dönüştür veya entity değerlerini tekrar metne çevir.",
+    "aliases": [
+      "html entity",
+      "encode html",
+      "decode html",
+      "escape",
+      "amp",
+      "lt",
+      "gt"
+    ],
+    "inputType": "p15",
+    "p15Mode": "html-entities",
+    "privacy": "browser",
+    "integration": "native"
   },
   {
     id: "unix-time",
