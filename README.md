@@ -84,3 +84,9 @@ P11'in renkli art-direction dili mobilde ayrı bir sistem olarak tamamlandı. Ta
 Tasarım kategorisine dört local-first araç eklendi: Renk Armonisi, Site Renk Sistemi, Web Buton Tasarımcısı ve Mobil Buton Tasarımcısı. Renk motoru, WCAG kontrast hesabı ve CSS üretimi sıfır dış bağımlılıkla tarayıcıda çalışır; tasarım arayüzü yalnız araç açıldığında lazy-load edilir.
 
 Araştırma ve lisans kararları `docs/DESIGN_TOOL_RESEARCH.md` içinde kayıtlıdır. MIT kaynaklardan etkileşim/tasarım fikirleri referans alındı; AGPL kaynak kodu projeye kopyalanmadı.
+
+## P14 tasarım + veri laboratuvarı
+
+Katalog 45 araca çıktı. Tasarım alanına CSS Gradient, Shadow, WCAG Kontrast, Tipografi Ölçeği, Spacing Sistemi ve Radius Sistemi eklendi. Veri alanına CSV Profil Analizi, Veri Kalitesi Kontrolü, Eksik Değer Analizi, Duplicate Satır Bulucu, CSV Kolon Analizi ve İki CSV Karşılaştır aracı eklendi.
+
+Yeni araçlar local-first çalışır. Tasarım motoru dış servise ihtiyaç duymaz; CSV araçları mevcut PapaParse altyapısını kullanır ve dosyaları sunucuya göndermez. Veri laboratuvarı yalnız ihtiyaç olduğunda lazy-load edilir. Araştırma ve ürün kararları docs/P14_DESIGN_DATA_RESEARCH.md dosyasında kayıtlıdır.

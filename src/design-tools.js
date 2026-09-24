@@ -305,3 +305,70 @@ export function buttonCss(options = {}) {
     preview: { background, text, border, hoverBackground, hoverText, radius, minHeight, horizontal, fullWidth }
   };
 }
+
+export function gradientCss(options = {}) {
+  const start = normalizeHex(options.start || "#4967FF");
+  const end = normalizeHex(options.end || "#FF6B6B");
+  const type = options.type === "radial" ? "radial" : "linear";
+  const angle = clamp(Number(options.angle ?? 135), 0, 360);
+  const background = type === "radial"
+    ? "radial-gradient(circle at center, " + start + " 0%, " + end + " 100%)"
+    : "linear-gradient(" + angle + "deg, " + start + " 0%, " + end + " 100%)";
+  return { start, end, type, angle, background, css: "background: " + background + ";" };
+}
+
+export function shadowCss(options = {}) {
+  const color = normalizeHex(options.color || "#0A0B10");
+  const x = clamp(Number(options.x ?? 0), -80, 80);
+  const y = clamp(Number(options.y ?? 18), -80, 80);
+  const blur = clamp(Number(options.blur ?? 40), 0, 120);
+  const spread = clamp(Number(options.spread ?? -12), -60, 60);
+  const opacity = clamp(Number(options.opacity ?? 22), 0, 100) / 100;
+  const inset = Boolean(options.inset);
+  const rgb = hexToRgb(color);
+  const value = (inset ? "inset " : "") + x + "px " + y + "px " + blur + "px " + spread + "px rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + opacity.toFixed(2) + ")";
+  return { value, css: "box-shadow: " + value + ";", metrics: { x, y, blur, spread, opacity, inset } };
+}
+
+export function contrastAudit(foregroundValue, backgroundValue) {
+  const foreground = normalizeHex(foregroundValue);
+  const background = normalizeHex(backgroundValue);
+  const ratio = contrastRatio(foreground, background);
+  return {
+    foreground,
+    background,
+    ratio,
+    aaNormal: ratio >= 4.5,
+    aaLarge: ratio >= 3,
+    aaaNormal: ratio >= 7,
+    aaaLarge: ratio >= 4.5
+  };
+}
+
+export function typographyScale(options = {}) {
+  const base = clamp(Number(options.base ?? 16), 10, 32);
+  const ratio = clamp(Number(options.ratio ?? 1.25), 1.05, 1.8);
+  const steps = clamp(Math.round(Number(options.steps ?? 7)), 4, 10);
+  return Array.from({ length: steps }, (_, index) => {
+    const px = Number((base * (ratio ** index)).toFixed(2));
+    return { index, token: "--font-" + index, px, rem: Number((px / 16).toFixed(4)) };
+  });
+}
+
+export function spacingScale(baseValue = 4) {
+  const base = clamp(Number(baseValue || 4), 2, 12);
+  return [1, 2, 3, 4, 6, 8, 12, 16].map((multiplier, index) => ({
+    token: "--space-" + (index + 1),
+    px: Number((base * multiplier).toFixed(2)),
+    multiplier
+  }));
+}
+
+export function radiusScale(baseValue = 8) {
+  const base = clamp(Number(baseValue || 8), 2, 32);
+  const values = [0, base / 2, base, base * 1.5, base * 2, base * 3];
+  return [
+    ...values.map((px, index) => ({ token: "--radius-" + index, px: Number(px.toFixed(2)) })),
+    { token: "--radius-pill", px: 999 }
+  ];
+}

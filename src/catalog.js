@@ -289,6 +289,72 @@ export const tools = [
     integration: "design-native"
   },
   {
+    id: "gradient-generator",
+    category: "tasarim",
+    title: "CSS Gradient Oluşturucu",
+    description: "Linear veya radial gradient tasarla; canlı önizlemeden doğrudan CSS çıktısı al.",
+    aliases: ["gradient", "gradyan", "css", "arka plan", "linear", "radial"],
+    inputType: "design",
+    designMode: "gradient",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "shadow-generator",
+    category: "tasarim",
+    title: "Shadow Tasarımcısı",
+    description: "Box-shadow değerlerini görsel olarak ayarla; blur, spread, yön, opaklık ve inset CSS üret.",
+    aliases: ["shadow", "gölge", "box shadow", "css", "blur", "spread"],
+    inputType: "design",
+    designMode: "shadow",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "contrast-checker",
+    category: "tasarim",
+    title: "Kontrast Kontrolü",
+    description: "Metin ve arka plan renklerinin WCAG AA/AAA kontrast eşiklerini anında kontrol et.",
+    aliases: ["kontrast", "wcag", "erişilebilirlik", "accessibility", "aa", "aaa", "renk"],
+    inputType: "design",
+    designMode: "contrast",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "typography-scale",
+    category: "tasarim",
+    title: "Tipografi Ölçeği",
+    description: "Temel font boyutu ve oran seç; uyumlu başlık/metin ölçülerini CSS tokenları olarak üret.",
+    aliases: ["tipografi", "font", "type scale", "başlık", "rem", "css"],
+    inputType: "design",
+    designMode: "typography",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "spacing-scale",
+    category: "tasarim",
+    title: "Spacing Sistemi",
+    description: "Tek temel birimden tutarlı boşluk ölçeği ve CSS değişkenleri oluştur.",
+    aliases: ["spacing", "boşluk", "padding", "margin", "grid", "token", "css"],
+    inputType: "design",
+    designMode: "spacing",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "radius-scale",
+    category: "tasarim",
+    title: "Radius Sistemi",
+    description: "Kart, buton ve yüzeyler için tutarlı border-radius token seti üret.",
+    aliases: ["radius", "köşe", "border radius", "yuvarlak", "token", "css"],
+    inputType: "design",
+    designMode: "radius",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
     id: "base64",
     category: "gelistirici",
     title: "Base64 Dönüştürücü",
@@ -344,6 +410,72 @@ export const tools = [
     ],
     privacy: "browser",
     integration: "papaparse"
+  },
+  {
+    id: "csv-profiler",
+    category: "veri",
+    title: "CSV Profil Analizi",
+    description: "CSV dosyasının kolon tiplerini, eksikleri, benzersiz değerleri ve sayısal özetlerini çıkar.",
+    aliases: ["csv", "profil", "profile", "kolon", "istatistik", "veri analizi"],
+    inputType: "data-lab",
+    dataMode: "profile",
+    privacy: "browser",
+    integration: "data-lab-native"
+  },
+  {
+    id: "data-quality-check",
+    category: "veri",
+    title: "Veri Kalitesi Kontrolü",
+    description: "Eksik değer, duplicate satır, karışık tip ve sabit kolon gibi temel kalite sorunlarını tara.",
+    aliases: ["veri kalite", "data quality", "eksik", "duplicate", "tip", "kontrol"],
+    inputType: "data-lab",
+    dataMode: "quality",
+    privacy: "browser",
+    integration: "data-lab-native"
+  },
+  {
+    id: "missing-values",
+    category: "veri",
+    title: "Eksik Değer Analizi",
+    description: "Hangi kolonlarda ne kadar boş değer olduğunu adet ve oranla sırala.",
+    aliases: ["eksik değer", "missing", "null", "boş", "csv", "kolon"],
+    inputType: "data-lab",
+    dataMode: "missing",
+    privacy: "browser",
+    integration: "data-lab-native"
+  },
+  {
+    id: "duplicate-rows",
+    category: "veri",
+    title: "Duplicate Satır Bulucu",
+    description: "Tamamen aynı CSV satırlarını grupla; tekrar sayılarını ve satır numaralarını göster.",
+    aliases: ["duplicate", "tekrar", "csv", "satır", "aynı kayıt", "duplicates"],
+    inputType: "data-lab",
+    dataMode: "duplicates",
+    privacy: "browser",
+    integration: "data-lab-native"
+  },
+  {
+    id: "csv-column-explorer",
+    category: "veri",
+    title: "CSV Kolon Analizi",
+    description: "Tek bir kolonu seç; veri tipi, benzersiz değer, eksik oranı ve en sık değerleri incele.",
+    aliases: ["csv", "kolon", "column", "frequency", "dağılım", "benzersiz"],
+    inputType: "data-lab",
+    dataMode: "column",
+    privacy: "browser",
+    integration: "data-lab-native"
+  },
+  {
+    id: "csv-compare",
+    category: "veri",
+    title: "İki CSV Karşılaştır",
+    description: "İki CSV'nin satır/kolon boyutlarını, eklenen-kaldırılan kolonları ve ortak satırlarını karşılaştır.",
+    aliases: ["csv", "karşılaştır", "compare", "diff", "kolon farkı", "satır farkı"],
+    inputType: "data-lab",
+    dataMode: "compare",
+    privacy: "browser",
+    integration: "data-lab-native"
   },
   {
     id: "duplicates",

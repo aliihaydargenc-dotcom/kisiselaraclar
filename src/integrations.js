@@ -27,12 +27,24 @@ export const integrations = {
     name: "Native UI Design Engine",
     source: "Web Platform + WCAG 2.2 ilkeleri",
     sourceUrl: "https://www.w3.org/TR/WCAG22/",
-    version: "P13",
+    version: "P14",
     license: "Bağımlılık yok",
     execution: "browser",
     networkRequired: false,
     dataLeavesDevice: false,
-    purpose: "Renk armonisi, semantik site tokenları, kontrast ve buton CSS üretimi"
+    purpose: "Renk, kontrast, gradient, shadow, tipografi, spacing, radius ve buton CSS üretimi"
+  },
+  "data-lab-native": {
+    id: "data-lab-native",
+    name: "Local Data Lab",
+    source: "PapaParse + Web Platform",
+    sourceUrl: "https://github.com/mholt/PapaParse",
+    version: "P14 / PapaParse 5.7.0",
+    license: "MIT + Web standardı",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "CSV profil, kalite, eksik değer, duplicate, kolon analizi ve dosya karşılaştırma"
   },
   tesseractjs: {
     id: "tesseractjs",

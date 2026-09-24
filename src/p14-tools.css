@@ -1,0 +1,56 @@
+.p14-design-preview,.p14-shadow-stage,.p14-contrast-preview{min-height:220px;border:1px solid rgba(255,255,255,.12);border-radius:24px;margin:22px 0;display:grid;place-items:center;overflow:hidden}
+.p14-design-preview span{padding:10px 14px;border-radius:999px;background:rgba(10,11,16,.72);color:#fff;font-weight:800;backdrop-filter:blur(8px)}
+.p14-code-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045)}
+.p14-code-row code{overflow:auto;white-space:nowrap}
+.p14-shadow-stage{background:linear-gradient(135deg,#f4f1e8,#fff);min-height:280px}
+.p14-shadow-stage>div{width:min(72%,340px);min-height:150px;background:#fff;color:#111318;border-radius:24px;display:grid;place-items:center;font-weight:800}
+.p14-contrast-preview{padding:28px;align-content:center;gap:8px}
+.p14-contrast-preview strong{font-size:clamp(30px,5vw,54px)}
+.p14-contrast-preview span{font-size:16px}
+.p14-scale-preview{display:grid;gap:10px;margin:20px 0}
+.p14-type-row{display:grid;grid-template-columns:110px 1fr auto;gap:16px;align-items:end;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.10)}
+.p14-type-row strong{line-height:1}
+.p14-type-row small,.p14-type-row span{opacity:.7}
+.p14-token-row{display:grid;grid-template-columns:110px 1fr 70px;gap:14px;align-items:center}
+.p14-token-row i{display:block;height:18px;background:var(--tool-accent,#8d76ff);border-radius:999px}
+.p14-radius-item{display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:center;padding:8px 0}
+.p14-radius-item i{width:58px;height:46px;background:var(--tool-accent,#8d76ff)}
+.p14-data-panel .file-drop{margin:0}
+.p14-data-input-grid,.p14-compare-grid{display:grid;gap:14px;margin:22px 0}
+.p14-compare-grid{grid-template-columns:1fr 1fr}
+.p14-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:20px 0}
+.p14-summary-card{padding:15px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);display:grid;gap:6px}
+.p14-summary-card span{font-size:12px;opacity:.65}
+.p14-summary-card strong{font-size:24px}
+.p14-data-output{margin-top:18px}
+.p14-data-output h3{margin:0 0 12px}
+.p14-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.10);border-radius:18px}
+.p14-table{border-collapse:collapse;width:100%;min-width:620px}
+.p14-table th,.p14-table td{padding:11px 13px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+.p14-table th{position:sticky;top:0;background:#15161d;z-index:1}
+.p14-issue-list{display:grid;gap:10px}
+.p14-issue{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:14px;border-radius:14px;border-left:4px solid #ffcc66;background:rgba(255,255,255,.04)}
+.p14-issue.high{border-left-color:#ff6b6b}
+.p14-issue.low{border-left-color:#8dff85}
+.p14-good-state{display:grid;gap:5px;padding:24px;border-radius:18px;background:rgba(141,255,133,.08);border:1px solid rgba(141,255,133,.25)}
+.p14-good-state strong{font-size:20px}
+.p14-column-select{display:grid;gap:8px}
+.p14-column-hero{display:grid;gap:4px;padding:18px;border-radius:18px;background:rgba(255,255,255,.05);margin-bottom:14px}
+.p14-column-hero strong{font-size:30px}
+.p14-compare-result{display:grid;gap:10px}
+.p14-compare-result article{display:grid;gap:6px;padding:16px;border-radius:16px;background:rgba(255,255,255,.05)}
+.p14-compare-result span{font-size:12px;opacity:.65}
+.p14-empty{opacity:.7}
+.p14-file-drop input{max-width:100%}
+@media(max-width:760px){
+  .p14-code-row{grid-template-columns:1fr}
+  .p14-code-row button{width:100%;min-height:48px}
+  .p14-type-row{grid-template-columns:1fr;align-items:start}
+  .p14-type-row strong{overflow-wrap:anywhere}
+  .p14-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .p14-compare-grid{grid-template-columns:1fr}
+  .p14-issue{grid-template-columns:1fr}
+  .p14-design-preview,.p14-shadow-stage,.p14-contrast-preview{min-height:190px;margin-inline:-4px}
+  .p14-token-row{grid-template-columns:90px 1fr 55px}
+  .p14-summary-card strong{font-size:21px}
+}

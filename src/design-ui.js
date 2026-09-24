@@ -1,11 +1,16 @@
 import {
   buttonCss,
+  contrastAudit,
   contrastRatio,
   generateHarmony,
   generateSiteTheme,
-  normalizeHex,
+  gradientCss,
+  radiusScale,
   readableText,
-  themeToCss
+  shadowCss,
+  spacingScale,
+  themeToCss,
+  typographyScale
 } from "./design-tools.js";
 
 function escapeHtml(value) {
@@ -247,11 +252,197 @@ function wireButton(toolView, mode) {
   render();
 }
 
+function gradientBody() {
+  return [
+    '<div class="design-controls design-controls-2">',
+    '<label>Başlangıç<input id="gradientStart" class="text-control design-color-input" type="color" value="#4967ff" /></label>',
+    '<label>Bitiş<input id="gradientEnd" class="text-control design-color-input" type="color" value="#ff6b6b" /></label>',
+    '<label>Tür<select id="gradientType" class="text-control"><option value="linear">Linear</option><option value="radial">Radial</option></select></label>',
+    '<label>Açı <output id="gradientAngleValue">135°</output><input id="gradientAngle" type="range" min="0" max="360" value="135" /></label>',
+    '</div>',
+    '<div id="p14DesignPreview" class="p14-design-preview"><span>Gradient</span></div>',
+    '<div class="p14-code-row"><code id="p14DesignCode"></code><button class="secondary-button" id="p14Copy" type="button">CSS kopyala</button></div>',
+    '<div id="designStatus" class="design-status">Renkleri değiştir; CSS anında güncellensin.</div>'
+  ].join("\n");
+}
+
+function shadowBody() {
+  return [
+    '<div class="design-controls design-controls-2">',
+    '<label>Gölge rengi<input id="shadowColor" class="text-control design-color-input" type="color" value="#0a0b10" /></label>',
+    '<label>Saydamlık <output id="shadowOpacityValue">22%</output><input id="shadowOpacity" type="range" min="0" max="80" value="22" /></label>',
+    '<label>X <output id="shadowXValue">0px</output><input id="shadowX" type="range" min="-40" max="40" value="0" /></label>',
+    '<label>Y <output id="shadowYValue">18px</output><input id="shadowY" type="range" min="-40" max="60" value="18" /></label>',
+    '<label>Blur <output id="shadowBlurValue">40px</output><input id="shadowBlur" type="range" min="0" max="100" value="40" /></label>',
+    '<label>Spread <output id="shadowSpreadValue">-12px</output><input id="shadowSpread" type="range" min="-30" max="30" value="-12" /></label>',
+    '<label class="design-check"><input id="shadowInset" type="checkbox" /> İç gölge</label>',
+    '</div>',
+    '<div class="p14-shadow-stage"><div id="p14ShadowCard">Gölge önizlemesi</div></div>',
+    '<div class="p14-code-row"><code id="p14DesignCode"></code><button class="secondary-button" id="p14Copy" type="button">CSS kopyala</button></div>',
+    '<div id="designStatus" class="design-status">Gölge değerlerini görsel olarak ayarla.</div>'
+  ].join("\n");
+}
+
+function contrastBody() {
+  return [
+    '<div class="design-controls design-controls-2">',
+    '<label>Metin rengi<input id="contrastFg" class="text-control design-color-input" type="color" value="#111318" /></label>',
+    '<label>Arka plan<input id="contrastBg" class="text-control design-color-input" type="color" value="#ffffff" /></label>',
+    '</div>',
+    '<div id="p14ContrastPreview" class="p14-contrast-preview"><strong>Okunabilir mi?</strong><span>Normal ve büyük metin için kontrol.</span></div>',
+    '<div id="p14ContrastBadges" class="theme-checks"></div>',
+    '<div id="designStatus" class="design-status">WCAG kontrast oranı otomatik hesaplanır.</div>'
+  ].join("\n");
+}
+
+function scaleBody(kind) {
+  const typography = kind === "typography";
+  const spacing = kind === "spacing";
+  return [
+    '<div class="design-controls design-controls-2">',
+    typography
+      ? '<label>Temel boyut (px)<input id="scaleBase" class="text-control" type="number" min="10" max="32" value="16" /></label>'
+      : '<label>Temel birim (px)<input id="scaleBase" class="text-control" type="number" min="2" max="32" value="' + (spacing ? "4" : "8") + '" /></label>',
+    typography
+      ? '<label>Oran<select id="typeRatio" class="text-control"><option value="1.125">Major Second · 1.125</option><option value="1.2">Minor Third · 1.20</option><option value="1.25" selected>Major Third · 1.25</option><option value="1.333">Perfect Fourth · 1.333</option><option value="1.5">Perfect Fifth · 1.50</option></select></label>'
+      : '',
+    '</div>',
+    '<div id="p14ScalePreview" class="p14-scale-preview"></div>',
+    '<div class="p14-code-row"><code id="p14DesignCode"></code><button class="secondary-button" id="p14Copy" type="button">CSS tokenlarını kopyala</button></div>',
+    '<div id="designStatus" class="design-status">Tutarlı ölçek tokenları üret.</div>'
+  ].join("\n");
+}
+
+function wireGradient(toolView) {
+  const start = toolView.querySelector("#gradientStart");
+  const end = toolView.querySelector("#gradientEnd");
+  const type = toolView.querySelector("#gradientType");
+  const angle = toolView.querySelector("#gradientAngle");
+  const preview = toolView.querySelector("#p14DesignPreview");
+  const code = toolView.querySelector("#p14DesignCode");
+  const status = toolView.querySelector("#designStatus");
+  let generated;
+
+  const render = () => {
+    generated = gradientCss({ start: start.value, end: end.value, type: type.value, angle: angle.value });
+    preview.style.background = generated.background;
+    code.textContent = generated.css;
+    toolView.querySelector("#gradientAngleValue").textContent = generated.angle + "°";
+    angle.disabled = generated.type === "radial";
+  };
+
+  [start, end, type, angle].forEach((control) => control.addEventListener(control.tagName === "SELECT" ? "change" : "input", render));
+  toolView.querySelector("#p14Copy").addEventListener("click", () => copyText(generated.css, status, "Gradient CSS kopyalandı."));
+  render();
+}
+
+function wireShadow(toolView) {
+  const ids = ["shadowColor", "shadowOpacity", "shadowX", "shadowY", "shadowBlur", "shadowSpread", "shadowInset"];
+  const controls = Object.fromEntries(ids.map((id) => [id, toolView.querySelector("#" + id)]));
+  const card = toolView.querySelector("#p14ShadowCard");
+  const code = toolView.querySelector("#p14DesignCode");
+  const status = toolView.querySelector("#designStatus");
+  let generated;
+
+  const render = () => {
+    generated = shadowCss({
+      color: controls.shadowColor.value,
+      opacity: controls.shadowOpacity.value,
+      x: controls.shadowX.value,
+      y: controls.shadowY.value,
+      blur: controls.shadowBlur.value,
+      spread: controls.shadowSpread.value,
+      inset: controls.shadowInset.checked
+    });
+    card.style.boxShadow = generated.value;
+    code.textContent = generated.css;
+    toolView.querySelector("#shadowOpacityValue").textContent = Math.round(generated.metrics.opacity * 100) + "%";
+    ["X", "Y", "Blur", "Spread"].forEach((key) => {
+      toolView.querySelector("#shadow" + key + "Value").textContent = generated.metrics[key.toLowerCase()] + "px";
+    });
+  };
+
+  Object.values(controls).forEach((control) => control.addEventListener(control.type === "checkbox" ? "change" : "input", render));
+  toolView.querySelector("#p14Copy").addEventListener("click", () => copyText(generated.css, status, "Shadow CSS kopyalandı."));
+  render();
+}
+
+function wireContrast(toolView) {
+  const fg = toolView.querySelector("#contrastFg");
+  const bg = toolView.querySelector("#contrastBg");
+  const preview = toolView.querySelector("#p14ContrastPreview");
+  const badges = toolView.querySelector("#p14ContrastBadges");
+  const status = toolView.querySelector("#designStatus");
+
+  const render = () => {
+    const audit = contrastAudit(fg.value, bg.value);
+    preview.style.color = audit.foreground;
+    preview.style.background = audit.background;
+    badges.innerHTML = [
+      '<span class="' + (audit.aaNormal ? "pass" : "warn") + '">AA normal ' + (audit.aaNormal ? "✓" : "×") + '</span>',
+      '<span class="' + (audit.aaLarge ? "pass" : "warn") + '">AA büyük ' + (audit.aaLarge ? "✓" : "×") + '</span>',
+      '<span class="' + (audit.aaaNormal ? "pass" : "warn") + '">AAA normal ' + (audit.aaaNormal ? "✓" : "×") + '</span>',
+      '<span class="' + (audit.aaaLarge ? "pass" : "warn") + '">AAA büyük ' + (audit.aaaLarge ? "✓" : "×") + '</span>'
+    ].join("");
+    status.textContent = "Kontrast: " + audit.ratio.toFixed(2) + ":1";
+  };
+
+  [fg, bg].forEach((control) => control.addEventListener("input", render));
+  render();
+}
+
+function wireScale(toolView, kind) {
+  const base = toolView.querySelector("#scaleBase");
+  const ratio = toolView.querySelector("#typeRatio");
+  const preview = toolView.querySelector("#p14ScalePreview");
+  const code = toolView.querySelector("#p14DesignCode");
+  const status = toolView.querySelector("#designStatus");
+  let css = "";
+
+  const render = () => {
+    let scale;
+    if (kind === "typography") scale = typographyScale({ base: base.value, ratio: ratio.value });
+    else if (kind === "spacing") scale = spacingScale(base.value);
+    else scale = radiusScale(base.value);
+
+    css = [":root {", ...scale.map((item) => "  " + item.token + ": " + item.px + "px;"), "}"].join("\n");
+    code.textContent = css;
+
+    if (kind === "typography") {
+      preview.innerHTML = scale.map((item, index) =>
+        '<div class="p14-type-row"><span>' + item.token + '</span><strong style="font-size:' + Math.min(item.px, 58) + 'px">Başlık ' + (index + 1) + '</strong><small>' + item.px + 'px · ' + item.rem + 'rem</small></div>'
+      ).join("");
+    } else if (kind === "spacing") {
+      preview.innerHTML = scale.map((item) =>
+        '<div class="p14-token-row"><span>' + item.token + '</span><i style="width:' + Math.min(item.px * 4, 280) + 'px"></i><strong>' + item.px + 'px</strong></div>'
+      ).join("");
+    } else {
+      preview.innerHTML = scale.map((item) =>
+        '<div class="p14-radius-item"><i style="border-radius:' + item.px + 'px"></i><span>' + item.token + '</span><strong>' + item.px + 'px</strong></div>'
+      ).join("");
+    }
+  };
+
+  base.addEventListener("input", render);
+  if (ratio) ratio.addEventListener("change", render);
+  toolView.querySelector("#p14Copy").addEventListener("click", () => copyText(css, status, "CSS tokenları kopyalandı."));
+  render();
+}
+
 export function renderDesignTool({ tool, toolView, integration, onBack }) {
-  let body = paletteBody();
-  if (tool.designMode === "site-theme") body = siteThemeBody();
-  if (tool.designMode === "web-button") body = buttonBody("web");
-  if (tool.designMode === "mobile-button") body = buttonBody("mobile");
+  const bodies = {
+    palette: paletteBody,
+    "site-theme": siteThemeBody,
+    "web-button": () => buttonBody("web"),
+    "mobile-button": () => buttonBody("mobile"),
+    gradient: gradientBody,
+    shadow: shadowBody,
+    contrast: contrastBody,
+    typography: () => scaleBody("typography"),
+    spacing: () => scaleBody("spacing"),
+    radius: () => scaleBody("radius")
+  };
+  const body = (bodies[tool.designMode] || paletteBody)();
 
   toolView.innerHTML = shell({ tool, integration, body });
   toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
@@ -259,5 +450,11 @@ export function renderDesignTool({ tool, toolView, integration, onBack }) {
   if (tool.designMode === "palette") wirePalette(toolView);
   else if (tool.designMode === "site-theme") wireSiteTheme(toolView);
   else if (tool.designMode === "web-button") wireButton(toolView, "web");
-  else wireButton(toolView, "mobile");
+  else if (tool.designMode === "mobile-button") wireButton(toolView, "mobile");
+  else if (tool.designMode === "gradient") wireGradient(toolView);
+  else if (tool.designMode === "shadow") wireShadow(toolView);
+  else if (tool.designMode === "contrast") wireContrast(toolView);
+  else if (tool.designMode === "typography") wireScale(toolView, "typography");
+  else if (tool.designMode === "spacing") wireScale(toolView, "spacing");
+  else if (tool.designMode === "radius") wireScale(toolView, "radius");
 }
