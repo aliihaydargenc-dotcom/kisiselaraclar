@@ -72,3 +72,8 @@ Mobil deneyim ayrı bir etkileşim katmanı olarak ele alındı. Alt hızlı iş
 ## P11 görsel kimlik
 
 Nötr SaaS görünümü bırakıldı. Ürün artık yüksek kontrastlı siyah/krem temel, acid lime, elektrik mavi, mercan ve mor vurgu renkleri; büyük serif başlıklar; hareketli hero kartları; neon ticker ve kategori bazlı renklenen araç kartları kullanır. Ana sayfadaki açıklama yükü azaltıldı.
+
+
+## P12 mobil görsel entegrasyon
+
+P11'in renkli art-direction dili mobilde ayrı bir sistem olarak tamamlandı. Tam ekran mobil hero, kategori renkli filtre/araç satırları, üçlü hızlı dock, full-bleed smart router, swipe fayda kartları ve kategoriye göre renklenen tool çalışma ekranları eklendi. Teknik motor/lisans bilgisi mobilde disclosure içine alındı; tool aksiyonları sticky çalışma barına dönüştürüldü.

@@ -186,6 +186,7 @@ function toolCard(tool, compact = false) {
 function renderCatalog() {
   currentToolId = "";
   document.body.classList.remove("tool-open");
+  delete document.body.dataset.toolCategory;
   setDocumentTitle();
   const query = searchInput.value;
   const list = searchTools(query, activeCategory);
@@ -265,8 +266,23 @@ function loadingPanel(label) {
   `;
 }
 
+function installMobileTechDetails() {
+  const strip = toolView.querySelector(".integration-strip");
+  if (!strip || toolView.querySelector(".mobile-tech-details")) return;
+
+  const details = document.createElement("details");
+  details.className = "mobile-tech-details";
+  const summary = document.createElement("summary");
+  summary.textContent = "Teknik bilgi";
+  const mobileStrip = strip.cloneNode(true);
+  mobileStrip.classList.add("integration-strip-mobile");
+  details.append(summary, mobileStrip);
+  strip.after(details);
+}
+
 function finalizeToolOpen() {
   enhanceFileDrops(toolView);
+  installMobileTechDetails();
   const handoff = applyStagedFiles(toolView, currentToolId);
   if (handoff.attempted && !handoff.applied) {
     const panel = toolView.querySelector(".tool-panel");
@@ -297,6 +313,7 @@ async function openTool(id, { record = true } = {}) {
 
   currentToolId = id;
   document.body.classList.add("tool-open");
+  document.body.dataset.toolCategory = tool.category;
   setDocumentTitle(tool);
   if (record) rememberRecentTool(safeStorage(), id, validToolIds);
   const integration = getIntegration(tool.integration);
@@ -547,6 +564,14 @@ mobileDock?.addEventListener("click", (event) => {
     requestAnimationFrame(() => {
       document.querySelector("#smartDropZone")?.scrollIntoView({ behavior: "smooth", block: "center" });
       document.querySelector("#smartFileInput")?.click();
+    });
+    return;
+  }
+
+  if (button.dataset.mobileAction === "tools") {
+    if (currentToolId) prepareCatalogForMobileAction();
+    requestAnimationFrame(() => {
+      toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     return;
   }
