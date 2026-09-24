@@ -446,6 +446,14 @@ export function renderDesignTool({ tool, toolView, integration, onBack }) {
 
   toolView.innerHTML = shell({ tool, integration, body });
   toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
+  try {
+    const seedInput = toolView.querySelector("#designSeed");
+    const transferredSeed = localStorage.getItem("kisiselaraclar:design-seed");
+    if (seedInput && /^#[0-9a-f]{6}$/i.test(transferredSeed || "")) {
+      seedInput.value = transferredSeed;
+      localStorage.removeItem("kisiselaraclar:design-seed");
+    }
+  } catch {}
 
   if (tool.designMode === "palette") wirePalette(toolView);
   else if (tool.designMode === "site-theme") wireSiteTheme(toolView);
