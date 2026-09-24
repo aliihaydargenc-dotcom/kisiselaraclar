@@ -10,6 +10,19 @@ export const integrations = {
     networkRequired: false,
     dataLeavesDevice: false
   },
+  tesseractjs: {
+    id: "tesseractjs",
+    name: "Tesseract.js",
+    source: "naptha/tesseract.js",
+    sourceUrl: "https://github.com/naptha/tesseract.js",
+    version: "7.0.0",
+    license: "Apache-2.0",
+    execution: "browser-worker-wasm",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Görsel ve PDF sayfasından Türkçe/İngilizce OCR metni çıkarma",
+    assets: "worker, WASM core ve tur/eng traineddata aynı origin üzerinde paketlenir"
+  },
   "qrcode-generator": {
     id: "qrcode-generator",
     name: "qrcode-generator",

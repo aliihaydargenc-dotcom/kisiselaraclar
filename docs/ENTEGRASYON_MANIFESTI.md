@@ -39,6 +39,23 @@ Bu dosya ürün içinde kullanılan dış motorların kaynak, lisans ve veri dav
 - Entegrasyon: PDF UI modülü ile lazy-load.
 - Bakım notu: Kütüphane olgun fakat upstream kod hareketi PDF.js kadar hızlı değil; API yüzeyi dar tutulur ve fixture testleriyle korunur.
 
+## Tesseract.js OCR
+
+- Kaynak: https://github.com/naptha/tesseract.js
+- npm paketi: **tesseract.js 7.0.0**
+- Core: **tesseract.js-core 7.0.0**
+- Dil paketleri: **@tesseract.js-data/tur 1.0.0**, **@tesseract.js-data/eng 1.0.0**
+- Lisans: Tesseract.js/Core **Apache-2.0**; dil paketleri **MIT**
+- Kullanım: görsel ve render edilmiş PDF sayfasından OCR metni çıkarma
+- Çalışma yeri: **browser + Web Worker + WASM**
+- Harici ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Build: `scripts/sync-ocr-assets.mjs` worker, WASM core ve tur/eng traineddata varlıklarını `public/ocr` altına kopyalar.
+- Runtime: OCR modülü ve Tesseract ana API'si yalnız OCR işlemi başladığında yüklenir.
+- PDF desteği: Tesseract.js doğrudan PDF okumaz; mevcut PDF.js seçilen sayfayı Canvas'a render eder, OCR Canvas üzerinde çalışır.
+- Güvenlik/perf sınırları: görsel 20 MB, PDF 25 MB, PDF render 18 megapiksel.
+- Runtime bütçesi: OCR statik varlıkları için maksimum **40 MB**; ana uygulama JS bütçesine dahil edilmez fakat ayrıca kalite kapısında ölçülür.
+
 ## qrcode-generator
 
 - Kaynak: https://github.com/kazuhikoarase/qrcode-generator
@@ -113,7 +130,8 @@ Base64, URL, JSON, metin, SHA-256 ve tarih araçlarında tarayıcının yerleşi
 Ağır PDF motorları nedeniyle bütçe artık iki katmana ayrılır:
 
 - Ana/entry JS: maksimum **100 KB**
-- Tüm lazy JS/MJS toplamı: maksimum **3.5 MB**
-- CSS: maksimum **120 KB**
+- Tüm uygulama lazy JS/MJS toplamı: maksimum **3.5 MB**
+- OCR worker/WASM/traineddata runtime varlıkları: maksimum **40 MB**
+- CSS: maksimum **140 KB**
 
-Ana ürün kabuğu küçük kalmalı; PDF ve gelecekte medya/OCR motorları yalnız ihtiyaç halinde yüklenmelidir.
+Ana ürün kabuğu küçük kalmalı; ağır OCR runtime varlıkları aynı origin üzerinde tutulur ve yalnız OCR gerektiğinde yüklenir.

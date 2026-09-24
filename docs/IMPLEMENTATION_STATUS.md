@@ -19,6 +19,8 @@ Türkçe-first, local-first, farklı açık kaynak motorların tek tasarım ve a
 - ExifReader tabanlı metadata okuma
 - P4 QR üretme / çok formatlı barkod okuma
 - P4 ZIP / GZIP arşiv araçları
+- P5 Türkçe/İngilizce local OCR
+- P5 görsel ve PDF sayfasından metin çıkarma
 
 ## P2 — PDF local toolkit
 
@@ -85,16 +87,39 @@ Güvenlik ve mimari:
 - GZIP trailer ISIZE alanı açmadan önce kontrol edilir.
 - ZXing yalnız tarama aracı çalıştırıldığında yüklenir.
 
+## P5 — OCR + belge/görsel metin
+
+Motorlar:
+- Tesseract.js 7.0.0 — Apache-2.0
+- tesseract.js-core 7.0.0 — Apache-2.0
+- @tesseract.js-data/tur 1.0.0 — MIT
+- @tesseract.js-data/eng 1.0.0 — MIT
+- PDF.js 6.3.289 — PDF sayfasını OCR öncesi Canvas'a render etmek için
+
+Yeni araçlar:
+- JPEG/PNG/WebP görselden Türkçe, İngilizce veya Türkçe+İngilizce metin çıkarma
+- PDF içinden seçili tek sayfayı render edip OCR ile metin çıkarma
+- OCR ilerleme yüzdesi
+- OCR güven skoru, kelime/karakter sayısı
+- düzenlenebilir sonuç, kopyalama ve TXT indirme
+
+Local-first mimari:
+- Tesseract worker, tüm WASM core varyantları ve tur/eng traineddata build sırasında `public/ocr` altına kopyalanır.
+- Tesseract.js hiçbir üçüncü taraf CDN'e ihtiyaç duymaz.
+- Görsel/PDF verisi hiçbir sunucu API'sine gönderilmez.
+- OCR yalnız kullanıcı araç ekranında işlemi başlattığında yüklenir.
+- Görsel sınırı 20 MB, PDF sınırı 25 MB, PDF render üst sınırı 18 megapikseldir.
+- OCR runtime varlıkları ana uygulama JS bütçesinden ayrı, açıkça izlenen 40 MB runtime bütçesine tabidir.
+
 ## Sıradaki anlamlı paket
 
-**P5 — OCR + belge/görsel metin araçları araştırması**
+**P6 — Medya araçları: ses/video dönüştürme ve kırpma**
 
 ## Backlog
 
 - Faker: Türkçe sahte veri üretici
 - Hoppscotch'tan ilhamla sade API istek test aracı
 - public-apis: yeni ücretsiz veri kaynakları için keşif kataloğu
-- OCR: Tesseract.js
 - medya: Mediabunny, gerektiğinde FFmpeg WASM fallback
 
 ## Release
