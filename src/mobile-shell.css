@@ -1,0 +1,25 @@
+/* P17.3 — mobile navigation shell
+   This file is loaded last and owns the final mobile dock appearance. */
+@media(max-width:620px){
+  .mobile-dock{
+    left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));
+    min-height:60px;padding:4px;gap:4px;
+    grid-template-columns:1.12fr .82fr .72fr;
+    border:0;border-radius:19px;
+    background:rgba(14,15,18,.94);
+    box-shadow:0 14px 38px rgba(0,0,0,.30);
+    backdrop-filter:blur(18px)
+  }
+  .mobile-dock button{
+    min-height:50px;padding:0 7px;
+    border:0!important;border-radius:15px!important
+  }
+  .mobile-dock button:first-child{background:var(--acid);color:var(--ink)}
+  .mobile-dock button:nth-child(2){background:#315cff;color:#fff}
+  .mobile-dock button:last-child{background:transparent;color:var(--cream)}
+  .mobile-dock-icon{font-size:15px}
+  .mobile-dock strong{font-size:8px}
+}
+@media(max-width:390px){
+  .mobile-dock{grid-template-columns:1.12fr .82fr .72fr}
+}
