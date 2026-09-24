@@ -13,6 +13,68 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function svgToPngBlob(svgMarkup, size = 2048) {
+  if (!svgMarkup) throw new Error("Önce QR kod oluştur.");
+  const svgBlob = new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" });
+  const svgUrl = URL.createObjectURL(svgBlob);
+  try {
+    const image = new Image();
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error("QR görseli hazırlanamadı."));
+      image.src = svgUrl;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("PNG oluşturmak için Canvas kullanılamıyor.");
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, size, size);
+    context.imageSmoothingEnabled = false;
+    context.drawImage(image, 0, 0, size, size);
+
+    return await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => blob ? resolve(blob) : reject(new Error("PNG dosyası oluşturulamadı.")),
+        "image/png"
+      );
+    });
+  } finally {
+    URL.revokeObjectURL(svgUrl);
+  }
+}
+
+async function pngToPdfBlob(pngBlob) {
+  const { PDFDocument } = await import("pdf-lib");
+  const pdf = await PDFDocument.create();
+  const png = await pdf.embedPng(await pngBlob.arrayBuffer());
+
+  const page = pdf.addPage([595.28, 841.89]);
+  const qrSize = 340;
+  const { width, height } = page.getSize();
+  page.drawImage(png, {
+    x: (width - qrSize) / 2,
+    y: (height - qrSize) / 2,
+    width: qrSize,
+    height: qrSize
+  });
+
+  const bytes = await pdf.save();
+  return new Blob([bytes], { type: "application/pdf" });
+}
+
 function shell({ tool, integration, body }) {
   return `
     <button class="back-button" id="backToCatalog">← Araçlara dön</button>
@@ -65,7 +127,9 @@ function generateBody() {
     <div id="qrOutput" class="qr-output hidden">
       <div id="qrSvg" class="qr-svg"></div>
       <div class="qr-output-actions">
-        <button class="primary-button" id="qrDownload" type="button">SVG indir</button>
+        <button class="primary-button" id="qrDownloadSvg" type="button">SVG indir</button>
+        <button class="secondary-button" id="qrDownloadPng" type="button">PNG indir</button>
+        <button class="secondary-button" id="qrDownloadPdf" type="button">PDF indir</button>
         <button class="secondary-button" id="qrCopy" type="button">İçeriği kopyala</button>
       </div>
     </div>
@@ -116,7 +180,7 @@ export function renderCodeTool({ tool, toolView, integration, onBack }) {
         });
         svgHost.innerHTML = svg;
         output.classList.remove("hidden");
-        status.textContent = "QR kod oluşturuldu. SVG olarak indirebilir veya içeriği kopyalayabilirsin.";
+        status.textContent = "QR kod oluşturuldu. SVG, PNG veya PDF olarak indirebilirsin.";
       } catch (error) {
         output.classList.add("hidden");
         status.textContent = `Hata: ${error instanceof Error ? error.message : "QR oluşturulamadı."}`;
@@ -131,16 +195,38 @@ export function renderCodeTool({ tool, toolView, integration, onBack }) {
       input.focus();
     });
 
-    toolView.querySelector("#qrDownload").addEventListener("click", () => {
+    toolView.querySelector("#qrDownloadSvg").addEventListener("click", () => {
       const svg = svgHost.innerHTML;
       if (!svg) return;
-      const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "qr-kod.svg";
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      downloadBlob(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }), "qr-kod.svg");
+      status.textContent = "SVG indirildi.";
+    });
+
+    toolView.querySelector("#qrDownloadPng").addEventListener("click", async () => {
+      const svg = svgHost.innerHTML;
+      if (!svg) return;
+      status.textContent = "PNG hazırlanıyor...";
+      try {
+        const png = await svgToPngBlob(svg);
+        downloadBlob(png, "qr-kod.png");
+        status.textContent = "PNG indirildi. Çıktı 2048 × 2048 px hazırlandı.";
+      } catch (error) {
+        status.textContent = `Hata: ${error instanceof Error ? error.message : "PNG oluşturulamadı."}`;
+      }
+    });
+
+    toolView.querySelector("#qrDownloadPdf").addEventListener("click", async () => {
+      const svg = svgHost.innerHTML;
+      if (!svg) return;
+      status.textContent = "PDF hazırlanıyor...";
+      try {
+        const png = await svgToPngBlob(svg);
+        const pdf = await pngToPdfBlob(png);
+        downloadBlob(pdf, "qr-kod.pdf");
+        status.textContent = "PDF indirildi. QR kod A4 sayfaya baskıya uygun şekilde yerleştirildi.";
+      } catch (error) {
+        status.textContent = `Hata: ${error instanceof Error ? error.message : "PDF oluşturulamadı."}`;
+      }
     });
 
     toolView.querySelector("#qrCopy").addEventListener("click", async () => {
