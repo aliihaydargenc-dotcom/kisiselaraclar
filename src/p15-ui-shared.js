@@ -1,0 +1,9 @@
+export const DESIGN_SEED_KEY = "kisiselaraclar:design-seed";
+export const e = (v) => String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('\"',"&quot;").replaceAll("'","&#039;");
+export const filePicker = (id,label,accept="image/*") => `<label class="file-drop p15-file" for="${id}"><strong>${e(label)}</strong><span>Dosya yalnız bu cihazda işlenir.</span><input id="${id}" type="file" accept="${accept}" /></label>`;
+export const statusLine = (text) => `<div id="p15Status" class="design-status">${e(text)}</div>`;
+export function copyText(root,value,message="Kopyalandı."){const s=root.querySelector("#p15Status");navigator.clipboard.writeText(String(value??"")).then(()=>{if(s)s.textContent=message},()=>{if(s)s.textContent="Kopyalama izni verilemedi."})}
+export function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+export const canvasBlob=(canvas,type="image/png")=>new Promise((ok,no)=>canvas.toBlob(b=>b?ok(b):no(new Error("Görsel çıktısı üretilemedi.")),type));
+export async function bitmap(file){if(globalThis.createImageBitmap)return createImageBitmap(file);const u=URL.createObjectURL(file);try{const i=new Image();i.src=u;await i.decode();return i}finally{setTimeout(()=>URL.revokeObjectURL(u),1000)}}
+export async function raster(file,max=420){const im=await bitmap(file),sw=im.width||im.naturalWidth,sh=im.height||im.naturalHeight,k=Math.min(1,max/Math.max(sw,sh)),w=Math.max(1,Math.round(sw*k)),h=Math.max(1,Math.round(sh*k)),c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(im,0,0,w,h);im.close?.();return{canvas:c,width:w,height:h,sourceWidth:sw,sourceHeight:sh,imageData:x.getImageData(0,0,w,h)}}
