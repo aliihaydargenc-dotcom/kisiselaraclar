@@ -97,11 +97,25 @@ function csvTable(result) {
   `;
 }
 
-function openTool(id) {
+async function openTool(id) {
   const tool = tools.find((item) => item.id === id);
   if (!tool) return;
 
   const integration = getIntegration(tool.integration);
+
+  if (tool.inputType === "pdf") {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = '<div class="tool-panel"><p>PDF aracı yükleniyor...</p></div>';
+    try {
+      const { renderPdfTool } = await import("./pdf-ui.js");
+      renderPdfTool({ tool, toolView, integration, onBack: renderCatalog });
+    } catch (error) {
+      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "PDF aracı yüklenemedi.")}</p></div>`;
+    }
+    return;
+  }
+
   const fileControl =
     tool.inputType === "csv-file"
       ? `

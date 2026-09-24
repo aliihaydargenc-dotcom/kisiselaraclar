@@ -12,44 +12,50 @@ Türkçe-first, local-first, farklı açık kaynak motorların tek tasarım ve a
 - Türkçe kategori + alias tabanlı araç araması
 - Local-first gizlilik göstergesi
 - 7 native tarayıcı aracı
+- PapaParse tabanlı CSV aracı
 - GitHub Actions kalite kapısı
+- Ana bundle / lazy bundle boyut bütçesi
 
-## P1 — İlk gerçek dış entegrasyon
+## P2 — PDF local toolkit
 
-PapaParse 5.7.0 (MIT) seçildi.
+Motorlar:
+- PDF.js / pdfjs-dist 6.3.289 — Apache-2.0
+- pdf-lib 1.17.1 — MIT
 
-Yeni yetenek:
-- CSV dosyası seçme (20 MB ilk sürüm sınırı)
-- dosyanın yalnız browser içinde okunması
-- delimiter otomatik algılama
-- başlık/kolon algılama
-- ilk 200 satırlık tablo önizlemesi
-- CSV → JSON çıktısı
-- Türkçe CSV arama alias'ları
-- araç ekranında motor / sürüm / lisans / veri dışarı çıkışı bilgisi
-- entegrasyon manifesti
-- Vite build
-- JS/CSS bundle bütçesi
+Yeni araçlar:
+- PDF önizleme: ilk sayfa render + sayfa sayısı
+- PDF birleştirme
+- sayfa seçip yeni PDF'e çıkarma
+- tüm sayfaları 90/180/270 derece döndürme
+
+Mimari:
+- PDF UI ve motorlar dinamik import ile lazy-load edilir.
+- PDF.js worker Vite asset olarak yerel paketlenir; CDN kullanılmaz.
+- Dosyalar tarayıcıdan dışarı gönderilmez.
+- İlk güvenlik/perf sınırı: dosya başına 25 MB.
+- pdf-lib fonksiyonları bellek içinde üretilen gerçek PDF fixture'larıyla test edilir.
 
 ## Sıradaki anlamlı paket
 
-**P2 — PDF çekirdeği teknik spike**
+**P3 — Görsel araçları**
 
 Öncelik:
-1. pdf.js ile browser PDF önizleme
-2. pdf-lib ile birleştirme / bölme / döndürme prototipi
-3. ağır PDF parçalarını lazy-load ederek JS ana bundle bütçesini koruma
-4. PDF motorları için lisans/veri manifesti
-5. gerçek PDF fixture testleri
+1. Cropper.js veya browser-native yaklaşım ile kırpma
+2. yeniden boyutlandırma
+3. kalite kontrollü sıkıştırma
+4. WebP/JPEG/PNG dönüşümü
+5. EXIF görüntüleme/silme için ExifReader değerlendirmesi
+6. yine lazy-load + entegrasyon manifesti
 
-P2 doğrulanmadan Vercel deployment başlatılmayacak.
+P3 doğrulanmadan Vercel deployment başlatılmayacak.
 
-## Backlog'a eklenen araştırma adayları
+## Backlog
 
 - Faker: Türkçe sahte veri üretici
 - Hoppscotch'tan ilhamla sade API istek test aracı
 - public-apis: yeni ücretsiz veri kaynakları için keşif kataloğu
-- Size Limit yaklaşımı: şu an custom bundle budget ile başlatıldı; ihtiyaç büyürse doğrudan araç değerlendirilecek
+- OCR: Tesseract.js
+- medya: Mediabunny, gerektiğinde FFmpeg WASM fallback
 
 ## Release
 

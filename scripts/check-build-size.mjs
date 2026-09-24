@@ -1,12 +1,13 @@
-import { readdir, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "dist");
 const limits = {
-  js: 250 * 1024,
-  css: 100 * 1024
+  coreJs: 100 * 1024,
+  totalJs: 3500 * 1024,
+  css: 120 * 1024
 };
 
 async function walk(pathname) {
@@ -20,21 +21,25 @@ async function walk(pathname) {
   return files;
 }
 
+const html = await readFile(join(root, "index.html"), "utf8");
+const entryMatch = html.match(/<script[^>]+src="([^"]+\.(?:js|mjs))"/);
+if (!entryMatch) throw new Error("Ana JS bundle bulunamadı.");
+
+const entryPath = join(root, entryMatch[1].replace(/^\//, ""));
+const coreJs = (await stat(entryPath)).size;
 const files = await walk(root);
-const totals = { js: 0, css: 0 };
+let totalJs = 0;
+let css = 0;
 
 for (const file of files) {
   const info = await stat(file);
-  if (file.endsWith(".js")) totals.js += info.size;
-  if (file.endsWith(".css")) totals.css += info.size;
+  if (/\.(?:js|mjs)$/.test(file)) totalJs += info.size;
+  if (file.endsWith(".css")) css += info.size;
 }
 
-for (const [kind, bytes] of Object.entries(totals)) {
+const values = { coreJs, totalJs, css };
+for (const [kind, bytes] of Object.entries(values)) {
   const limit = limits[kind];
-  const kb = (bytes / 1024).toFixed(1);
-  const maxKb = (limit / 1024).toFixed(0);
-  console.log(`${kind.toUpperCase()}: ${kb} KB / ${maxKb} KB bütçe`);
-  if (bytes > limit) {
-    throw new Error(`${kind.toUpperCase()} bundle bütçeyi aştı.`);
-  }
+  console.log(`${kind}: ${(bytes / 1024).toFixed(1)} KB / ${(limit / 1024).toFixed(0)} KB bütçe`);
+  if (bytes > limit) throw new Error(`${kind} bundle bütçeyi aştı.`);
 }

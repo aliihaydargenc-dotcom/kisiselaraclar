@@ -21,6 +21,30 @@ export const integrations = {
     networkRequired: false,
     dataLeavesDevice: false,
     purpose: "CSV ayrıştırma, delimiter algılama ve CSV → JSON dönüşümü"
+  },
+  pdfjs: {
+    id: "pdfjs",
+    name: "PDF.js",
+    source: "mozilla/pdf.js",
+    sourceUrl: "https://github.com/mozilla/pdf.js",
+    version: "6.3.289",
+    license: "Apache-2.0",
+    execution: "browser-worker",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "PDF sayfalarını tarayıcıda görüntüleme"
+  },
+  pdflib: {
+    id: "pdflib",
+    name: "pdf-lib",
+    source: "Hopding/pdf-lib",
+    sourceUrl: "https://github.com/Hopding/pdf-lib",
+    version: "1.17.1",
+    license: "MIT",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "PDF birleştirme, sayfa çıkarma ve döndürme"
   }
 };
 
