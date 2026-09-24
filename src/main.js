@@ -21,6 +21,8 @@ const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
 const mobileDock = document.querySelector("#mobileDock");
+const heroSearchButton = document.querySelector("#heroSearchButton");
+const scrollProgress = document.querySelector("#scrollProgress");
 const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
@@ -166,7 +168,7 @@ function wireSmartRouter() {
 
 function toolCard(tool, compact = false) {
   return `
-    <button class="${compact ? "quick-tool" : "tool-card"}" data-tool="${tool.id}" aria-label="${escapeHtml(tool.title)} aracını aç">
+    <button class="${compact ? `quick-tool cat-${tool.category}` : `tool-card cat-${tool.category}`}" data-tool="${tool.id}" aria-label="${escapeHtml(tool.title)} aracını aç">
       ${compact ? "" : `
         <div class="tool-card-top">
           <span class="tool-category">${categoryLabel(tool.category)}</span>
@@ -201,10 +203,9 @@ function renderCatalog() {
       <section class="quick-section" aria-labelledby="quickTitle">
         <div class="quick-head">
           <div>
-            <span class="eyebrow">HIZLI ERİŞİM</span>
-            <h2 id="quickTitle">Hızlı erişim</h2>
+            <span class="eyebrow">HIZLI</span>
+            <h2 id="quickTitle">Kestirmeler</h2>
           </div>
-          <span>Son kullandıkların önce gelir.</span>
         </div>
         <div class="quick-grid">
           ${quickTools.map((tool) => toolCard(tool, true)).join("")}
@@ -213,10 +214,9 @@ function renderCatalog() {
     ` : ""}
     <div class="catalog-head">
       <div>
-        <span class="eyebrow">${activeCategory === "all" ? "ARAÇ KATALOĞU" : categoryLabel(activeCategory).toLocaleUpperCase("tr-TR")}</span>
-        <h2>Araçlar <span class="catalog-count">${list.length}</span></h2>
+        <span class="eyebrow">${activeCategory === "all" ? "HEPSİ" : categoryLabel(activeCategory).toLocaleUpperCase("tr-TR")}</span>
+        <h2><span class="catalog-count">${list.length}</span> araç</h2>
       </div>
-      <span class="catalog-note">Türkçe • cihazında işler</span>
     </div>
     <div class="tool-grid">
       ${list.map((tool) => toolCard(tool)).join("")}
@@ -559,3 +559,19 @@ mobileDock?.addEventListener("click", (event) => {
     });
   }
 });
+
+
+heroSearchButton?.addEventListener("click", () => {
+  toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
+  requestAnimationFrame(() => searchInput.focus({ preventScroll: true }));
+});
+
+function updateScrollProgress() {
+  if (!scrollProgress) return;
+  const max = document.documentElement.scrollHeight - innerHeight;
+  const ratio = max > 0 ? Math.max(0, Math.min(1, scrollY / max)) : 0;
+  scrollProgress.style.transform = `scaleX(${ratio})`;
+}
+
+addEventListener("scroll", updateScrollProgress, { passive: true });
+updateScrollProgress();
