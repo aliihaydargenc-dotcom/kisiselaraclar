@@ -62,3 +62,8 @@ Arayüz 29 araçlık katalog büyüdükten sonra yeniden düzenlendi. Üç sütu
 ## Site shell redesign
 
 Ürün arayüzü dashboard görünümünden çıkarılarak landing-first bir web sitesi yapısına taşındı. Sticky üst navigasyon, editorial hero, ürün görseli, yatay araç keşfi ve açıklayıcı alt bölüm eklendi. Desktop sidebar kaldırıldı; arama ve kategori filtresi araç kataloğunun doğal bir parçası oldu. Bir araç açıldığında landing katmanları geri çekilerek odaklı çalışma ekranı korunur.
+
+
+## P10 mobil UX
+
+Mobil deneyim ayrı bir etkileşim katmanı olarak ele alındı. Alt hızlı işlem dock'u, swipe kategori/hızlı erişim şeritleri, liste tipi araç kataloğu, 48 px dokunma hedefleri, safe-area desteği ve sıkılaştırılmış tool ekranları eklendi.

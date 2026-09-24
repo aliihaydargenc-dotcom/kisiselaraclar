@@ -247,3 +247,21 @@ P9 sonrasında ürünün hâlâ dashboard hissi vermesi nedeniyle ana bilgi mima
 - footer eklendi
 - araç açıldığında landing, katalog toolbar ve tanıtım blokları gizlenerek odaklı tool-page modu kullanılır
 - mobilde aynı yapı tek sütunda, sabit marka header ile çalışır
+
+
+## P10 — Mobil UX
+
+Mobil görünüm masaüstü layout'un küçültülmüş hali olmaktan çıkarıldı.
+
+- safe-area uyumlu sabit alt hızlı işlem dock'u: Dosya seç / Ara
+- hero mobilde daha kısa, tek aksiyonlu ve daha kompakt showcase yapısında
+- arama 48 px dokunma alanına çıkarıldı
+- kategori filtreleri yatay scroll-snap chip yapısına geçirildi
+- smart router mobilde daha kısa ve dokunma odaklı hale getirildi
+- hızlı erişim tam yatay swipe şeridine dönüştürüldü
+- araç kataloğu mobilde kart grid yerine sınırlarla ayrılmış liste düzenine geçti
+- tool sayfalarında başlık, metadata, dosya seçici, input ve sonuç alanları mobil için sıkılaştırıldı
+- aksiyon butonları 48 px dokunma hedefi ve iki kolon/tek kolon davranışı aldı
+- native file picker butonu mobil tasarım diliyle eşlendi
+- 390 px altı ekranlar için ek yoğunluk düzenlemesi yapıldı
+- tool açıkken mobil dock gizlenir; çalışma ekranı tam odağa geçer

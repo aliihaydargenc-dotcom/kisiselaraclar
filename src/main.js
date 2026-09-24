@@ -20,6 +20,7 @@ const toolView = document.querySelector("#toolView");
 const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
+const mobileDock = document.querySelector("#mobileDock");
 const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
@@ -524,4 +525,37 @@ headerSearchButton?.addEventListener("click", () => {
     toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
     searchInput.focus({ preventScroll: true });
   });
+});
+
+
+function prepareCatalogForMobileAction() {
+  if (currentToolId) {
+    history.replaceState({ tool: null }, "", `${location.pathname}${location.search}`);
+  }
+  activeCategory = "all";
+  searchInput.value = "";
+  renderCategories();
+  renderCatalog();
+}
+
+mobileDock?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-mobile-action]");
+  if (!button) return;
+
+  if (button.dataset.mobileAction === "file") {
+    prepareCatalogForMobileAction();
+    requestAnimationFrame(() => {
+      document.querySelector("#smartDropZone")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      document.querySelector("#smartFileInput")?.click();
+    });
+    return;
+  }
+
+  if (button.dataset.mobileAction === "search") {
+    if (currentToolId) prepareCatalogForMobileAction();
+    requestAnimationFrame(() => {
+      toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
+      searchInput.focus({ preventScroll: true });
+    });
+  }
 });
