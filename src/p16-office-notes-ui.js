@@ -30,8 +30,9 @@ function wireNote(root) {
   let active = notes[0]?.id || "";
 
   const persist = () => {
-    putJson(P16_NOTES_KEY, notes);
-    status(root, "Kaydedildi · yalnız bu cihazda.");
+    const saved = putJson(P16_NOTES_KEY, notes);
+    status(root, saved ? "Kaydedildi · yalnız bu cihazda." : "Kaydedilemedi · tarayıcı depolamasını kontrol et.");
+    return saved;
   };
   const current = () => notes.find((item) => item.id === active);
   const renderList = () => {
@@ -95,7 +96,12 @@ function wireNote(root) {
   };
   root.querySelector("#p16DeleteNote").onclick = () => {
     if (!active) return;
-    notes = notes.filter((item) => item.id !== active);
+    const item = current();
+    const label = item?.title || item?.text.slice(0, 28) || "Adsız not";
+    const accepted = globalThis.confirm?.(`"${label}" notu silinsin mi?`) ?? true;
+    if (!accepted) return;
+    clearTimeout(timer);
+    notes = notes.filter((entry) => entry.id !== active);
     active = notes[0]?.id || "";
     persist();
     loadActive();
@@ -153,16 +159,42 @@ function wireMeeting(root) {
     decisions: nodes.Decisions.value,
     actions: nodes.Actions.value
   });
+  const saveDraft = () => {
+    const saved = putJson(P16_MEETING_KEY, data());
+    status(root, saved ? "Taslak kaydedildi." : "Taslak kaydedilemedi · tarayıcı depolamasını kontrol et.");
+    return saved;
+  };
   let timer;
   Object.values(nodes).forEach((node) => node.addEventListener("input", () => {
     clearTimeout(timer);
-    timer = setTimeout(() => { putJson(P16_MEETING_KEY, data()); status(root, "Taslak kaydedildi."); }, 250);
+    timer = setTimeout(saveDraft, 250);
   }));
   root.querySelector("#p16MeetingTasks").onclick = () => {
+    const existing = normalizeTasks(getJson(P16_TASKS_KEY, []));
     const additions = actionLinesToTasks(nodes.Actions.value, nodes.Date.value);
-    const tasks = normalizeTasks([...getJson(P16_TASKS_KEY, []), ...additions]);
-    putJson(P16_TASKS_KEY, tasks);
-    status(root, additions.length ? `${additions.length} aksiyon Görev & Takvim'e eklendi.` : "Aksiyon satırı bulunamadı.");
+    const keys = new Set(existing.map((task) => `${task.title.toLocaleLowerCase("tr-TR")}\u0000${task.date}`));
+    const unique = [];
+    for (const task of additions) {
+      const key = `${task.title.toLocaleLowerCase("tr-TR")}\u0000${task.date}`;
+      if (keys.has(key)) continue;
+      keys.add(key);
+      unique.push(task);
+    }
+    if (!additions.length) {
+      status(root, "Aksiyon satırı bulunamadı.");
+      return;
+    }
+    if (!unique.length) {
+      status(root, "Bu aksiyonlar zaten Görev & Takvim'de.");
+      return;
+    }
+    const saved = putJson(P16_TASKS_KEY, normalizeTasks([...existing, ...unique]));
+    if (!saved) {
+      status(root, "Görevler kaydedilemedi · tarayıcı depolamasını kontrol et.");
+      return;
+    }
+    const skipped = additions.length - unique.length;
+    status(root, `${unique.length} aksiyon Görev & Takvim'e eklendi.${skipped ? ` · ${skipped} tekrar atlandı.` : ""}`);
   };
   root.querySelector("#p16MeetingCopy").onclick = async () => {
     try { await navigator.clipboard.writeText(buildMeetingMarkdown(data())); status(root, "Toplantı özeti kopyalandı."); }
@@ -172,9 +204,11 @@ function wireMeeting(root) {
     downloadText(buildMeetingMarkdown(data()), `${safeName(nodes.Title.value, "toplanti-notu")}.md`, "text/markdown;charset=utf-8");
   };
   root.querySelector("#p16MeetingClear").onclick = () => {
+    const accepted = globalThis.confirm?.("Toplantı taslağındaki metinler temizlensin mi?") ?? true;
+    if (!accepted) return;
     Object.values(nodes).forEach((node) => { if (node.type !== "date") node.value = ""; });
-    putJson(P16_MEETING_KEY, data());
-    status(root, "Toplantı taslağı temizlendi.");
+    const saved = putJson(P16_MEETING_KEY, data());
+    status(root, saved ? "Toplantı taslağı temizlendi." : "Taslak temizlendi ancak cihazda kaydedilemedi.");
   };
 }
 

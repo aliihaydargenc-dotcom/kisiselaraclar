@@ -1,11 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  P17_BACKUP_ENTRY_LIMIT,
   P17_BACKUP_SCHEMA,
+  P17_BACKUP_VALUE_LIMIT,
   buildWorkspaceSummary,
   createWorkspaceBackup,
   restoreWorkspaceBackup,
-  searchWorkspaceContent
+  searchWorkspaceContent,
+  validateWorkspaceBackup
 } from "../src/p17-workspace.js";
 
 function storageOf(initial = {}) {
@@ -67,4 +70,31 @@ test("P17 araması not, görev ve toplantı içeriğini bulur", () => {
   const results = searchWorkspaceContent(storage, "gelir");
   assert.equal(results.length, 3);
   assert.deepEqual(new Set(results.map((item) => item.toolId)), new Set(["quick-note", "tasks-calendar", "meeting-notes"]));
+});
+
+
+test("P17 yedek doğrulaması aşırı kayıt ve büyük değerleri reddeder", () => {
+  const tooMany = Object.fromEntries(Array.from({ length: P17_BACKUP_ENTRY_LIMIT + 1 }, (_, index) => [
+    `kisiselaraclar:test:${index}`,
+    "x"
+  ]));
+  assert.throws(() => validateWorkspaceBackup({
+    schema: P17_BACKUP_SCHEMA,
+    version: 1,
+    entries: tooMany
+  }), /en fazla/);
+
+  assert.throws(() => validateWorkspaceBackup({
+    schema: P17_BACKUP_SCHEMA,
+    version: 1,
+    entries: { "kisiselaraclar:test": "x".repeat(P17_BACKUP_VALUE_LIMIT + 1) }
+  }), /2 MB/);
+});
+
+test("P17 hızlı işler gerçek eylem niyeti taşır", async () => {
+  const storage = storageOf();
+  const { buildP17HomeMarkup } = await import("../src/p17-workspace.js");
+  const html = buildP17HomeMarkup(storage, new Date(2026, 8, 24, 12, 0, 0));
+  assert.match(html, /data-tool="quick-note" data-tool-action="new-note"/);
+  assert.match(html, /data-tool="tasks-calendar" data-tool-action="new-task"/);
 });

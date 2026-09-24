@@ -8,7 +8,7 @@ function pickerBody(){return `${filePicker("p15Image","Rengini seçmek istediği
 function wirePicker(r){const i=r.querySelector("#p15Image"),c=r.querySelector("#p15Canvas"),o=r.querySelector("#p15Picked"),b=r.querySelector("#p15Copy"),s=r.querySelector("#p15Status");let d,v;i.onchange=async()=>{try{const x=await raster(i.files[0],720);c.width=x.width;c.height=x.height;c.getContext("2d").drawImage(x.canvas,0,0);d=x.imageData;s.textContent=`${x.sourceWidth}×${x.sourceHeight} görsel hazır.`}catch(x){s.textContent=`Hata: ${x.message}`}};c.onpointerdown=x=>{if(!d)return;const q=c.getBoundingClientRect();v=pixelColor(d.data,c.width,c.height,(x.clientX-q.left)/q.width*c.width,(x.clientY-q.top)/q.height*c.height);o.style.setProperty("--picked",v.hex);o.querySelector("strong").textContent=v.hex;o.querySelector("span").textContent=`RGB ${v.r}, ${v.g}, ${v.b} · α ${v.alpha.toFixed(2)}`;b.disabled=false};b.onclick=()=>v&&copyText(r,v.hex,`${v.hex} kopyalandı.`)}
 
 function svgBody(){return `<div class="p15-editor-grid"><label>SVG kaynak<textarea id="p15Input" class="text-control p15-code" spellcheck="false" placeholder="<svg viewBox=…></svg>"></textarea></label><div><span class="p15-label">Güvenli önizleme</span><div class="p15-svg-preview"><img id="p15Preview" alt="SVG önizleme"></div></div></div><div class="action-row"><button class="primary-button" id="p15Run">İncele ve temizle</button><button class="secondary-button" id="p15Download" disabled>Temiz SVG indir</button></div><div id="p15Metrics" class="p15-metrics"></div><div class="result-wrap"><div class="result-head"><span>Temiz SVG</span><button class="text-button" id="p15Copy">Kopyala</button></div><pre id="p15Output"></pre></div>${statusLine("SVG kaynak kodunu yapıştır.")}`}
-function wireSvg(r){const s=r.querySelector("#p15Status"),inp=r.querySelector("#p15Input"),out=r.querySelector("#p15Output"),img=r.querySelector("#p15Preview"),m=r.querySelector("#p15Metrics"),d=r.querySelector("#p15Download");let clean="",u="";r.querySelector("#p15Run").onclick=()=>{try{const x=svgInfo(inp.value);clean=x.sanitized;out.textContent=clean;if(u)URL.revokeObjectURL(u);u=URL.createObjectURL(new Blob([clean],{type:"image/svg+xml"}));img.src=u;m.innerHTML=[["Boyut",x.width&&x.height?`${x.width}×${x.height}`:"—"],["Öğe",x.elementCount],["Tür",x.uniqueElements.slice(0,6).join(", ")||"—"],["Boyut",`${x.bytes} B`]].map(v=>`<article><span>${v[0]}</span><strong>${e(v[1])}</strong></article>`).join("");d.disabled=false;s.textContent="SVG temizlendi ve önizlendi."}catch(x){s.textContent=`Hata: ${x.message}`}};r.querySelector("#p15Copy").onclick=()=>copyText(r,clean,"Temiz SVG kopyalandı.");d.onclick=()=>clean&&downloadBlob(new Blob([clean],{type:"image/svg+xml"}),"temiz.svg")}
+function wireSvg(r){const s=r.querySelector("#p15Status"),inp=r.querySelector("#p15Input"),out=r.querySelector("#p15Output"),img=r.querySelector("#p15Preview"),m=r.querySelector("#p15Metrics"),d=r.querySelector("#p15Download");let clean="",u="";r.querySelector("#p15Run").onclick=()=>{try{const x=svgInfo(inp.value);clean=x.sanitized;out.textContent=clean;if(u)URL.revokeObjectURL(u);u=URL.createObjectURL(new Blob([clean],{type:"image/svg+xml"}));img.onload=()=>{if(u){URL.revokeObjectURL(u);u=""}};img.src=u;m.innerHTML=[["Boyut",x.width&&x.height?`${x.width}×${x.height}`:"—"],["Öğe",x.elementCount],["Tür",x.uniqueElements.slice(0,6).join(", ")||"—"],["Dosya",`${x.bytes} B`]].map(v=>`<article><span>${v[0]}</span><strong>${e(v[1])}</strong></article>`).join("");d.disabled=false;s.textContent="SVG temizlendi ve önizlendi."}catch(x){s.textContent=`Hata: ${x.message}`}};r.querySelector("#p15Copy").onclick=()=>copyText(r,clean,"Temiz SVG kopyalandı.");d.onclick=()=>clean&&downloadBlob(new Blob([clean],{type:"image/svg+xml"}),"temiz.svg")}
 
 async function svgCanvas(svg,width,bg=null){const x=svgInfo(svg),ratio=x.width&&x.height?x.width/x.height:1,w=Math.max(16,Math.min(4096,Number(width)||512)),h=Math.max(1,Math.round(w/ratio)),u=URL.createObjectURL(new Blob([x.sanitized],{type:"image/svg+xml"}));try{const im=new Image();im.src=u;await im.decode();const c=document.createElement("canvas");c.width=w;c.height=h;const z=c.getContext("2d");if(bg){z.fillStyle=bg;z.fillRect(0,0,w,h)}z.drawImage(im,0,0,w,h);return c}finally{URL.revokeObjectURL(u)}}
 function svgPngBody(){return `<div class="p15-editor-grid"><label>SVG kaynak<textarea id="p15Input" class="text-control p15-code"></textarea></label><div class="p15-controls"><label>PNG genişliği<input id="p15Width" class="text-control" type="number" min="16" max="4096" value="512"></label><label>Arka plan<input id="p15Bg" type="color" value="#ffffff"></label><label class="design-check"><input id="p15Transparent" type="checkbox" checked> Şeffaf</label></div></div><div class="action-row"><button class="primary-button" id="p15Run">PNG üret</button><button class="secondary-button" id="p15Download" disabled>PNG indir</button></div><div class="p15-image-stage"><canvas id="p15Canvas"></canvas></div>${statusLine("SVG yapıştır ve PNG ölçüsünü seç.")}`}
@@ -16,7 +16,41 @@ function wireSvgPng(r){const s=r.querySelector("#p15Status"),out=r.querySelector
 
 function faviconBody(){return `${filePicker("p15Image","Logo / ikon görselini seç","image/png,image/jpeg,image/webp,image/svg+xml")}<div id="p15Icons" class="p15-icon-grid"></div><div class="action-row"><button class="primary-button" id="p15Run" disabled>İkon paketini ZIP yap</button></div>${statusLine("Kare veya kareye yakın bir logo seç.")}`}
 function cover(ctx,im,size){const w=im.width||im.naturalWidth,h=im.height||im.naturalHeight,k=Math.max(size/w,size/h),dw=w*k,dh=h*k;ctx.clearRect(0,0,size,size);ctx.drawImage(im,(size-dw)/2,(size-dh)/2,dw,dh)}
-function wireFavicon(r){const i=r.querySelector("#p15Image"),g=r.querySelector("#p15Icons"),run=r.querySelector("#p15Run"),s=r.querySelector("#p15Status");let im;i.onchange=async()=>{try{im=await bitmap(i.files[0]);g.innerHTML=FAVICON_SIZES.map(n=>`<article><canvas width="${n}" height="${n}" data-size="${n}"></canvas><strong>${n}×${n}</strong></article>`).join("");g.querySelectorAll("canvas").forEach(c=>cover(c.getContext("2d"),im,+c.dataset.size));run.disabled=false;s.textContent=`${FAVICON_SIZES.length} ikon boyutu hazır.`}catch(x){s.textContent=`Hata: ${x.message}`}};run.onclick=async()=>{try{const files={};for(const c of g.querySelectorAll("canvas")){const n=+c.dataset.size,b=await canvasBlob(c);files[`icon-${n}x${n}.png`]=new Uint8Array(await b.arrayBuffer())}files["icons.webmanifest.json"]=new TextEncoder().encode(JSON.stringify({icons:FAVICON_SIZES.filter(n=>n>=192).map(n=>({src:`icon-${n}x${n}.png`,sizes:`${n}x${n}`,type:"image/png"}))},null,2));const{zipSync}=await import("fflate");downloadBlob(new Blob([zipSync(files,{level:6})],{type:"application/zip"}),"favicon-app-icon-paketi.zip");s.textContent="İkon paketi indirildi."}catch(x){s.textContent=`Hata: ${x.message}`}}}
+function wireFavicon(r){
+  const i=r.querySelector("#p15Image"),g=r.querySelector("#p15Icons"),run=r.querySelector("#p15Run"),s=r.querySelector("#p15Status");
+  let im;
+  i.onchange=async()=>{
+    try{
+      const file=i.files?.[0];
+      if(!file)return;
+      const isSvg=file.type==="image/svg+xml" || /\.svg$/i.test(file.name||"");
+      const source=isSvg
+        ? new Blob([sanitizeSvgText(await file.text())],{type:"image/svg+xml"})
+        : file;
+      im=await bitmap(source);
+      g.innerHTML=FAVICON_SIZES.map(n=>`<article><canvas width="${n}" height="${n}" data-size="${n}"></canvas><strong>${n}×${n}</strong></article>`).join("");
+      g.querySelectorAll("canvas").forEach(c=>cover(c.getContext("2d"),im,+c.dataset.size));
+      run.disabled=false;
+      s.textContent=`${FAVICON_SIZES.length} ikon boyutu hazır.`;
+    }catch(x){
+      run.disabled=true;
+      s.textContent=`Hata: ${x.message}`;
+    }
+  };
+  run.onclick=async()=>{
+    try{
+      const files={};
+      for(const c of g.querySelectorAll("canvas")){
+        const n=+c.dataset.size,b=await canvasBlob(c);
+        files[`icon-${n}x${n}.png`]=new Uint8Array(await b.arrayBuffer());
+      }
+      files["icons.webmanifest.json"]=new TextEncoder().encode(JSON.stringify({icons:FAVICON_SIZES.filter(n=>n>=192).map(n=>({src:`icon-${n}x${n}.png`,sizes:`${n}x${n}`,type:"image/png"}))},null,2));
+      const{zipSync}=await import("fflate");
+      downloadBlob(new Blob([zipSync(files,{level:6})],{type:"application/zip"}),"favicon-app-icon-paketi.zip");
+      s.textContent="İkon paketi indirildi.";
+    }catch(x){s.textContent=`Hata: ${x.message}`}
+  }
+}
 
 function ratioBody(){return `<div class="p15-ratio-grid"><label>Genişlik<input id="p15W" class="text-control" type="number" min="1" value="1920"></label><label>Yükseklik<input id="p15H" class="text-control" type="number" min="1" value="1080"></label></div><div id="p15Ratio" class="p15-ratio-card"><span>Oran</span><strong>16:9</strong><small>1.7778 · yatay</small></div><div class="p15-presets"><button data-ratio="1920,1080">16:9</button><button data-ratio="1080,1080">1:1</button><button data-ratio="1080,1350">4:5</button><button data-ratio="1080,1920">9:16</button></div>${statusLine("Ölçüleri değiştir; oran anında hesaplansın.")}`}
 function wireRatio(r){const w=r.querySelector("#p15W"),h=r.querySelector("#p15H"),c=r.querySelector("#p15Ratio"),draw=()=>{const x=aspectRatio(w.value,h.value),o=x.orientation==="landscape"?"yatay":x.orientation==="portrait"?"dikey":"kare";c.querySelector("strong").textContent=x.ratio;c.querySelector("small").textContent=`${x.decimal.toFixed(4)} · ${o}`;c.style.setProperty("--ratio",x.decimal)};[w,h].forEach(x=>x.oninput=draw);r.querySelector(".p15-presets").onclick=x=>{const b=x.target.closest("[data-ratio]");if(b){[w.value,h.value]=b.dataset.ratio.split(",");draw()}};draw()}
