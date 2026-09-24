@@ -88,3 +88,11 @@ pre { margin: 0; padding: 16px; min-height: 110px; white-space: pre-wrap; overfl
 .data-table { width: max-content; min-width: 100%; border-collapse: collapse; background: white; font-size: 13px; }
 .data-table th, .data-table td { padding: 9px 11px; border-right: 1px solid #eceef1; border-bottom: 1px solid #eceef1; text-align: left; white-space: nowrap; }
 .data-table th { position: sticky; top: 0; z-index: 1; background: #f7f8fa; font-weight: 800; }
+
+
+.text-control { width: 100%; border: 1px solid #d8dce3; background: #fafbfc; border-radius: 12px; padding: 11px 12px; outline: none; margin-bottom: 10px; }
+.text-control:focus { border-color: #7a8799; box-shadow: 0 0 0 3px rgba(122, 135, 153, .12); }
+.pdf-run-button { margin-top: 4px; }
+.pdf-status { margin-top: 18px; padding: 12px 14px; border-radius: 12px; background: #f7f8fa; color: #5f6875; font-size: 13px; }
+.pdf-canvas-wrap { overflow: auto; padding: 14px; border: 1px solid #e1e4e9; border-radius: 14px; background: #eef1f4; }
+.pdf-canvas-wrap canvas { display: block; max-width: 100%; height: auto !important; margin: 0 auto; background: white; box-shadow: 0 8px 24px rgba(17,24,39,.12); }

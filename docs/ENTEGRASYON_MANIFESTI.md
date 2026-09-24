@@ -12,10 +12,32 @@ Bu dosya ürün içinde kullanılan dış motorların kaynak, lisans ve veri dav
 - Ağ gereksinimi: **yok**
 - Kullanıcı verisi cihazdan çıkar mı?: **hayır**
 - Entegrasyon biçimi: npm dependency, sürüm sabit
-- Neden seçildi?: Olgun CSV parser; bozuk/büyük CSV girdilerinde native split yaklaşımından daha güvenilir, delimiter algılama ve header desteği hazır.
-- Alternatif: Kendi parser'ımızı yazmak. Reddedildi; CSV quoting/escaping/delimiter edge-case'lerini gereksiz yere yeniden üretir.
-- Testler: delimiter algılama, Türkçe kolon adı, CSV→JSON, manifest güvenlik kontrolü.
-- Kaldırma/fallback: Entegrasyon tek modülde tutulur; katalogtan ve `tool-engines.js` importundan kaldırılabilir.
+- Neden seçildi?: Olgun CSV parser; quoting/escaping/delimiter edge-case'lerini yeniden yazmamak için.
+- Testler: delimiter algılama, Türkçe kolon adı, CSV→JSON, manifest kontrolü.
+
+## PDF.js
+
+- Kaynak: https://github.com/mozilla/pdf.js
+- npm paketi: **pdfjs-dist 6.3.289**
+- Lisans: **Apache-2.0**
+- Kullanım: PDF önizleme/render
+- Çalışma yeri: **browser + Web Worker**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Entegrasyon: PDF aracı açıldığında lazy-load; ana bundle'a dahil edilmez.
+- Not: Worker da build asset'i olarak yerel paketlenir; harici CDN kullanılmaz.
+
+## pdf-lib
+
+- Kaynak: https://github.com/Hopding/pdf-lib
+- Kullanılan sürüm: **1.17.1**
+- Lisans: **MIT**
+- Kullanım: PDF birleştirme, seçili sayfaları çıkarma, döndürme
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Entegrasyon: PDF UI modülü ile lazy-load.
+- Bakım notu: Kütüphane olgun fakat upstream kod hareketi PDF.js kadar hızlı değil; API yüzeyi dar tutulur ve fixture testleriyle korunur.
 
 ## Native Web Platform
 
@@ -27,8 +49,10 @@ Base64, URL, JSON, metin, SHA-256 ve tarih araçlarında tarayıcının yerleşi
 
 ## Bundle bütçesi
 
-İlk koruma:
-- JavaScript: maksimum **250 KB** (build çıktısındaki toplam JS)
-- CSS: maksimum **100 KB**
+Ağır PDF motorları nedeniyle bütçe artık iki katmana ayrılır:
 
-Bu bütçe ağır PDF/medya motorları geldiğinde lazy-load/chunk stratejisini zorlamak için bilinçli olarak düşük tutulmuştur.
+- Ana/entry JS: maksimum **100 KB**
+- Tüm lazy JS/MJS toplamı: maksimum **3.5 MB**
+- CSS: maksimum **120 KB**
+
+Ana ürün kabuğu küçük kalmalı; PDF ve gelecekte medya/OCR motorları yalnız ihtiyaç halinde yüklenmelidir.

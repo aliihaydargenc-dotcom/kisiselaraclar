@@ -1,4 +1,5 @@
 export const categories = [
+  { id: "pdf", label: "PDF" },
   { id: "metin", label: "Metin" },
   { id: "veri", label: "Veri" },
   { id: "gelistirici", label: "Geliştirici" },
@@ -6,6 +7,50 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "pdf-preview",
+    category: "pdf",
+    title: "PDF Önizleme",
+    description: "PDF dosyasını yükle, sayfa sayısını gör ve ilk sayfayı cihazında önizle.",
+    aliases: ["pdf", "görüntüle", "önizle", "sayfa", "viewer"],
+    inputType: "pdf",
+    pdfMode: "preview",
+    privacy: "browser",
+    integration: "pdfjs"
+  },
+  {
+    id: "pdf-merge",
+    category: "pdf",
+    title: "PDF Birleştir",
+    description: "Birden fazla PDF dosyasını seçtiğin sırayla tek PDF haline getir.",
+    aliases: ["pdf", "birleştir", "merge", "join", "dosya"],
+    inputType: "pdf",
+    pdfMode: "merge",
+    privacy: "browser",
+    integration: "pdflib"
+  },
+  {
+    id: "pdf-extract",
+    category: "pdf",
+    title: "PDF Sayfa Çıkar",
+    description: "PDF içinden istediğin sayfaları seçip yeni bir PDF olarak kaydet.",
+    aliases: ["pdf", "böl", "split", "sayfa", "çıkar", "ayır"],
+    inputType: "pdf",
+    pdfMode: "extract",
+    privacy: "browser",
+    integration: "pdflib"
+  },
+  {
+    id: "pdf-rotate",
+    category: "pdf",
+    title: "PDF Döndür",
+    description: "PDF sayfalarını 90°, 180° veya 270° döndür ve yeni dosyayı indir.",
+    aliases: ["pdf", "döndür", "rotate", "90", "180", "270"],
+    inputType: "pdf",
+    pdfMode: "rotate",
+    privacy: "browser",
+    integration: "pdflib"
+  },
   {
     id: "base64",
     category: "gelistirici",
