@@ -219,10 +219,14 @@ function taskRows(summary) {
 
   if (!focus.length) {
     return `
-      <div class="p17-empty-focus">
-        <strong>Bugün için açık iş yok.</strong>
-        <span>İstersen bir görev ekle veya doğrudan başka bir işe geç.</span>
-      </div>`;
+      <button type="button" class="p17-empty-focus" data-tool="tasks-calendar">
+        <span class="p17-empty-icon" aria-hidden="true">＋</span>
+        <span class="p17-empty-copy">
+          <strong>Bugün için açık iş yok</strong>
+          <small>Görev eklemek için dokun</small>
+        </span>
+        <span class="p17-empty-arrow" aria-hidden="true">→</span>
+      </button>`;
   }
 
   return `
@@ -276,8 +280,8 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <article class="p17-actions-card">
           <div class="p17-card-head">
             <div>
-              <span>Hızlı işler</span>
-              <h3>Bir dokunuşla başla</h3>
+              <span>Hızlı başla</span>
+              <h3>Ne yapmak istiyorsun?</h3>
             </div>
           </div>
           <div class="p17-action-grid">
@@ -380,8 +384,17 @@ function downloadBackup(storage) {
   return Object.keys(payload.entries).length;
 }
 
-export function wireP17Workspace(root, storage) {
+export function wireP17Workspace(root, storage, onOpenTool) {
   if (!root) return;
+
+  root.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-tool]");
+    if (!button || !root.contains(button)) return;
+    const id = String(button.dataset.tool || "");
+    if (!id || typeof onOpenTool !== "function") return;
+    event.preventDefault();
+    onOpenTool(id);
+  });
   const status = root.querySelector("#p17BackupStatus");
   const setStatus = (value) => {
     if (status) status.textContent = value;

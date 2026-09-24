@@ -108,3 +108,8 @@ P16'nın sınırı Word/Excel veya proje yönetimi uygulaması kopyalamak değil
 P17 araç sayısını büyütmek yerine kullanım kolaylığını merkez alır. Ana akış artık Bugün merkeziyle başlar; bugünkü/gecikmiş görevlar, son not veya toplantı taslağı ve en sık ihtiyaç duyulan işler tek ekranda görünür. Araç araması aynı zamanda yerel not, görev ve toplantı içeriğinde de arama yapar.
 
 Tüm `kisiselaraclar:` yerel verileri tek JSON yedeği olarak dışa aktarılabilir ve kontrollü biçimde geri yüklenebilir. Yeni P17 katmanı mevcut P16 verisini yeniden kullanır; hesap, sunucu veya ücretli API eklemez. Mobilde pazarlama yüzeyi küçültülerek ilk yapılabilir eylemler daha yukarı taşınmıştır.
+
+
+### P17.1 mobil çalışma alanı düzeltmesi
+
+Bugün çalışma merkezindeki Hızlı Başla, görev ve Devam Et kartları doğrudan araç yönlendirmesine bağlandı. Mobil çalışma alanı ağır siyah panel/kutu görünümünden çıkarılarak daha açık, kompakt ve dokunma odaklı bento düzene geçirildi; boş görev durumu doğrudan görev ekleme eylemine dönüştürüldü ve mobil dock daha hafif hale getirildi.
