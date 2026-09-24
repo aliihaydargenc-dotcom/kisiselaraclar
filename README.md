@@ -2,7 +2,7 @@
 
 Türkçe öncelikli, tarayıcıda mümkün olduğunca yerel çalışan (local-first) günlük araçlar platformu.
 
-Bu repo şu anda **ilk production release hazırlığı aşamasındadır**. CSV, PDF, görsel, QR/barkod, arşiv ve OCR araçları tarayıcı içinde çalışır; Vercel/deployment bilinçli olarak son aşamaya bırakılmıştır.
+Bu repo şu anda **GitHub Pages production release hazırlığı aşamasındadır**. CSV, PDF, görsel, QR/barkod, arşiv ve OCR araçları tarayıcı içinde çalışır; Vercel/deployment bilinçli olarak son aşamaya bırakılmıştır.
 
 ## Ürün ilkeleri
 
@@ -28,3 +28,10 @@ Araştırma sonuçları `docs/` altında tutulacak. Henüz üçüncü taraf uygu
 - Masaüstünde dosyalar seçim alanlarına sürüklenip bırakılabilir.
 - `/` arama kutusuna odaklanır.
 - Release doğrulaması: `docs/RELEASE_CHECKLIST.md`.
+
+
+## Hosting
+
+Ana ücretsiz production hattı GitHub Pages + GitHub Actions'tır. Vite build'i Pages için `BASE_PATH=/kisiselaraclar/` ile üretilir; normal root-domain build'lerinde varsayılan `/` kullanılmaya devam eder.
+
+İlk kurulumda repository Pages kaynağı bir kez **GitHub Actions** olarak seçilmelidir. Sonrasında `main` push'ları otomatik quality + build + deploy hattını tetikler.
