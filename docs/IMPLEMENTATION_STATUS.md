@@ -151,3 +151,17 @@ Kod tabanı release-readiness aşamasındadır. `docs/RELEASE_CHECKLIST.md` krit
 - Pages base path: `/kisiselaraclar/`
 - Root-domain hosting uyumluluğu korunur: varsayılan Vite base `/`
 - Vercel ve Railway zorunlu değildir; yalnız ikincil/fallback seçeneklerdir.
+
+
+## P6 — Akıllı Dosya Yönlendirici
+
+Amaç katalogdan araç arama zorunluluğunu azaltmak ve ürünün local-first avantajını doğrudan ana kullanım akışına taşımaktır.
+
+- ana sayfada tek/çoklu dosya seçme ve sürükle-bırak
+- MIME/uzantı tabanlı tamamen local dosya sınıflandırma
+- PDF, görsel, CSV, ZIP ve GZIP için bağlama uygun araç önerileri
+- çoklu PDF için PDF Birleştir önceliği
+- karışık çoklu seçimde ZIP Oluştur güvenli fallback'i
+- önerilen araca dosyayı bellekte taşıma; destekleyen tarayıcılarda input'a otomatik aktarma
+- dosya içeriğini öneri üretmek için okumama
+- otomatik aktarımı desteklemeyen tarayıcılar için açık kullanıcı mesajı

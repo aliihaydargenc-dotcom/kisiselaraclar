@@ -1,11 +1,14 @@
 import { categories, searchTools, tools } from "./catalog.js";
 import { getIntegration } from "./integrations.js";
 import {
+  applyStagedFiles,
+  classifyFileSelection,
   enhanceFileDrops,
   loadRecentToolIds,
   parseToolHash,
   quickToolIds,
   rememberRecentTool,
+  stageFilesForTool,
   toolHash
 } from "./product-ux.js";
 import { runEngine } from "./tool-engines.js";
@@ -19,6 +22,7 @@ const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
 let currentToolId = "";
+let smartFiles = [];
 
 function safeStorage() {
   try {
@@ -63,6 +67,100 @@ function renderCategories() {
     .join("");
 }
 
+function formatSmartBytes(bytes) {
+  const value = Number(bytes || 0);
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function smartRouterMarkup() {
+  const selection = classifyFileSelection(smartFiles, validToolIds);
+  const recommended = selection.toolIds
+    .map((id) => tools.find((tool) => tool.id === id))
+    .filter(Boolean);
+  const totalBytes = smartFiles.reduce((sum, file) => sum + Number(file.size || 0), 0);
+  const fileNames = smartFiles.slice(0, 2).map((file) => escapeHtml(file.name || "dosya")).join(" • ");
+  const extra = smartFiles.length > 2 ? ` • +${smartFiles.length - 2}` : "";
+
+  return `
+    <section class="smart-router" aria-labelledby="smartRouterTitle">
+      <div class="smart-router-copy">
+        <span class="eyebrow">AKILLI DOSYA YÖNLENDİRİCİ</span>
+        <h2 id="smartRouterTitle">Dosyayı bırak, uygun araçları çıkaralım.</h2>
+        <p>Dosyan yüklenmez. Yalnız dosya türü ve uzantısı tarayıcıda okunarak sana uygun araçlar gösterilir.</p>
+      </div>
+      <label class="smart-drop-zone ${smartFiles.length ? "has-selection" : ""}" id="smartDropZone">
+        <input class="smart-file-input" id="smartFileInput" type="file" multiple />
+        <span class="smart-drop-mark" aria-hidden="true">+</span>
+        <strong>${smartFiles.length ? escapeHtml(selection.label) : "Dosya seç veya buraya bırak"}</strong>
+        <span>${smartFiles.length ? `${fileNames}${extra} • ${formatSmartBytes(totalBytes)}` : "PDF, görsel, CSV, ZIP, GZIP veya herhangi bir dosya"}</span>
+      </label>
+      ${smartFiles.length ? `
+        <div class="smart-detected">
+          <div>
+            <span class="smart-family">${escapeHtml(selection.label)}</span>
+            <strong>${escapeHtml(selection.summary)}</strong>
+          </div>
+          <button class="text-button smart-clear" id="smartClear" type="button">Temizle</button>
+        </div>
+        <div class="smart-tool-grid">
+          ${recommended.map((tool, index) => `
+            <button class="smart-tool-card ${index === 0 ? "recommended" : ""}" data-smart-tool="${tool.id}" type="button">
+              <span>${index === 0 ? "Önerilen" : categoryLabel(tool.category)}</span>
+              <strong>${escapeHtml(tool.title)}</strong>
+              <small>${escapeHtml(tool.description)}</small>
+            </button>
+          `).join("")}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function wireSmartRouter() {
+  const zone = catalogView.querySelector("#smartDropZone");
+  const input = catalogView.querySelector("#smartFileInput");
+  if (!zone || !input) return;
+
+  input.addEventListener("change", () => {
+    smartFiles = [...(input.files || [])];
+    renderCatalog();
+  });
+
+  const stop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  zone.addEventListener("dragenter", (event) => {
+    stop(event);
+    zone.classList.add("is-dragging");
+  });
+  zone.addEventListener("dragover", (event) => {
+    stop(event);
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    zone.classList.add("is-dragging");
+  });
+  zone.addEventListener("dragleave", (event) => {
+    stop(event);
+    if (!zone.contains(event.relatedTarget)) zone.classList.remove("is-dragging");
+  });
+  zone.addEventListener("drop", (event) => {
+    stop(event);
+    zone.classList.remove("is-dragging");
+    const files = [...(event.dataTransfer?.files || [])];
+    if (!files.length) return;
+    smartFiles = files;
+    renderCatalog();
+  });
+
+  catalogView.querySelector("#smartClear")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    smartFiles = [];
+    renderCatalog();
+  });
+}
+
 function toolCard(tool, compact = false) {
   const integration = getIntegration(tool.integration);
   return `
@@ -96,6 +194,7 @@ function renderCatalog() {
     .filter(Boolean);
 
   catalogView.innerHTML = `
+    ${activeCategory === "all" && !query.trim() ? smartRouterMarkup() : ""}
     ${quickTools.length ? `
       <section class="quick-section" aria-labelledby="quickTitle">
         <div class="quick-head">
@@ -124,6 +223,7 @@ function renderCatalog() {
   `;
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
+  wireSmartRouter();
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç • ${categories.length} kategori`;
 }
 
@@ -165,6 +265,18 @@ function loadingPanel(label) {
 
 function finalizeToolOpen() {
   enhanceFileDrops(toolView);
+  const handoff = applyStagedFiles(toolView, currentToolId);
+  if (handoff.attempted && !handoff.applied) {
+    const panel = toolView.querySelector(".tool-panel");
+    if (panel) {
+      const note = document.createElement("div");
+      note.className = "smart-handoff-note";
+      note.textContent = handoff.reason === "unsupported"
+        ? "Dosyan hazır; bu tarayıcı otomatik aktarmaya izin vermedi. Dosyayı aşağıdaki seçim alanından yeniden seç."
+        : "Bu araçta otomatik dosya aktarımı kullanılamadı.";
+      panel.prepend(note);
+    }
+  }
   toolView.querySelector("#backToCatalog")?.focus({ preventScroll: true });
 }
 
@@ -360,6 +472,15 @@ categoryList.addEventListener("click", (event) => {
 });
 
 catalogView.addEventListener("click", (event) => {
+  const smartCard = event.target.closest("[data-smart-tool]");
+  if (smartCard) {
+    const id = smartCard.dataset.smartTool;
+    stageFilesForTool(smartFiles, id);
+    smartFiles = [];
+    navigateTool(id);
+    return;
+  }
+
   const card = event.target.closest("[data-tool]");
   if (card) navigateTool(card.dataset.tool);
 });
