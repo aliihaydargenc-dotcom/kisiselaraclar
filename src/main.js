@@ -86,15 +86,15 @@ function smartRouterMarkup() {
   return `
     <section class="smart-router" aria-labelledby="smartRouterTitle">
       <div class="smart-router-copy">
-        <span class="eyebrow">AKILLI DOSYA YÖNLENDİRİCİ</span>
-        <h2 id="smartRouterTitle">Dosyayı bırak, uygun araçları çıkaralım.</h2>
-        <p>Dosyan yüklenmez. Yalnız dosya türü ve uzantısı tarayıcıda okunarak sana uygun araçlar gösterilir.</p>
+        <span class="eyebrow">DOSYAYLA BAŞLA</span>
+        <h2 id="smartRouterTitle">Dosyanı bırak. Uygun araçları bulalım.</h2>
+        <p>Türünü cihazında algılar, kullanabileceğin araçları hemen öne çıkarırız.</p>
       </div>
       <label class="smart-drop-zone ${smartFiles.length ? "has-selection" : ""}" id="smartDropZone">
         <input class="smart-file-input" id="smartFileInput" type="file" multiple />
         <span class="smart-drop-mark" aria-hidden="true">+</span>
-        <strong>${smartFiles.length ? escapeHtml(selection.label) : "Dosya seç veya buraya bırak"}</strong>
-        <span>${smartFiles.length ? `${fileNames}${extra} • ${formatSmartBytes(totalBytes)}` : "PDF, görsel, CSV, ZIP, GZIP veya herhangi bir dosya"}</span>
+        <strong>${smartFiles.length ? escapeHtml(selection.label) : "Dosya seç veya sürükleyip bırak"}</strong>
+        <span>${smartFiles.length ? `${fileNames}${extra} • ${formatSmartBytes(totalBytes)}` : "PDF, görsel, medya, CSV, ZIP ve daha fazlası"}</span>
       </label>
       ${smartFiles.length ? `
         <div class="smart-detected">
@@ -162,19 +162,17 @@ function wireSmartRouter() {
 }
 
 function toolCard(tool, compact = false) {
-  const integration = getIntegration(tool.integration);
   return `
     <button class="${compact ? "quick-tool" : "tool-card"}" data-tool="${tool.id}" aria-label="${escapeHtml(tool.title)} aracını aç">
       ${compact ? "" : `
         <div class="tool-card-top">
           <span class="tool-category">${categoryLabel(tool.category)}</span>
-          <span class="local-dot" title="Tarayıcıda çalışır" aria-hidden="true">●</span>
+          <span class="tool-card-arrow" aria-hidden="true">↗</span>
         </div>
       `}
       <strong>${escapeHtml(tool.title)}</strong>
       ${compact ? `<span>${categoryLabel(tool.category)}</span>` : `
         <span>${escapeHtml(tool.description)}</span>
-        <small class="engine-label">${escapeHtml(integration.name)}</small>
       `}
     </button>
   `;
@@ -200,9 +198,9 @@ function renderCatalog() {
         <div class="quick-head">
           <div>
             <span class="eyebrow">HIZLI ERİŞİM</span>
-            <h2 id="quickTitle">Sık kullanılan işler</h2>
+            <h2 id="quickTitle">Hızlı erişim</h2>
           </div>
-          <span>Son kullandıkların burada öne çıkar.</span>
+          <span>Son kullandıkların önce gelir.</span>
         </div>
         <div class="quick-grid">
           ${quickTools.map((tool) => toolCard(tool, true)).join("")}
@@ -212,9 +210,9 @@ function renderCatalog() {
     <div class="catalog-head">
       <div>
         <span class="eyebrow">${activeCategory === "all" ? "ARAÇ KATALOĞU" : categoryLabel(activeCategory).toLocaleUpperCase("tr-TR")}</span>
-        <h2>${list.length} araç hazır</h2>
+        <h2>Araçlar <span class="catalog-count">${list.length}</span></h2>
       </div>
-      <span class="catalog-note">Local-first • Türkçe</span>
+      <span class="catalog-note">Türkçe • cihazında işler</span>
     </div>
     <div class="tool-grid">
       ${list.map((tool) => toolCard(tool)).join("")}

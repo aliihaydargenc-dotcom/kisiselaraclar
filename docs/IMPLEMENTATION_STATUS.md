@@ -208,3 +208,26 @@ Mimari:
 - `media-ui.js` yalnız medya aracı açıldığında lazy-load edilir.
 - Mediabunny yalnız medya modülü gerektiğinde yüklenir.
 - FFmpeg.wasm ana bağımlılık yapılmadı; daha ağır WASM fallback ileride yalnız gerçek codec açığı kanıtlanırsa değerlendirilecek.
+
+
+## P9 — UX / tasarım yenilemesi
+
+Amaç yeni araç eklemek değil, 29 araçlık ürünün görsel yükünü azaltmak ve kullanım hiyerarşisini sadeleştirmektir.
+
+Ana kararlar:
+- desktop araç kataloğu 3 sütundan 2 sütuna düşürüldü
+- sidebar kart görünümünden çıkarılıp sade navigasyona dönüştürüldü
+- hızlı erişim kompakt yatay şerit oldu
+- akıllı dosya yönlendirici ana başlangıç noktası olarak daha belirgin, fakat daha az metinli hale geldi
+- kartlardan motor/entegrasyon etiketi kaldırıldı; teknik ayrıntı araç içinde kaldı
+- tool ekranının büyük beyaz panel kabuğu kaldırıldı
+- border, shadow, badge ve bilgi kutusu yoğunluğu azaltıldı
+- input, dropzone, sonuç ve durum yüzeyleri ortak token sistemiyle birleştirildi
+- mobil kategori navigasyonu yatay pill yapısına dönüştürüldü
+- reduced-motion korunarak çok hafif giriş animasyonu eklendi
+
+Tasarım yönü:
+- açık, sakin, düşük kontrastlı yüzey hiyerarşisi
+- yalnız ana aksiyonlarda güçlü koyu kontrast
+- teknik bilgiyi geri planda tutma
+- araç işlevini ve dosya akışını ön plana çıkarma
