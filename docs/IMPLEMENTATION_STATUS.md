@@ -265,3 +265,22 @@ Mobil görünüm masaüstü layout'un küçültülmüş hali olmaktan çıkarıl
 - native file picker butonu mobil tasarım diliyle eşlendi
 - 390 px altı ekranlar için ek yoğunluk düzenlemesi yapıldı
 - tool açıkken mobil dock gizlenir; çalışma ekranı tam odağa geçer
+
+
+## P11 — Visual Identity Reset
+
+P11, önceki nötr/minimal SaaS görünümünü tamamen terk eden art-direction paketidir.
+
+- siyah sahne + krem içerik alanı
+- acid lime, elektrik mavi, mercan, mor ve cyan vurgu paleti
+- büyük serif display tipografisi + sans-serif ürün tipografisi
+- hareketli hero renk kartları ve glow orb
+- tam genişlik hareketli neon ticker
+- smart router elektrik mavi ana sahne + acid dropzone
+- kategoriye göre renklenen tool kartları
+- hızlı erişimde karanlık, renkli hover yüzeyleri
+- üç kısa, renkli fayda bloğu; uzun açıklama metinleri kaldırıldı
+- dev tipografili footer
+- tool ekranları da gri SaaS panelinden çıkarılıp krem/ink/blue workshop diline taşındı
+- scroll progress ve düşük yoğunluklu noise eklendi
+- mobil kimlik de aynı renk ve tipografi sistemiyle yeniden işlendi

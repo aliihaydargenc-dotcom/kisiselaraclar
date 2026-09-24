@@ -67,3 +67,8 @@ Arayüz 29 araçlık katalog büyüdükten sonra yeniden düzenlendi. Üç sütu
 ## P10 mobil UX
 
 Mobil deneyim ayrı bir etkileşim katmanı olarak ele alındı. Alt hızlı işlem dock'u, swipe kategori/hızlı erişim şeritleri, liste tipi araç kataloğu, 48 px dokunma hedefleri, safe-area desteği ve sıkılaştırılmış tool ekranları eklendi.
+
+
+## P11 görsel kimlik
+
+Nötr SaaS görünümü bırakıldı. Ürün artık yüksek kontrastlı siyah/krem temel, acid lime, elektrik mavi, mercan ve mor vurgu renkleri; büyük serif başlıklar; hareketli hero kartları; neon ticker ve kategori bazlı renklenen araç kartları kullanır. Ana sayfadaki açıklama yükü azaltıldı.
