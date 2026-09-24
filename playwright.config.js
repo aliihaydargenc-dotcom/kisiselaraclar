@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "line" : "list",
   use: {
-    baseURL: "http://127.0.0.1:4173/kisiselaraclar/",
+    baseURL: "http://127.0.0.1:4173/",
     trace: "retain-on-failure"
   },
   projects: [
@@ -24,8 +24,8 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: "BASE_PATH=/kisiselaraclar/ npm run build && npm run preview -- --host 127.0.0.1 --port 4173",
-    url: "http://127.0.0.1:4173/kisiselaraclar/",
+    command: "npm run build && npm run preview -- --host 127.0.0.1 --port 4173",
+    url: "http://127.0.0.1:4173/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000
   }
