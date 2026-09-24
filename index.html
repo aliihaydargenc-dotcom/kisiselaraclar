@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./src/p14-tools.css" />
   <link rel="stylesheet" href="./src/p15-tools.css" />
   <link rel="stylesheet" href="./src/p16-office.css" />
+  <link rel="stylesheet" href="./src/p17-workspace.css" />
 </head>
 <body>
   <a class="skip-link" href="#mainContent">İçeriğe geç</a>
@@ -25,8 +26,8 @@
         <span>Kişisel Araçlar</span>
       </a>
       <nav class="site-nav" aria-label="Ana navigasyon">
-        <a href="#mainContent">Araçlar</a>
-        <a href="#why">Neden?</a>
+        <a href="#mainContent">Bugün</a>
+        <a href="#toolBrowser">Araçlar</a>
       </nav>
       <button class="nav-search" id="headerSearchButton" type="button" aria-label="Araç ara">
         <span>Ara</span>
@@ -47,13 +48,13 @@
           <span>cihazında</span>
         </div>
 
-        <h1><span>Tek site.</span><em>68 küçük uzman.</em></h1>
+        <h1><span>İşini seç.</span><em>Hemen bitir.</em></h1>
 
-        <p>Notlardan PDF imzaya, görselden JSON’a. Gereken küçük aracı aç, işini bitir; dosya ve metin mümkün olduğunca cihazında kalsın.</p>
+        <p>Not al, görev planla, belge tara, PDF imzala veya dosyanı bırak. İlk ekranda gereken işi başlat; ayrıntıya yalnız ihtiyacın olduğunda in.</p>
 
         <div class="hero-actions">
           <a class="hero-primary" href="#mainContent">
-            Araçlara git
+            Bugünü aç
             <span aria-hidden="true">↓</span>
           </a>
           <button class="hero-secondary" id="heroSearchButton" type="button">Araç ara ↗</button>
@@ -91,6 +92,7 @@
   <div class="tools-stage">
     <main class="workspace" id="mainContent">
       <section class="content">
+        <div id="homeView" class="home-view"></div>
         <div class="tool-browser" id="toolBrowser">
           <div class="tool-browser-head">
             <div>
@@ -154,9 +156,9 @@
       <span class="mobile-dock-icon" aria-hidden="true">＋</span>
       <strong>Dosya seç</strong>
     </button>
-    <button type="button" data-mobile-action="tools">
-      <span class="mobile-dock-icon" aria-hidden="true">▦</span>
-      <strong>Araçlar</strong>
+    <button type="button" data-mobile-action="today">
+      <span class="mobile-dock-icon" aria-hidden="true">◫</span>
+      <strong>Bugün</strong>
     </button>
     <button type="button" data-mobile-action="search">
       <span class="mobile-dock-icon" aria-hidden="true">⌕</span>

@@ -6,17 +6,18 @@ import {
   enhanceFileDrops,
   loadRecentToolIds,
   parseToolHash,
-  quickToolIds,
   rememberRecentTool,
   stageFilesForTool,
   toolHash
 } from "./product-ux.js";
 import { runEngine } from "./tool-engines.js";
+import { buildP17HomeMarkup, buildP17SearchMarkup, wireP17Workspace } from "./p17-workspace.js";
 
 const searchInput = document.querySelector("#toolSearch");
 const categoryList = document.querySelector("#categoryList");
 const catalogView = document.querySelector("#catalogView");
 const toolView = document.querySelector("#toolView");
+const homeView = document.querySelector("#homeView");
 const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
@@ -191,21 +192,23 @@ function renderCatalog() {
   const query = searchInput.value;
   const list = searchTools(query, activeCategory);
   const recentIds = loadRecentToolIds(safeStorage(), validToolIds);
-  const quickIds = activeCategory === "all" && !query.trim()
-    ? quickToolIds(recentIds, validToolIds)
-    : [];
+  const isHome = activeCategory === "all" && !query.trim();
+  const quickIds = isHome ? recentIds.slice(0, 5) : [];
   const quickTools = quickIds
     .map((id) => tools.find((tool) => tool.id === id))
     .filter(Boolean);
 
+  if (homeView) homeView.innerHTML = isHome ? buildP17HomeMarkup(safeStorage()) : "";
+
   catalogView.innerHTML = `
-    ${activeCategory === "all" && !query.trim() ? smartRouterMarkup() : ""}
+    ${isHome ? smartRouterMarkup() : ""}
+    ${activeCategory === "all" && query.trim() ? buildP17SearchMarkup(safeStorage(), query) : ""}
     ${quickTools.length ? `
       <section class="quick-section" aria-labelledby="quickTitle">
         <div class="quick-head">
           <div>
-            <span class="eyebrow">HIZLI</span>
-            <h2 id="quickTitle">Kestirmeler</h2>
+            <span class="eyebrow">SON</span>
+            <h2 id="quickTitle">Son kullandıkların</h2>
           </div>
         </div>
         <div class="quick-grid">
@@ -227,6 +230,7 @@ function renderCatalog() {
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
+  if (homeView) wireP17Workspace(homeView, safeStorage());
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
@@ -584,10 +588,11 @@ mobileDock?.addEventListener("click", (event) => {
     return;
   }
 
-  if (button.dataset.mobileAction === "tools") {
+  if (button.dataset.mobileAction === "today") {
     if (currentToolId) prepareCatalogForMobileAction();
     requestAnimationFrame(() => {
-      toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const today = document.querySelector("#p17Workspace");
+      (today || toolBrowser)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     return;
   }
