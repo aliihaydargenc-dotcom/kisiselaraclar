@@ -40,3 +40,10 @@ Ana ücretsiz production hattı GitHub Pages + GitHub Actions'tır. Vite build'i
 ## Akıllı dosya yönlendirme
 
 Ana ekranda dosya seçildiğinde veya bırakıldığında dosyanın MIME türü/uzantısı yalnız tarayıcı içinde değerlendirilir. Uygun araçlar otomatik önerilir; önerilen araca geçildiğinde destekleyen tarayıcılarda dosya seçimi bellekte araca aktarılır. Dosya içeriği bu yönlendirme için okunmaz ve sunucuya gönderilmez.
+
+
+## PDF ↔ görsel dönüşüm köprüsü
+
+- PDF içindeki seçili sayfalar PNG/JPEG'e dönüştürülüp ZIP olarak indirilebilir.
+- JPEG/PNG/WebP görseller seçim sırasıyla tek PDF'e dönüştürülebilir.
+- Dönüşümler mevcut PDF.js, pdf-lib, Canvas ve fflate altyapısıyla cihaz içinde yapılır; yeni dış servis veya ücretli API eklenmez.

@@ -188,6 +188,28 @@ export const tools = [
     integration: "pdflib"
   },
   {
+    id: "pdf-to-images",
+    category: "pdf",
+    title: "PDF Sayfalarını Görsele Dönüştür",
+    description: "PDF içindeki seçili sayfaları cihazında PNG veya JPEG'e dönüştür ve tek ZIP olarak indir.",
+    aliases: ["pdf", "jpg", "jpeg", "png", "görsel", "resim", "sayfa", "dönüştür", "convert"],
+    inputType: "pdf",
+    pdfMode: "to-images",
+    privacy: "browser",
+    integration: "pdfjs"
+  },
+  {
+    id: "images-to-pdf",
+    category: "pdf",
+    title: "Görsellerden PDF Oluştur",
+    description: "JPEG, PNG veya WebP görselleri seçim sırasıyla A4 sayfalara yerleştirip tek PDF oluştur.",
+    aliases: ["jpg", "jpeg", "png", "webp", "görsel", "resim", "fotoğraf", "pdf", "dönüştür"],
+    inputType: "pdf",
+    pdfMode: "from-images",
+    privacy: "browser",
+    integration: "pdflib"
+  },
+  {
     id: "base64",
     category: "gelistirici",
     title: "Base64 Dönüştürücü",

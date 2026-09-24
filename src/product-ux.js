@@ -122,8 +122,8 @@ export function quickToolIds(recentIds = [], validIds = [], limit = 6) {
 
 
 const SMART_FILE_RULES = Object.freeze({
-  pdf: ["pdf-preview", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page"],
-  image: ["image-compress", "image-resize", "image-crop", "image-convert", "image-metadata", "ocr-image", "barcode-scan"],
+  pdf: ["pdf-preview", "pdf-to-images", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page"],
+  image: ["image-compress", "image-resize", "image-crop", "image-convert", "images-to-pdf", "image-metadata", "ocr-image", "barcode-scan"],
   csv: ["csv-json"],
   zip: ["zip-extract"],
   gzip: ["gzip"],
@@ -180,13 +180,26 @@ export function classifyFileSelection(fileLikes = [], validIds = []) {
   if (files.length > 1) {
     const families = files.map(classifyFile);
     const allPdf = families.every((family) => family === "pdf");
+    const allImage = families.every((family) => family === "image");
     return {
-      family: allPdf ? "pdf-multi" : "multi",
-      label: allPdf ? `${files.length} PDF` : `${files.length} dosya`,
+      family: allPdf ? "pdf-multi" : allImage ? "image-multi" : "multi",
+      label: allPdf
+        ? `${files.length} PDF`
+        : allImage
+          ? `${files.length} görsel`
+          : `${files.length} dosya`,
       summary: allPdf
         ? "Birden fazla PDF algılandı. Birleştirebilir veya tek ZIP yapabilirsin."
-        : "Birden fazla dosya algılandı. Hepsini tek ZIP içinde paketleyebilirsin.",
-      toolIds: filterIds(allPdf ? ["pdf-merge", "zip-create"] : ["zip-create"])
+        : allImage
+          ? "Birden fazla görsel algılandı. Tek PDF oluşturabilir veya ZIP içinde paketleyebilirsin."
+          : "Birden fazla dosya algılandı. Hepsini tek ZIP içinde paketleyebilirsin.",
+      toolIds: filterIds(
+        allPdf
+          ? ["pdf-merge", "zip-create"]
+          : allImage
+            ? ["images-to-pdf", "zip-create"]
+            : ["zip-create"]
+      )
     };
   }
 

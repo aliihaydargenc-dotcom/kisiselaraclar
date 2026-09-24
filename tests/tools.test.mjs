@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog yirmi dört local-first araç içerir", () => {
-  assert.equal(tools.length, 24);
+test("katalog yirmi altı local-first araç içerir", () => {
+  assert.equal(tools.length, 26);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 
@@ -24,6 +24,8 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("zip aç", "arsiv")[0]?.id, "zip-extract");
   assert.equal(searchTools("görsel metin", "ocr")[0]?.id, "ocr-image");
   assert.equal(searchTools("pdf ocr", "ocr")[0]?.id, "ocr-pdf-page");
+  assert.equal(searchTools("pdf jpg", "pdf")[0]?.id, "pdf-to-images");
+  assert.equal(searchTools("görseller pdf", "pdf")[0]?.id, "images-to-pdf");
 });
 
 test("base64 unicode roundtrip çalışır", () => {

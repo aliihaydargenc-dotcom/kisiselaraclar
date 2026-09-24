@@ -165,3 +165,18 @@ Amaç katalogdan araç arama zorunluluğunu azaltmak ve ürünün local-first av
 - önerilen araca dosyayı bellekte taşıma; destekleyen tarayıcılarda input'a otomatik aktarma
 - dosya içeriğini öneri üretmek için okumama
 - otomatik aktarımı desteklemeyen tarayıcılar için açık kullanıcı mesajı
+
+
+## P7 — PDF ↔ Görsel Dönüşüm Köprüsü
+
+Yeni araçlar:
+- PDF Sayfalarını Görsele Dönüştür
+- Görsellerden PDF Oluştur
+
+Davranış:
+- PDF → PNG/JPEG: seçili sayfalar, en fazla 40 sayfa, 1200/1600/2000 px hedef genişlik, ZIP çıktı
+- Görsel → PDF: JPEG/PNG/WebP, en fazla 30 görsel ve 120 MB toplam giriş
+- WebP ve EXIF yönlü görseller Canvas üzerinden normalize edilerek PDF'e gömülür
+- A4 sayfa yönü görsel yönüne göre otomatik seçilir; en-boy oranı korunur
+- Akıllı dosya yönlendirici tek PDF, tek görsel ve çoklu görsel seçimlerinde bu akışları önerir
+- Yeni bağımlılık veya sunucu API'si eklenmez
