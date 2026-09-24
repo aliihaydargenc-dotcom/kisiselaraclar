@@ -103,6 +103,19 @@ async function openTool(id) {
 
   const integration = getIntegration(tool.integration);
 
+  if (tool.inputType === "ocr") {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = '<div class="tool-panel"><p>OCR aracı yükleniyor...</p></div>';
+    try {
+      const { renderOcrTool } = await import("./ocr-ui.js");
+      renderOcrTool({ tool, toolView, integration, onBack: renderCatalog });
+    } catch (error) {
+      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "OCR aracı yüklenemedi.")}</p></div>`;
+    }
+    return;
+  }
+
   if (tool.inputType === "code") {
     catalogView.classList.add("hidden");
     toolView.classList.remove("hidden");

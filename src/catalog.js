@@ -1,4 +1,5 @@
 export const categories = [
+  { id: "ocr", label: "OCR" },
   { id: "kod", label: "QR & Barkod" },
   { id: "arsiv", label: "Arşiv" },
   { id: "gorsel", label: "Görsel" },
@@ -10,6 +11,28 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "ocr-image",
+    category: "ocr",
+    title: "Görselden Metin Çıkar",
+    description: "Fotoğraf, ekran görüntüsü veya taramadan Türkçe/İngilizce metni cihazında OCR ile çıkar.",
+    aliases: ["ocr", "görsel", "fotoğraf", "ekran görüntüsü", "metin", "yazı", "tara", "scan"],
+    inputType: "ocr",
+    ocrMode: "image",
+    privacy: "browser",
+    integration: "tesseractjs"
+  },
+  {
+    id: "ocr-pdf-page",
+    category: "ocr",
+    title: "PDF Sayfasından Metin Çıkar",
+    description: "PDF içinden bir sayfayı cihazında render et ve o sayfadaki metni OCR ile çıkar.",
+    aliases: ["ocr", "pdf", "sayfa", "metin", "yazı", "belge", "tara", "scan"],
+    inputType: "ocr",
+    ocrMode: "pdf",
+    privacy: "browser",
+    integration: "tesseractjs"
+  },
   {
     id: "qr-generate",
     category: "kod",

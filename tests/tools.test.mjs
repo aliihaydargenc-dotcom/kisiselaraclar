@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog yirmi iki local-first araç içerir", () => {
-  assert.equal(tools.length, 22);
+test("katalog yirmi dört local-first araç içerir", () => {
+  assert.equal(tools.length, 24);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 
@@ -22,6 +22,8 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("qr oluştur", "kod")[0]?.id, "qr-generate");
   assert.equal(searchTools("barkod tara", "kod")[0]?.id, "barcode-scan");
   assert.equal(searchTools("zip aç", "arsiv")[0]?.id, "zip-extract");
+  assert.equal(searchTools("görsel metin", "ocr")[0]?.id, "ocr-image");
+  assert.equal(searchTools("pdf ocr", "ocr")[0]?.id, "ocr-pdf-page");
 });
 
 test("base64 unicode roundtrip çalışır", () => {
@@ -48,6 +50,13 @@ test("CSV JSON dönüşümü başlıkları anahtar olarak kullanır", () => {
     { ad: "Ali", puan: "10" },
     { ad: "Zehra", puan: "20" }
   ]);
+});
+
+test("Tesseract OCR entegrasyonu aynı-origin local-first olarak kayıtlıdır", () => {
+  const integration = getIntegration("tesseractjs");
+  assert.equal(integration.version, "7.0.0");
+  assert.equal(integration.networkRequired, false);
+  assert.equal(integration.dataLeavesDevice, false);
 });
 
 test("P4 entegrasyonları local-first olarak kayıtlıdır", () => {

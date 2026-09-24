@@ -1,5 +1,5 @@
 import { readFile, readdir, stat } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -7,7 +7,8 @@ const root = join(here, "..", "dist");
 const limits = {
   coreJs: 100 * 1024,
   totalJs: 3500 * 1024,
-  css: 120 * 1024
+  ocrRuntime: 40 * 1024 * 1024,
+  css: 140 * 1024
 };
 
 async function walk(pathname) {
@@ -29,15 +30,21 @@ const entryPath = join(root, entryMatch[1].replace(/^\//, ""));
 const coreJs = (await stat(entryPath)).size;
 const files = await walk(root);
 let totalJs = 0;
+let ocrRuntime = 0;
 let css = 0;
 
 for (const file of files) {
   const info = await stat(file);
+  const rel = relative(root, file).replaceAll("\\", "/");
+  if (rel.startsWith("ocr/")) {
+    ocrRuntime += info.size;
+    continue;
+  }
   if (/\.(?:js|mjs)$/.test(file)) totalJs += info.size;
   if (file.endsWith(".css")) css += info.size;
 }
 
-const values = { coreJs, totalJs, css };
+const values = { coreJs, totalJs, ocrRuntime, css };
 for (const [kind, bytes] of Object.entries(values)) {
   const limit = limits[kind];
   console.log(`${kind}: ${(bytes / 1024).toFixed(1)} KB / ${(limit / 1024).toFixed(0)} KB bütçe`);
