@@ -1,6 +1,7 @@
 export const categories = [
   { id: "gorsel", label: "Görsel" },
   { id: "tasarim", label: "Tasarım" },
+  { id: "ofis", label: "Ofis" },
   { id: "gelistirici", label: "Geliştirici" },
   { id: "veri", label: "Veri" },
   { id: "pdf", label: "PDF" },
@@ -13,6 +14,94 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "quick-note",
+    category: "ofis",
+    title: "Hızlı Not",
+    description: "Başlık veya klasör zorunluluğu olmadan not al; otomatik kaydet, sabitle, kopyala veya Markdown indir.",
+    aliases: ["not", "notes", "hızlı not", "memo", "checklist", "yaz"],
+    inputType: "p16-office",
+    officeMode: "quick-note",
+    privacy: "browser",
+    integration: "native"
+  },
+  {
+    id: "meeting-notes",
+    category: "ofis",
+    title: "Toplantı Notu",
+    description: "Notları, kararları ve aksiyonları aynı ekranda tut; aksiyonları göreve çevir ve temiz özet indir.",
+    aliases: ["toplantı", "meeting", "karar", "aksiyon", "minutes", "not"],
+    inputType: "p16-office",
+    officeMode: "meeting-notes",
+    privacy: "browser",
+    integration: "native"
+  },
+  {
+    id: "tasks-calendar",
+    category: "ofis",
+    title: "Görev & Takvim",
+    description: "Basit görevleri tarih ve saatle tut; aylık görünümde izle ve açık tarihli işleri .ics olarak takvimine aktar.",
+    aliases: ["görev", "takvim", "calendar", "todo", "ics", "hatırlatma", "plan"],
+    inputType: "p16-office",
+    officeMode: "tasks-calendar",
+    privacy: "browser",
+    integration: "native"
+  },
+  {
+    id: "voice-note",
+    category: "ofis",
+    title: "Sesli Not",
+    description: "Destekleyen tarayıcılarda konuşmayı metne çevir; sonucu düzenle, kopyala veya Hızlı Not'a kaydet.",
+    aliases: ["ses", "dikte", "speech to text", "voice", "mikrofon", "transkript"],
+    inputType: "p16-office",
+    officeMode: "voice-note",
+    privacy: "browser-dependent",
+    integration: "native"
+  },
+  {
+    id: "document-scan",
+    category: "ofis",
+    title: "Belge Tara & Temizle",
+    description: "Telefon kamerası veya fotoğraftan belgeyi kırp, döndür, kontrastını düzelt; temiz PNG veya PDF çıkar.",
+    aliases: ["belge tara", "scan", "kamera", "tarayıcı", "document scanner", "pdf"],
+    inputType: "p16-office",
+    officeMode: "document-scan",
+    privacy: "browser",
+    integration: "native"
+  },
+  {
+    id: "pdf-fill-sign",
+    category: "ofis",
+    title: "PDF Doldur & İmzala",
+    description: "PDF üzerine kısa metin, tarih ve çizdiğin imzayı yerleştir; yeni dosyayı cihazında üret.",
+    aliases: ["pdf imzala", "imza", "signature", "doldur", "form", "paraf"],
+    inputType: "p16-office",
+    officeMode: "pdf-fill-sign",
+    privacy: "browser",
+    integration: "pdflib"
+  },
+  {
+    id: "image-annotate",
+    category: "ofis",
+    title: "Gizle & İşaretle",
+    description: "Ekran görüntüsünde hassas alanları karart veya pikselle; kutu ve ok ekleyip paylaşılabilir PNG hazırla.",
+    aliases: ["ekran görüntüsü", "blur", "redact", "karart", "ok", "kutu", "annotate"],
+    inputType: "p16-office",
+    officeMode: "image-annotate",
+    privacy: "browser",
+    integration: "image-native"
+  },
+  {
+    id: "document-compare",
+    category: "ofis",
+    title: "Belge Karşılaştır",
+    description: "İki metin veya metin katmanlı PDF'deki ekleme ve silmeleri yan yana yükleyip hızlıca bul.",
+    aliases: ["belge karşılaştır", "document diff", "metin farkı", "pdf karşılaştır", "sürüm farkı"],
+    inputType: "p16-office",
+    officeMode: "document-compare",
+    privacy: "browser",
+    integration: "pdfjs"
+  },
   {
     id: "media-info",
     category: "medya",

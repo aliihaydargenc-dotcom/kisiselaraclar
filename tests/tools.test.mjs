@@ -8,9 +8,10 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog altmış local-first araç içerir", () => {
-  assert.equal(tools.length, 60);
-  assert.ok(tools.every((tool) => tool.privacy === "browser"));
+test("katalog P16 ile 68 araç içerir ve veri akışı açıkça tanımlıdır", () => {
+  assert.equal(tools.length, 68);
+  assert.ok(tools.every((tool) => ["browser", "browser-dependent"].includes(tool.privacy)));
+  assert.equal(tools.find((tool) => tool.id === "voice-note")?.privacy, "browser-dependent");
 });
 
 test("Türkçe alias ile araç bulunabilir", () => {
@@ -35,6 +36,9 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("svg png", "gorsel")[0]?.id, "svg-to-png");
   assert.equal(searchTools("json diff", "gelistirici")[0]?.id, "json-diff");
   assert.equal(searchTools("regex playground", "gelistirici")[0]?.id, "regex-playground");
+  assert.equal(searchTools("hızlı not", "ofis")[0]?.id, "quick-note");
+  assert.equal(searchTools("pdf imzala", "ofis")[0]?.id, "pdf-fill-sign");
+  assert.equal(searchTools("belge tara", "ofis")[0]?.id, "document-scan");
 });
 
 test("base64 unicode roundtrip çalışır", () => {

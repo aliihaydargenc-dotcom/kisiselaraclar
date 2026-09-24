@@ -1,0 +1,90 @@
+.p16-panel{--p16-ink:#101114;--p16-paper:#fffdf5;--p16-acid:#dfff47;--p16-blue:#4f7cff;--p16-coral:#ff695f;--p16-line:rgba(16,17,20,.16)}
+.p16-panel .text-control{width:100%;box-sizing:border-box}
+.p16-status{margin-top:18px;padding:12px 14px;border:1px solid var(--p16-line);border-radius:14px;background:color-mix(in srgb,var(--p16-acid) 30%,transparent);font-size:.9rem}
+.p16-empty{padding:20px;border:1px dashed var(--p16-line);border-radius:14px;opacity:.65}
+.p16-danger{color:#a32620!important}
+.p16-label{display:block;margin-bottom:8px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.p16-file{margin:18px 0}
+.p16-note-layout,.p16-task-layout,.p16-sign-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(0,1.6fr);gap:18px;margin-top:18px}
+.p16-note-sidebar,.p16-note-editor,.p16-calendar,.p16-task-layout>section{border:1px solid var(--p16-line);border-radius:20px;background:rgba(255,255,255,.54)}
+.p16-note-sidebar{padding:14px}
+.p16-side-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.p16-note-list{display:grid;gap:8px;max-height:520px;overflow:auto}
+.p16-note-item{border:1px solid transparent;border-radius:12px;padding:10px;text-align:left;background:transparent;display:grid;gap:4px;color:inherit}
+.p16-note-item:hover,.p16-note-item.active{border-color:var(--p16-ink);background:var(--p16-acid)}
+.p16-note-item small{opacity:.6}
+.p16-note-editor{padding:16px;display:grid;gap:12px}
+.p16-note-title{font-size:1.25rem;font-weight:800}
+.p16-note-text{min-height:360px;resize:vertical;line-height:1.55}
+.p16-meeting-head{display:grid;grid-template-columns:1.4fr .6fr 1fr;gap:10px;margin:18px 0 12px}
+.p16-meeting-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.p16-meeting-grid label{display:grid;gap:7px;font-weight:700}
+.p16-meeting-grid textarea{min-height:190px;resize:vertical;font-weight:400}
+.p16-meeting-grid .p16-span-2{grid-column:1/-1}
+.p16-meeting-grid .p16-span-2 textarea{min-height:130px}
+.p16-meeting-grid small{font-weight:400;opacity:.65}
+.p16-task-create{display:grid;grid-template-columns:1.6fr .7fr .55fr auto;gap:10px;margin-top:18px}
+.p16-task-layout>section,.p16-calendar{padding:14px}
+.p16-tabs,.p16-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.p16-tabs button,.p16-toolbar button{border:1px solid var(--p16-line);background:transparent;border-radius:999px;padding:9px 12px;color:inherit}
+.p16-tabs button.active,.p16-toolbar button.active{background:var(--p16-ink);color:#fff;border-color:var(--p16-ink)}
+.p16-task-list{display:grid;gap:8px;min-height:160px}
+.p16-task{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:11px;border:1px solid var(--p16-line);border-radius:14px}
+.p16-task label{display:flex;align-items:center;gap:9px;min-width:0}
+.p16-task.done span{text-decoration:line-through;opacity:.55}
+.p16-task small{opacity:.65;white-space:nowrap}
+.p16-calendar-head{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;text-align:center;margin-bottom:12px}
+.p16-calendar-head button{height:36px;border:1px solid var(--p16-line);border-radius:50%;background:transparent;color:inherit}
+.p16-weekdays,.p16-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.p16-weekdays{font-size:.7rem;font-weight:800;opacity:.55;text-align:center;margin-bottom:6px}
+.p16-calendar-grid>button,.p16-calendar-grid>span{aspect-ratio:1;border:0;border-radius:10px;display:grid;place-items:center;position:relative;background:rgba(0,0,0,.035);color:inherit}
+.p16-calendar-grid>button.has-task{background:var(--p16-acid);font-weight:800}
+.p16-calendar-grid b{position:absolute;right:4px;top:3px;min-width:15px;height:15px;border-radius:999px;background:var(--p16-ink);color:#fff;font-size:.58rem;display:grid;place-items:center}
+.p16-voice{display:grid;justify-items:center;gap:14px;margin-top:22px}
+.p16-mic{width:92px;height:92px;border:2px solid var(--p16-line);border-radius:50%;display:grid;place-items:center;background:rgba(79,124,255,.08)}
+.p16-mic span{width:28px;height:42px;border-radius:18px;background:var(--p16-blue);position:relative}
+.p16-mic span:after{content:"";position:absolute;left:50%;bottom:-12px;width:42px;height:20px;border:3px solid var(--p16-ink);border-top:0;border-radius:0 0 24px 24px;transform:translateX(-50%)}
+.p16-mic.active{animation:p16Pulse 1.1s infinite}
+@keyframes p16Pulse{50%{box-shadow:0 0 0 14px rgba(79,124,255,.12)}}
+.p16-voice .text-control:not(textarea){max-width:260px}
+.p16-voice-text{width:min(820px,100%);min-height:260px;resize:vertical}
+.p16-toolbar{margin-top:14px}
+.p16-canvas-stage{display:grid;place-items:center;overflow:auto;min-height:260px;border:1px solid var(--p16-line);border-radius:18px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 50%/18px 18px;padding:12px}
+.p16-canvas-stage canvas{display:block;max-width:100%;height:auto;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.14)}
+.p16-paper{background:#e9e8e1}
+.p16-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.p16-compare-side{display:grid;gap:8px}
+.p16-compare-side textarea{min-height:230px;resize:vertical}
+.p16-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.p16-metrics article{padding:12px;border:1px solid var(--p16-line);border-radius:14px;display:grid;gap:4px}
+.p16-metrics span{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;opacity:.55}
+.p16-metrics strong{font-size:1.2rem}
+.p16-diff-view{white-space:pre-wrap;line-height:1.7;padding:16px;border:1px solid var(--p16-line);border-radius:16px;max-height:520px;overflow:auto;background:rgba(255,255,255,.55)}
+.p16-diff-view .added{background:#dff7c4;text-decoration:none}
+.p16-diff-view .removed{background:#ffd0cc;text-decoration:line-through}
+.p16-diff-view .same{opacity:.78}
+.p16-scan-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.p16-scan-controls label{display:grid;gap:5px;font-size:.78rem;font-weight:700}
+.p16-check{display:flex!important;align-items:center;gap:8px}
+.p16-sign-controls{display:grid;grid-template-columns:.45fr 1.2fr .7fr;gap:10px;margin-top:18px}
+.p16-sign-controls label{display:grid;gap:6px;font-size:.78rem;font-weight:800}
+.p16-sign-grid{grid-template-columns:1.3fr .7fr}
+.p16-pdf-stage{position:relative;display:grid;place-items:center;overflow:auto;min-height:260px;border:1px solid var(--p16-line);border-radius:18px;background:#d8d8d8;padding:10px}
+.p16-pdf-stage canvas{max-width:100%;height:auto;display:block;box-shadow:0 8px 28px rgba(0,0,0,.18)}
+#p16SignTarget{position:absolute;width:18px;height:18px;border:3px solid var(--p16-coral);border-radius:50%;left:12%;top:78%;transform:translate(-50%,-50%);pointer-events:none}
+.p16-signature{width:100%;max-width:520px;height:auto;background:#fff;border:1px solid var(--p16-line);border-radius:14px;touch-action:none}
+@media(max-width:780px){
+ .p16-note-layout,.p16-task-layout,.p16-sign-grid,.p16-compare-grid{grid-template-columns:1fr}
+ .p16-note-sidebar{order:2}
+ .p16-note-text{min-height:280px}
+ .p16-meeting-head{grid-template-columns:1fr}
+ .p16-meeting-grid{grid-template-columns:1fr}
+ .p16-meeting-grid .p16-span-2{grid-column:auto}
+ .p16-task-create{grid-template-columns:1fr 1fr}
+ .p16-task-create #p16TaskTitle{grid-column:1/-1}
+ .p16-task-create button{grid-column:1/-1}
+ .p16-scan-controls{grid-template-columns:1fr 1fr}
+ .p16-sign-controls{grid-template-columns:1fr}
+ .p16-task{grid-template-columns:minmax(0,1fr) auto}
+ .p16-task small{grid-column:1}
+}

@@ -2,7 +2,7 @@
 
 Türkçe öncelikli, tarayıcıda mümkün olduğunca yerel çalışan (local-first) günlük araçlar platformu.
 
-Bu repo şu anda **GitHub Pages production release hazırlığı aşamasındadır**. CSV, PDF, görsel, QR/barkod, arşiv ve OCR araçları tarayıcı içinde çalışır; Vercel/deployment bilinçli olarak son aşamaya bırakılmıştır.
+Bu repo **GitHub Pages üzerinde production olarak yayınlanır**. PDF, görsel, ofis, QR/barkod, arşiv, OCR ve diğer desteklenen işlemler mümkün olduğunca tarayıcı içinde çalışır.
 
 ## Ürün ilkeleri
 
@@ -90,3 +90,14 @@ Araştırma ve lisans kararları `docs/DESIGN_TOOL_RESEARCH.md` içinde kayıtl�
 Katalog 45 araca çıktı. Tasarım alanına CSS Gradient, Shadow, WCAG Kontrast, Tipografi Ölçeği, Spacing Sistemi ve Radius Sistemi eklendi. Veri alanına CSV Profil Analizi, Veri Kalitesi Kontrolü, Eksik Değer Analizi, Duplicate Satır Bulucu, CSV Kolon Analizi ve İki CSV Karşılaştır aracı eklendi.
 
 Yeni araçlar local-first çalışır. Tasarım motoru dış servise ihtiyaç duymaz; CSV araçları mevcut PapaParse altyapısını kullanır ve dosyaları sunucuya göndermez. Veri laboratuvarı yalnız ihtiyaç olduğunda lazy-load edilir. Araştırma ve ürün kararları docs/P14_DESIGN_DATA_RESEARCH.md dosyasında kayıtlıdır.
+
+
+## P15 görsel + geliştirici laboratuvarı
+
+Katalog 60 araca çıktı. Görsel alanına palet çıkarma, piksel renk seçici, SVG inceleme/dönüşüm, favicon paketi, en-boy oranı ve şeffaflık analizi; geliştirici alanına JSON diff, regex playground, UUID, JWT okuyucu, Markdown → HTML, HTML/CSS minify ve entity araçları eklendi.
+
+## P16 ofis çalışma alanı
+
+Katalog 68 araca çıktı. Yeni **Ofis** kategorisi; Hızlı Not, Toplantı Notu, Görev & Takvim, Sesli Not, Belge Tara & Temizle, PDF Doldur & İmzala, Gizle & İşaretle ve Belge Karşılaştır araçlarını içerir.
+
+P16'nın sınırı Word/Excel veya proje yönetimi uygulaması kopyalamak değildir. Küçük günlük ofis işlerini hızlı ve mümkün olduğunca local-first biçimde tamamlar. Not/görev/toplantı verileri cihazda tutulur; belge/görsel/PDF işlemleri tarayıcıda yapılır. Sesli not, tarayıcının SpeechRecognition desteğine bağlıdır ve ses işleme davranışı tarayıcıya göre değişebilir.

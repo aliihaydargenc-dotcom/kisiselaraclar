@@ -325,7 +325,7 @@ async function openTool(id, { record = true } = {}) {
     toolView.innerHTML = loadingPanel(label);
     try {
       const module = await importer();
-      module[rendererName]({ tool, toolView, integration, onBack });
+      await module[rendererName]({ tool, toolView, integration, onBack });
       finalizeToolOpen();
     } catch (error) {
       toolView.innerHTML = `
@@ -345,6 +345,10 @@ async function openTool(id, { record = true } = {}) {
   }
   if (tool.inputType === "data-lab") {
     await renderLazy("Veri analizi yükleniyor", () => import("./data-lab-ui.js"), "renderDataLabTool", "Veri analizi yüklenemedi.");
+    return;
+  }
+  if (tool.inputType === "p16-office") {
+    await renderLazy("Ofis aracı yükleniyor", () => import("./p16-office-ui.js"), "renderP16OfficeTool", "Ofis aracı yüklenemedi.");
     return;
   }
   if (tool.inputType === "p15") {
