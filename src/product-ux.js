@@ -1,12 +1,14 @@
 export const RECENT_TOOLS_KEY = "kisiselaraclar:recent-tools";
 export const FEATURED_TOOL_IDS = Object.freeze([
+  "quick-note",
+  "pdf-fill-sign",
+  "document-scan",
+  "image-annotate",
   "pdf-merge",
   "image-compress",
   "ocr-image",
   "qr-generate",
-  "zip-create",
-  "csv-json",
-  "media-convert"
+  "zip-create"
 ]);
 
 export function parseToolHash(hash = "") {
@@ -123,8 +125,8 @@ export function quickToolIds(recentIds = [], validIds = [], limit = 6) {
 
 
 const SMART_FILE_RULES = Object.freeze({
-  pdf: ["pdf-preview", "pdf-to-images", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page"],
-  image: ["image-compress", "image-resize", "image-crop", "image-convert", "images-to-pdf", "image-metadata", "ocr-image", "barcode-scan"],
+  pdf: ["pdf-fill-sign", "document-compare", "pdf-preview", "pdf-to-images", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page"],
+  image: ["document-scan", "image-annotate", "image-compress", "image-resize", "image-crop", "image-convert", "images-to-pdf", "image-metadata", "ocr-image", "barcode-scan"],
   csv: ["csv-json"],
   zip: ["zip-extract"],
   gzip: ["gzip"],
@@ -221,8 +223,8 @@ export function classifyFileSelection(fileLikes = [], validIds = []) {
     generic: "Dosya"
   };
   const summaries = {
-    pdf: "PDF algılandı. Görüntüle, düzenle veya OCR ile metnini çıkar.",
-    image: "Görsel algılandı. Sıkıştır, boyutlandır, dönüştür, metadata incele veya OCR uygula.",
+    pdf: "PDF algılandı. İmzala, karşılaştır, görüntüle, düzenle veya OCR ile metnini çıkar.",
+    image: "Görsel algılandı. Belge olarak temizle, işaretle, sıkıştır, boyutlandır veya OCR uygula.",
     csv: "CSV algılandı. Tabloyu görüntüle veya JSON'a dönüştür.",
     zip: "ZIP algılandı. İçeriğini cihazında güvenli biçimde inceleyip çıkart.",
     gzip: "GZIP algılandı. Dosyayı cihazında aç veya yeniden sıkıştır.",
