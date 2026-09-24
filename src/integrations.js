@@ -1,4 +1,16 @@
 export const integrations = {
+  mediabunny: {
+    id: "mediabunny",
+    name: "Mediabunny",
+    source: "Vanilagy/mediabunny",
+    sourceUrl: "https://github.com/Vanilagy/mediabunny",
+    version: "1.59.1",
+    license: "MPL-2.0",
+    execution: "browser-webcodecs",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Ses/video metadata okuma, kırpma, kapsayıcı/codec dönüşümü ve video yeniden boyutlandırma"
+  },
   native: {
     id: "native",
     name: "Web Platform API",

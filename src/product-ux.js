@@ -5,7 +5,8 @@ export const FEATURED_TOOL_IDS = Object.freeze([
   "ocr-image",
   "qr-generate",
   "zip-create",
-  "csv-json"
+  "csv-json",
+  "media-convert"
 ]);
 
 export function parseToolHash(hash = "") {
@@ -127,6 +128,7 @@ const SMART_FILE_RULES = Object.freeze({
   csv: ["csv-json"],
   zip: ["zip-extract"],
   gzip: ["gzip"],
+  media: ["media-info", "media-trim", "media-convert"],
   generic: ["zip-create"]
 });
 
@@ -155,6 +157,11 @@ export function classifyFile(fileLike = {}) {
     ["application/zip", "application/x-zip-compressed"].includes(type) ||
     ext === "zip"
   ) return "zip";
+  if (
+    type.startsWith("audio/") ||
+    type.startsWith("video/") ||
+    ["mp4", "m4v", "mov", "webm", "mkv", "mp3", "wav", "m4a", "aac", "flac", "ogg", "opus"].includes(ext)
+  ) return "media";
   if (
     ["application/gzip", "application/x-gzip"].includes(type) ||
     ext === "gz" ||
@@ -210,6 +217,7 @@ export function classifyFileSelection(fileLikes = [], validIds = []) {
     csv: "CSV",
     zip: "ZIP",
     gzip: "GZIP",
+    media: "Medya",
     generic: "Dosya"
   };
   const summaries = {
@@ -218,6 +226,7 @@ export function classifyFileSelection(fileLikes = [], validIds = []) {
     csv: "CSV algılandı. Tabloyu görüntüle veya JSON'a dönüştür.",
     zip: "ZIP algılandı. İçeriğini cihazında güvenli biçimde inceleyip çıkart.",
     gzip: "GZIP algılandı. Dosyayı cihazında aç veya yeniden sıkıştır.",
+    media: "Ses/video algılandı. Teknik bilgileri incele, kırp veya formatını dönüştür.",
     generic: "Bu dosya için doğrudan düzenleyici yok; istersen ZIP içinde paketleyebilirsin."
   };
 
