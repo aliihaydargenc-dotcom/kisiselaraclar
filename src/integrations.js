@@ -10,6 +10,42 @@ export const integrations = {
     networkRequired: false,
     dataLeavesDevice: false
   },
+  "qrcode-generator": {
+    id: "qrcode-generator",
+    name: "qrcode-generator",
+    source: "kazuhikoarase/qrcode-generator",
+    sourceUrl: "https://github.com/kazuhikoarase/qrcode-generator",
+    version: "2.0.4",
+    license: "MIT",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Metin ve bağlantılardan SVG QR kod üretme"
+  },
+  "zxing-browser": {
+    id: "zxing-browser",
+    name: "ZXing Browser",
+    source: "zxing-js/browser",
+    sourceUrl: "https://github.com/zxing-js/browser",
+    version: "0.2.1 + library 0.23.0",
+    license: "MIT / Apache-2.0",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Görsel dosyalarından çok formatlı QR ve barkod okuma"
+  },
+  fflate: {
+    id: "fflate",
+    name: "fflate",
+    source: "101arrowz/fflate",
+    sourceUrl: "https://github.com/101arrowz/fflate",
+    version: "0.8.3",
+    license: "MIT",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "ZIP oluşturma/çıkarma ve GZIP sıkıştırma/açma"
+  },
   "image-native": {
     id: "image-native",
     name: "Web Platform Image API",

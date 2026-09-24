@@ -1,4 +1,6 @@
 export const categories = [
+  { id: "kod", label: "QR & Barkod" },
+  { id: "arsiv", label: "Arşiv" },
   { id: "gorsel", label: "Görsel" },
   { id: "pdf", label: "PDF" },
   { id: "metin", label: "Metin" },
@@ -8,6 +10,61 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "qr-generate",
+    category: "kod",
+    title: "QR Kod Oluştur",
+    description: "Metin, bağlantı veya kısa bilgiden cihazında indirilebilir QR kod üret.",
+    aliases: ["qr", "qrcode", "kod", "oluştur", "üret", "link", "bağlantı"],
+    inputType: "code",
+    codeMode: "generate",
+    privacy: "browser",
+    integration: "qrcode-generator"
+  },
+  {
+    id: "barcode-scan",
+    category: "kod",
+    title: "QR / Barkod Oku",
+    description: "Bir görseldeki QR, EAN, UPC, Code 128 ve diğer yaygın barkodları cihazında çöz.",
+    aliases: ["qr", "barkod", "barcode", "ean", "upc", "code128", "tara", "oku", "scan"],
+    inputType: "code",
+    codeMode: "scan",
+    privacy: "browser",
+    integration: "zxing-browser"
+  },
+  {
+    id: "zip-create",
+    category: "arsiv",
+    title: "ZIP Oluştur",
+    description: "Birden fazla dosyayı tarayıcıda tek ZIP arşivine dönüştür.",
+    aliases: ["zip", "arşiv", "arsiv", "sıkıştır", "paketle", "dosya"],
+    inputType: "archive",
+    archiveMode: "zip-create",
+    privacy: "browser",
+    integration: "fflate"
+  },
+  {
+    id: "zip-extract",
+    category: "arsiv",
+    title: "ZIP Aç / Çıkart",
+    description: "ZIP içeriğini cihazında incele ve içindeki dosyaları tek tek indir.",
+    aliases: ["zip", "arşiv", "arsiv", "aç", "çıkar", "extract", "unzip"],
+    inputType: "archive",
+    archiveMode: "zip-extract",
+    privacy: "browser",
+    integration: "fflate"
+  },
+  {
+    id: "gzip",
+    category: "arsiv",
+    title: "GZIP Sıkıştır / Aç",
+    description: "Tek bir dosyayı .gz biçiminde sıkıştır veya GZIP dosyasını aç.",
+    aliases: ["gzip", "gz", "sıkıştır", "aç", "gunzip", "compress", "decompress"],
+    inputType: "archive",
+    archiveMode: "gzip",
+    privacy: "browser",
+    integration: "fflate"
+  },
   {
     id: "image-crop",
     category: "gorsel",

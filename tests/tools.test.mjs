@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog on yedi local-first araç içerir", () => {
-  assert.equal(tools.length, 17);
+test("katalog yirmi iki local-first araç içerir", () => {
+  assert.equal(tools.length, 22);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 
@@ -19,6 +19,9 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("csv json", "veri")[0]?.id, "csv-json");
   assert.equal(searchTools("fotoğraf sıkıştır", "gorsel")[0]?.id, "image-compress");
   assert.equal(searchTools("exif konum", "gorsel")[0]?.id, "image-metadata");
+  assert.equal(searchTools("qr oluştur", "kod")[0]?.id, "qr-generate");
+  assert.equal(searchTools("barkod tara", "kod")[0]?.id, "barcode-scan");
+  assert.equal(searchTools("zip aç", "arsiv")[0]?.id, "zip-extract");
 });
 
 test("base64 unicode roundtrip çalışır", () => {
@@ -45,6 +48,13 @@ test("CSV JSON dönüşümü başlıkları anahtar olarak kullanır", () => {
     { ad: "Ali", puan: "10" },
     { ad: "Zehra", puan: "20" }
   ]);
+});
+
+test("P4 entegrasyonları local-first olarak kayıtlıdır", () => {
+  for (const id of ["qrcode-generator", "zxing-browser", "fflate"]) {
+    assert.equal(getIntegration(id).dataLeavesDevice, false);
+  }
+  assert.equal(getIntegration("fflate").version, "0.8.3");
 });
 
 test("ExifReader entegrasyonu local-first olarak kayıtlıdır", () => {

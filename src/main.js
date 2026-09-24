@@ -103,6 +103,32 @@ async function openTool(id) {
 
   const integration = getIntegration(tool.integration);
 
+  if (tool.inputType === "code") {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = '<div class="tool-panel"><p>QR / barkod aracı yükleniyor...</p></div>';
+    try {
+      const { renderCodeTool } = await import("./code-ui.js");
+      renderCodeTool({ tool, toolView, integration, onBack: renderCatalog });
+    } catch (error) {
+      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "QR / barkod aracı yüklenemedi.")}</p></div>`;
+    }
+    return;
+  }
+
+  if (tool.inputType === "archive") {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = '<div class="tool-panel"><p>Arşiv aracı yükleniyor...</p></div>';
+    try {
+      const { renderArchiveTool } = await import("./archive-ui.js");
+      renderArchiveTool({ tool, toolView, integration, onBack: renderCatalog });
+    } catch (error) {
+      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "Arşiv aracı yüklenemedi.")}</p></div>`;
+    }
+    return;
+  }
+
   if (tool.inputType === "image") {
     catalogView.classList.add("hidden");
     toolView.classList.remove("hidden");
