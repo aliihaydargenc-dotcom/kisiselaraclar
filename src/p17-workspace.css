@@ -161,27 +161,12 @@ body:not(.tool-open) .tool-browser{margin-top:24px}
   .p17-search{padding:13px;border-radius:14px}
   .p17-search-list{grid-template-columns:1fr}
   body:not(.tool-open) .tool-browser{margin-top:16px}
-
-  .mobile-dock{
-    left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));
-    min-height:60px;padding:4px;gap:4px;border:0;border-radius:19px;
-    background:rgba(14,15,18,.94);box-shadow:0 14px 38px rgba(0,0,0,.30);
-    backdrop-filter:blur(18px)
-  }
-  .mobile-dock button{min-height:50px;padding:0 7px;border:0!important;border-radius:15px!important}
-  .mobile-dock button:first-child{background:var(--acid);color:var(--ink)}
-  .mobile-dock button:nth-child(2){background:#315cff;color:#fff}
-  .mobile-dock button:last-child{background:transparent;color:var(--cream)}
-  .mobile-dock-icon{font-size:15px}
-  .mobile-dock strong{font-size:8px}
 }
 @media(max-width:390px){
   .p17-workspace-head h2{font-size:27px}
   .p17-date{display:none}
   .p17-action{grid-template-columns:27px minmax(0,1fr)}
-  .p17-action i{width:27px;height:27px}
-  .mobile-dock{grid-template-columns:1.12fr .82fr .72fr}
-}
+  .p17-action i{width:27px;height:27px}}
 @media(prefers-reduced-motion:no-preference){
   .p17-workspace{animation:p17-in .32s cubic-bezier(.2,.7,.2,1) both}
   .p17-action,.p17-task-row,.p17-empty-focus{transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease}

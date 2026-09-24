@@ -1,6 +1,6 @@
 {
   "name": "kisiselaraclar",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,9 @@
     "check": "node --check src/main.js && node --check src/design-tools.js && node --check src/design-ui.js && node --check src/data-lab.js && node --check src/data-lab-ui.js && node --check src/p15-tools.js && node --check src/p15-ui-shared.js && node --check src/p15-ui.js && node --check src/p15-image-ui.js && node --check src/p15-dev-ui.js && node --check src/p16-office-tools.js && node --check src/p16-office-ui-shared.js && node --check src/p16-office-ui.js && node --check src/p16-office-notes-ui.js && node --check src/p16-office-tasks-ui.js && node --check src/p16-office-image-ui.js && node --check src/p16-office-document-ui.js && node --check src/p17-workspace.js && node --check src/catalog.js && node --check src/tool-engines.js && node --check src/integrations.js && node --check src/pdf-tools.js && node --check src/pdf-ui.js && node --check src/image-tools.js && node --check src/image-ui.js && node --check src/code-tools.js && node --check src/code-ui.js && node --check src/archive-tools.js && node --check src/archive-ui.js && node --check src/ocr-tools.js && node --check src/ocr-ui.js && node --check scripts/sync-ocr-assets.mjs && node --check src/product-ux.js && node --check vite.config.js && node --check src/media-tools.js && node --check src/media-ui.js",
     "test": "node --test tests/*.test.mjs",
     "size": "node scripts/check-build-size.mjs",
-    "quality": "npm run check && npm test && npm run build && npm run size"
+    "quality": "npm run check && npm run test && npm run css:audit && npm run build && npm run size",
+    "css:audit": "node scripts/check-css-ownership.mjs",
+    "smoke": "playwright test"
   },
   "dependencies": {
     "papaparse": "5.7.0",
@@ -28,6 +30,7 @@
     "mediabunny": "1.59.1"
   },
   "devDependencies": {
-    "vite": "8.3.0"
+    "vite": "8.3.0",
+    "@playwright/test": "^1.55.0"
   }
 }
