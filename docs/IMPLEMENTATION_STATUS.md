@@ -180,3 +180,31 @@ Davranış:
 - A4 sayfa yönü görsel yönüne göre otomatik seçilir; en-boy oranı korunur
 - Akıllı dosya yönlendirici tek PDF, tek görsel ve çoklu görsel seçimlerinde bu akışları önerir
 - Yeni bağımlılık veya sunucu API'si eklenmez
+
+
+## P8 — Yerel medya araçları
+
+Motor:
+- Mediabunny 1.59.1 — MPL-2.0
+- WebCodecs destekli tarayıcı içi decode/encode; sunucu API'si yok
+
+Yeni araçlar:
+- Medya Bilgisi & Önizleme
+- Ses / Video Kırp
+- Medya Dönüştür
+
+Davranış:
+- MP4, MOV, WebM, MKV, MP3, WAV, M4A, AAC, FLAC, OGG/Opus gibi yaygın kapsayıcıları okuma
+- süre, codec, track, çözünürlük, kanal, sample-rate ve temel metadata görüntüleme
+- başlangıç/bitiş saniyesi ile kırpma
+- MP4 / WebM / MP3 / WAV hedefleri
+- MP3/WAV çıktısında video track'ini bilinçli atma
+- video dönüşümünde orijinal / 1920 / 1280 / 854 px genişlik seçenekleri
+- dönüştürme başlamadan önce tarayıcının decode/encode yeteneğini doğrulama
+- conversion/kırpma için 100 MB giriş sınırı; metadata için 750 MB
+- akıllı dosya yönlendiricide ses/video algılama
+
+Mimari:
+- `media-ui.js` yalnız medya aracı açıldığında lazy-load edilir.
+- Mediabunny yalnız medya modülü gerektiğinde yüklenir.
+- FFmpeg.wasm ana bağımlılık yapılmadı; daha ağır WASM fallback ileride yalnız gerçek codec açığı kanıtlanırsa değerlendirilecek.

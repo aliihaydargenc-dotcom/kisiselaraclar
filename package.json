@@ -1,13 +1,13 @@
 {
   "name": "kisiselaraclar",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "node scripts/sync-ocr-assets.mjs && vite",
     "build": "node scripts/sync-ocr-assets.mjs && vite build",
     "preview": "vite preview",
-    "check": "node --check src/main.js && node --check src/catalog.js && node --check src/tool-engines.js && node --check src/integrations.js && node --check src/pdf-tools.js && node --check src/pdf-ui.js && node --check src/image-tools.js && node --check src/image-ui.js && node --check src/code-tools.js && node --check src/code-ui.js && node --check src/archive-tools.js && node --check src/archive-ui.js && node --check src/ocr-tools.js && node --check src/ocr-ui.js && node --check scripts/sync-ocr-assets.mjs && node --check src/product-ux.js && node --check vite.config.js",
+    "check": "node --check src/main.js && node --check src/catalog.js && node --check src/tool-engines.js && node --check src/integrations.js && node --check src/pdf-tools.js && node --check src/pdf-ui.js && node --check src/image-tools.js && node --check src/image-ui.js && node --check src/code-tools.js && node --check src/code-ui.js && node --check src/archive-tools.js && node --check src/archive-ui.js && node --check src/ocr-tools.js && node --check src/ocr-ui.js && node --check scripts/sync-ocr-assets.mjs && node --check src/product-ux.js && node --check vite.config.js && node --check src/media-tools.js && node --check src/media-ui.js",
     "test": "node --test tests/*.test.mjs",
     "size": "node scripts/check-build-size.mjs",
     "quality": "npm run check && npm test && npm run build && npm run size"
@@ -24,7 +24,8 @@
     "tesseract.js": "7.0.0",
     "tesseract.js-core": "7.0.0",
     "@tesseract.js-data/tur": "1.0.0",
-    "@tesseract.js-data/eng": "1.0.0"
+    "@tesseract.js-data/eng": "1.0.0",
+    "mediabunny": "1.59.1"
   },
   "devDependencies": {
     "vite": "8.3.0"

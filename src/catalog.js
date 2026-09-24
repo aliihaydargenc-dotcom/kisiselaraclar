@@ -1,4 +1,5 @@
 export const categories = [
+  { id: "medya", label: "Medya" },
   { id: "ocr", label: "OCR" },
   { id: "kod", label: "QR & Barkod" },
   { id: "arsiv", label: "Arşiv" },
@@ -11,6 +12,39 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "media-info",
+    category: "medya",
+    title: "Medya Bilgisi & Önizleme",
+    description: "Ses veya videonun süre, codec, çözünürlük, track ve metadata bilgilerini cihazında incele.",
+    aliases: ["medya", "video", "ses", "audio", "codec", "süre", "çözünürlük", "metadata", "önizle"],
+    inputType: "media",
+    mediaMode: "info",
+    privacy: "browser",
+    integration: "mediabunny"
+  },
+  {
+    id: "media-trim",
+    category: "medya",
+    title: "Ses / Video Kırp",
+    description: "Ses veya videodan başlangıç ve bitiş saniyesini seç; cihazında yeni medya dosyası üret.",
+    aliases: ["medya", "video", "ses", "kırp", "kes", "trim", "başlangıç", "bitiş", "mp4", "mp3"],
+    inputType: "media",
+    mediaMode: "trim",
+    privacy: "browser",
+    integration: "mediabunny"
+  },
+  {
+    id: "media-convert",
+    category: "medya",
+    title: "Medya Dönüştür",
+    description: "Ses/video dosyasını MP4, WebM, MP3 veya WAV biçimine dönüştür; videoyu istersen küçült.",
+    aliases: ["medya", "video", "ses", "convert", "dönüştür", "mp4", "webm", "mp3", "wav", "küçült"],
+    inputType: "media",
+    mediaMode: "convert",
+    privacy: "browser",
+    integration: "mediabunny"
+  },
   {
     id: "ocr-image",
     category: "ocr",

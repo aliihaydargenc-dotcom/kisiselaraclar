@@ -47,3 +47,8 @@ Ana ekranda dosya seçildiğinde veya bırakıldığında dosyanın MIME türü/
 - PDF içindeki seçili sayfalar PNG/JPEG'e dönüştürülüp ZIP olarak indirilebilir.
 - JPEG/PNG/WebP görseller seçim sırasıyla tek PDF'e dönüştürülebilir.
 - Dönüşümler mevcut PDF.js, pdf-lib, Canvas ve fflate altyapısıyla cihaz içinde yapılır; yeni dış servis veya ücretli API eklenmez.
+
+
+## P8 medya araçları
+
+Ses/video dosyaları için yerel metadata inceleme, zaman aralığı kırpma ve MP4/WebM/MP3/WAV dönüşümü eklendi. Medya motoru lazy-load edilir ve dosya sunucuya gönderilmez. Dönüştürme desteği tarayıcının mevcut codec/WebCodecs yeteneklerine göre işlem öncesinde doğrulanır.

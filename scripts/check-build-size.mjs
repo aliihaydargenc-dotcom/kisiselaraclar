@@ -6,7 +6,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "dist");
 const limits = {
   coreJs: 100 * 1024,
-  totalJs: 3500 * 1024,
+  // P8 adds Mediabunny as a lazy-only media runtime. Core entry stays capped separately.
+  totalJs: 4250 * 1024,
   ocrRuntime: 40 * 1024 * 1024,
   css: 140 * 1024
 };

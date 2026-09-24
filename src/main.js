@@ -319,6 +319,10 @@ async function openTool(id, { record = true } = {}) {
     }
   }
 
+  if (tool.inputType === "media") {
+    await renderLazy("Medya aracı yükleniyor", () => import("./media-ui.js"), "renderMediaTool", "Medya aracı yüklenemedi.");
+    return;
+  }
   if (tool.inputType === "ocr") {
     await renderLazy("OCR aracı yükleniyor", () => import("./ocr-ui.js"), "renderOcrTool", "OCR aracı yüklenemedi.");
     return;

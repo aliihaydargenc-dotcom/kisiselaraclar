@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog yirmi altı local-first araç içerir", () => {
-  assert.equal(tools.length, 26);
+test("katalog yirmi dokuz local-first araç içerir", () => {
+  assert.equal(tools.length, 29);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 
@@ -26,6 +26,8 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("pdf ocr", "ocr")[0]?.id, "ocr-pdf-page");
   assert.equal(searchTools("pdf jpg", "pdf")[0]?.id, "pdf-to-images");
   assert.equal(searchTools("görseller pdf", "pdf")[0]?.id, "images-to-pdf");
+  assert.equal(searchTools("video kırp", "medya")[0]?.id, "media-trim");
+  assert.equal(searchTools("mp3 dönüştür", "medya")[0]?.id, "media-convert");
 });
 
 test("base64 unicode roundtrip çalışır", () => {
@@ -95,4 +97,13 @@ test("metin istatistikleri Türkçe sonuç üretir", () => {
 test("unix zaman dönüştürme saniye girdisini kabul eder", () => {
   const result = engines.unixToDate("0");
   assert.match(result, /1970/);
+});
+
+
+test("Mediabunny entegrasyonu local-first olarak kayıtlıdır", () => {
+  const integration = getIntegration("mediabunny");
+  assert.equal(integration.version, "1.59.1");
+  assert.equal(integration.license, "MPL-2.0");
+  assert.equal(integration.networkRequired, false);
+  assert.equal(integration.dataLeavesDevice, false);
 });
