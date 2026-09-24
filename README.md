@@ -52,3 +52,8 @@ Ana ekranda dosya seçildiğinde veya bırakıldığında dosyanın MIME türü/
 ## P8 medya araçları
 
 Ses/video dosyaları için yerel metadata inceleme, zaman aralığı kırpma ve MP4/WebM/MP3/WAV dönüşümü eklendi. Medya motoru lazy-load edilir ve dosya sunucuya gönderilmez. Dönüştürme desteği tarayıcının mevcut codec/WebCodecs yeteneklerine göre işlem öncesinde doğrulanır.
+
+
+## P9 UX yenilemesi
+
+Arayüz 29 araçlık katalog büyüdükten sonra yeniden düzenlendi. Üç sütunlu yoğun katalog iki sütuna düşürüldü; sidebar ve tool panel kabukları sadeleştirildi; hızlı erişim yatay şerit oldu; teknik motor bilgileri geri plana alındı. Tasarım artık daha az border/shadow kullanır ve dosya bırakma akışını ana odak olarak öne çıkarır.
