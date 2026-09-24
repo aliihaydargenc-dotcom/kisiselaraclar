@@ -76,3 +76,15 @@ pre { margin: 0; padding: 16px; min-height: 110px; white-space: pre-wrap; overfl
   .category-list { grid-template-columns: 1fr 1fr; }
   .tool-panel { padding: 18px; }
 }
+
+
+.engine-label { margin-top: auto; color: #8a919c; font-size: 11px; font-weight: 750; }
+.integration-strip { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: -8px 0 20px; padding: 12px 14px; border: 1px solid #dce8df; background: #f3faf5; border-radius: 13px; color: #42604a; font-size: 12px; }
+.file-drop { display: grid !important; gap: 5px; margin-bottom: 14px !important; padding: 18px; border: 1px dashed #bfc7d1; border-radius: 14px; background: #fafbfc; cursor: pointer; }
+.file-drop span { color: #737b86; font-size: 13px; font-weight: 500; }
+.file-drop input { margin-top: 8px; max-width: 100%; }
+.csv-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 12px 14px; background: #fafbfc; border-bottom: 1px solid #e1e4e9; color: #59616d; font-size: 12px; }
+.table-scroll { max-height: 440px; overflow: auto; }
+.data-table { width: max-content; min-width: 100%; border-collapse: collapse; background: white; font-size: 13px; }
+.data-table th, .data-table td { padding: 9px 11px; border-right: 1px solid #eceef1; border-bottom: 1px solid #eceef1; text-align: left; white-space: nowrap; }
+.data-table th { position: sticky; top: 0; z-index: 1; background: #f7f8fa; font-weight: 800; }

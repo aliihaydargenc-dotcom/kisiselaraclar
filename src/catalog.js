@@ -17,7 +17,8 @@ export const tools = [
       { id: "encodeBase64", label: "Base64'e çevir" },
       { id: "decodeBase64", label: "Base64 çöz" }
     ],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   },
   {
     id: "url",
@@ -30,7 +31,8 @@ export const tools = [
       { id: "encodeUrl", label: "URL kodla" },
       { id: "decodeUrl", label: "URL çöz" }
     ],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   },
   {
     id: "json",
@@ -43,7 +45,23 @@ export const tools = [
       { id: "formatJson", label: "Düzenle ve doğrula" },
       { id: "minifyJson", label: "Sıkıştır" }
     ],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
+  },
+  {
+    id: "csv-json",
+    category: "veri",
+    title: "CSV Görüntüle ve JSON'a Dönüştür",
+    description: "CSV dosyasını cihazında aç, ayırıcıyı otomatik algıla, tabloyu önizle ve JSON çıktısı üret.",
+    aliases: ["csv", "json", "excel", "virgül", "ayraç", "delimiter", "tablo", "dönüştür"],
+    inputLabel: "CSV içeriği",
+    inputType: "csv-file",
+    actions: [
+      { id: "previewCsv", label: "Tabloyu önizle" },
+      { id: "csvToJson", label: "JSON'a dönüştür" }
+    ],
+    privacy: "browser",
+    integration: "papaparse"
   },
   {
     id: "duplicates",
@@ -53,7 +71,8 @@ export const tools = [
     aliases: ["duplicate", "tekrar", "satır", "benzersiz", "unique"],
     inputLabel: "Satırlar",
     actions: [{ id: "removeDuplicateLines", label: "Tekrarları kaldır" }],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   },
   {
     id: "text-stats",
@@ -63,7 +82,8 @@ export const tools = [
     aliases: ["kelime", "karakter", "istatistik", "word count", "say"],
     inputLabel: "Metin",
     actions: [{ id: "textStats", label: "Hesapla" }],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   },
   {
     id: "sha256",
@@ -73,7 +93,8 @@ export const tools = [
     aliases: ["hash", "sha", "sha256", "özet", "checksum"],
     inputLabel: "Metin",
     actions: [{ id: "sha256", label: "SHA-256 hesapla" }],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   },
   {
     id: "unix-time",
@@ -86,7 +107,8 @@ export const tools = [
       { id: "unixToDate", label: "Unix → tarih" },
       { id: "dateToUnix", label: "Tarih → Unix" }
     ],
-    privacy: "browser"
+    privacy: "browser",
+    integration: "native"
   }
 ];
 

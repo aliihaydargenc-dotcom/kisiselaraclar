@@ -9,34 +9,47 @@ Türkçe-first, local-first, farklı açık kaynak motorların tek tasarım ve a
 - Açık kaynak araştırma kataloğu
 - Entegrasyon/lisans politikası
 - Türkçe varsayılan ürün yaklaşımı
-- Çekirdek statik web kabuğu
 - Türkçe kategori + alias tabanlı araç araması
-- Araç manifesti
 - Local-first gizlilik göstergesi
-- 7 native tarayıcı aracı:
-  - Base64 dönüştürücü
-  - URL kodlayıcı
-  - JSON düzenleyici/doğrulayıcı
-  - Tekrarlanan satır temizleyici
-  - Metin istatistikleri
-  - SHA-256 özeti
-  - Unix zaman dönüştürücü
-- Node tabanlı unit testleri
+- 7 native tarayıcı aracı
 - GitHub Actions kalite kapısı
+
+## P1 — İlk gerçek dış entegrasyon
+
+PapaParse 5.7.0 (MIT) seçildi.
+
+Yeni yetenek:
+- CSV dosyası seçme (20 MB ilk sürüm sınırı)
+- dosyanın yalnız browser içinde okunması
+- delimiter otomatik algılama
+- başlık/kolon algılama
+- ilk 200 satırlık tablo önizlemesi
+- CSV → JSON çıktısı
+- Türkçe CSV arama alias'ları
+- araç ekranında motor / sürüm / lisans / veri dışarı çıkışı bilgisi
+- entegrasyon manifesti
+- Vite build
+- JS/CSS bundle bütçesi
 
 ## Sıradaki anlamlı paket
 
-**P1 — İlk dış kaynak entegrasyon dalgası**
-
-Amaç: entegrasyon politikasını gerçek bileşenlerle kanıtlamak.
+**P2 — PDF çekirdeği teknik spike**
 
 Öncelik:
-1. PapaParse (MIT) ile CSV görüntüle / CSV → JSON
-2. pdf.js + pdf-lib ile PDF önizleme / birleştirme / bölme için teknik spike
-3. Cropper.js ile görsel kırpma ve tarayıcı-native yeniden boyutlandırma
-4. Her entegrasyon için kaynak/lisans/çalışma yeri/veri akışı manifesti
+1. pdf.js ile browser PDF önizleme
+2. pdf-lib ile birleştirme / bölme / döndürme prototipi
+3. ağır PDF parçalarını lazy-load ederek JS ana bundle bütçesini koruma
+4. PDF motorları için lisans/veri manifesti
+5. gerçek PDF fixture testleri
 
-Bu paket tamamlanmadan Vercel deployment başlatılmayacak.
+P2 doğrulanmadan Vercel deployment başlatılmayacak.
+
+## Backlog'a eklenen araştırma adayları
+
+- Faker: Türkçe sahte veri üretici
+- Hoppscotch'tan ilhamla sade API istek test aracı
+- public-apis: yeni ücretsiz veri kaynakları için keşif kataloğu
+- Size Limit yaklaşımı: şu an custom bundle budget ile başlatıldı; ihtiyaç büyürse doğrudan araç değerlendirilecek
 
 ## Release
 
