@@ -26,7 +26,12 @@ const html = await readFile(join(root, "index.html"), "utf8");
 const entryMatch = html.match(/<script[^>]+src="([^"]+\.(?:js|mjs))"/);
 if (!entryMatch) throw new Error("Ana JS bundle bulunamadı.");
 
-const entryPath = join(root, entryMatch[1].replace(/^\//, ""));
+const entryUrl = entryMatch[1].split("?")[0];
+const assetIndex = entryUrl.indexOf("assets/");
+const entryRelative = assetIndex >= 0
+  ? entryUrl.slice(assetIndex)
+  : entryUrl.replace(/^(?:\.\/|\/)+/, "");
+const entryPath = join(root, entryRelative);
 const coreJs = (await stat(entryPath)).size;
 const files = await walk(root);
 let totalJs = 0;
