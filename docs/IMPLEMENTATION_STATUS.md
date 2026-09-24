@@ -128,7 +128,7 @@ Eklenenler:
 
 ## Sıradaki anlamlı paket
 
-**P6 — İlk production release + gerçek dosya smoke testleri**
+**P6 — GitHub Pages production release + gerçek dosya smoke testleri**
 
 Medya araçları production doğrulamasından sonraya ertelendi.
 
@@ -141,4 +141,13 @@ Medya araçları production doğrulamasından sonraya ertelendi.
 
 ## Release
 
-Kod tabanı release-readiness aşamasındadır. `docs/RELEASE_CHECKLIST.md` kritik kullanıcı akışlarını tanımlar. İlk production deploy bu paket doğrulandıktan sonra yapılacaktır.
+Kod tabanı release-readiness aşamasındadır. `docs/RELEASE_CHECKLIST.md` kritik kullanıcı akışlarını tanımlar. GitHub Pages deploy workflow'u production hattıdır; ilk Pages etkinleştirmesinden sonra main push'ları otomatik yayınlanır.
+
+
+## Hosting stratejisi
+
+- Birincil ücretsiz static hosting: GitHub Pages
+- Build/deploy: GitHub Actions
+- Pages base path: `/kisiselaraclar/`
+- Root-domain hosting uyumluluğu korunur: varsayılan Vite base `/`
+- Vercel ve Railway zorunlu değildir; yalnız ikincil/fallback seçeneklerdir.
