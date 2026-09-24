@@ -101,3 +101,10 @@ Katalog 60 araca çıktı. Görsel alanına palet çıkarma, piksel renk seçici
 Katalog 68 araca çıktı. Yeni **Ofis** kategorisi; Hızlı Not, Toplantı Notu, Görev & Takvim, Sesli Not, Belge Tara & Temizle, PDF Doldur & İmzala, Gizle & İşaretle ve Belge Karşılaştır araçlarını içerir.
 
 P16'nın sınırı Word/Excel veya proje yönetimi uygulaması kopyalamak değildir. Küçük günlük ofis işlerini hızlı ve mümkün olduğunca local-first biçimde tamamlar. Not/görev/toplantı verileri cihazda tutulur; belge/görsel/PDF işlemleri tarayıcıda yapılır. Sesli not, tarayıcının SpeechRecognition desteğine bağlıdır ve ses işleme davranışı tarayıcıya göre değişebilir.
+
+
+## P17 çalışma merkezi
+
+P17 araç sayısını büyütmek yerine kullanım kolaylığını merkez alır. Ana akış artık Bugün merkeziyle başlar; bugünkü/gecikmiş görevlar, son not veya toplantı taslağı ve en sık ihtiyaç duyulan işler tek ekranda görünür. Araç araması aynı zamanda yerel not, görev ve toplantı içeriğinde de arama yapar.
+
+Tüm `kisiselaraclar:` yerel verileri tek JSON yedeği olarak dışa aktarılabilir ve kontrollü biçimde geri yüklenebilir. Yeni P17 katmanı mevcut P16 verisini yeniden kullanır; hesap, sunucu veya ücretli API eklemez. Mobilde pazarlama yüzeyi küçültülerek ilk yapılabilir eylemler daha yukarı taşınmıştır.
