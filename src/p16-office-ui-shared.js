@@ -11,7 +11,14 @@ export function getJson(key, fallback = []) {
   return safeJsonParse(storage()?.getItem(key), fallback);
 }
 export function putJson(key, value) {
-  try { storage()?.setItem(key, JSON.stringify(value)); } catch {}
+  const target = storage();
+  if (!target?.setItem) return false;
+  try {
+    target.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
 }
 export function status(root, value) {
   const node = root.querySelector("#p16Status");

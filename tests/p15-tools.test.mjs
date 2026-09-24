@@ -80,3 +80,17 @@ test("HTML entity encode decode roundtrip çalışır", () => {
 test("SHA-256 motoru geriye dönük sabit çıktıyı korur", async () => {
   assert.equal(await sha256Text("abc"),"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 });
+
+
+test("SVG temizleyici harici ağ referanslarını kaldırıp yerel fragmentleri korur", () => {
+  const clean=sanitizeSvgText(`<svg xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g"><stop offset="0"/></linearGradient></defs>
+    <style>@import url("https://evil.example/a.css"); .x{fill:url(#g)}</style>
+    <image href="https://evil.example/a.png"/>
+    <use href="#g"/>
+    <rect class="x" style="stroke:url(https://evil.example/s.svg#x)"/>
+  </svg>`);
+  assert.doesNotMatch(clean,/evil\.example|@import/i);
+  assert.match(clean,/href="#g"/);
+  assert.match(clean,/url\(#g\)/);
+});

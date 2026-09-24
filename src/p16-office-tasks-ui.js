@@ -67,7 +67,12 @@ function wireTasks(root) {
       ? `<button data-calendar-date="${cell.date}" class="${cell.taskCount ? "has-task" : ""}"><span>${cell.day}</span>${cell.taskCount ? `<b>${cell.taskCount}</b>` : ""}</button>`
       : `<span></span>`).join("");
   };
-  const render = () => { tasks = normalizeTasks(tasks); renderList(); renderCalendar(); persist(); };
+  const render = () => {
+    tasks = normalizeTasks(tasks);
+    renderList();
+    renderCalendar();
+    return persist();
+  };
   root.querySelector("#p16TaskAdd").onclick = () => {
     const title = root.querySelector("#p16TaskTitle");
     if (!title.value.trim()) { status(root, "Görev başlığı yaz."); return; }
@@ -80,8 +85,8 @@ function wireTasks(root) {
       createdAt: Date.now()
     });
     title.value = "";
-    render();
-    status(root, "Görev eklendi.");
+    const saved = render();
+    status(root, saved ? "Görev eklendi." : "Görev eklendi ancak cihazda kaydedilemedi.");
   };
   root.querySelector(".p16-tabs").onclick = (event) => {
     const button = event.target.closest("[data-task-filter]");
@@ -95,13 +100,18 @@ function wireTasks(root) {
     if (done) {
       const task = tasks.find((item) => item.id === done.dataset.taskDone);
       if (task) task.done = done.checked;
-      render();
+      const saved = render();
+      if (!saved) status(root, "Değişiklik cihazda kaydedilemedi.");
       return;
     }
     const del = event.target.closest("[data-task-delete]");
     if (del) {
+      const task = tasks.find((item) => item.id === del.dataset.taskDelete);
+      const accepted = globalThis.confirm?.(`"${task?.title || "Görev"}" silinsin mi?`) ?? true;
+      if (!accepted) return;
       tasks = tasks.filter((item) => item.id !== del.dataset.taskDelete);
-      render();
+      const saved = render();
+      status(root, saved ? "Görev silindi." : "Görev silindi ancak cihazda kaydedilemedi.");
     }
   };
   root.querySelector("#p16PrevMonth").onclick = () => { month -= 1; if (month < 0) { month = 11; year -= 1; } renderCalendar(); };
@@ -110,7 +120,10 @@ function wireTasks(root) {
     const button = event.target.closest("[data-calendar-date]");
     if (!button) return;
     root.querySelector("#p16TaskDate").value = button.dataset.calendarDate;
-    status(root, `${button.dataset.calendarDate.split("-").reverse().join(".")} yeni görev tarihi olarak seçildi.`);
+    const title = root.querySelector("#p16TaskTitle");
+    root.querySelector(".p16-task-create")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => title?.focus({ preventScroll: true }));
+    status(root, `${button.dataset.calendarDate.split("-").reverse().join(".")} seçildi · görev başlığını yaz.`);
   };
   root.querySelector("#p16TaskIcs").onclick = () => {
     try {
@@ -169,7 +182,8 @@ function wireVoice(root) {
   start.onclick = () => {
     finalText = text.value ? `${text.value.trim()} ` : "";
     rec.lang = root.querySelector("#p16VoiceLang").value;
-    try { rec.start(); } catch {}
+    try { rec.start(); }
+    catch { status(root, "Dinleme başlatılamadı. Mikrofon iznini ve tarayıcı desteğini kontrol et."); }
   };
   stop.onclick = () => rec.stop();
   root.querySelector("#p16VoiceCopy").onclick = async () => {
@@ -180,8 +194,8 @@ function wireVoice(root) {
     if (!text.value.trim()) { status(root, "Kaydedilecek metin yok."); return; }
     const notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
     notes.unshift({ id: uid("note"), title: "Sesli not", text: text.value.trim(), pinned: false, updatedAt: Date.now() });
-    putJson(P16_NOTES_KEY, notes);
-    status(root, "Metin Hızlı Not'a kaydedildi.");
+    const saved = putJson(P16_NOTES_KEY, notes);
+    status(root, saved ? "Metin Hızlı Not'a kaydedildi." : "Not cihazda kaydedilemedi · tarayıcı depolamasını kontrol et.");
   };
 }
 

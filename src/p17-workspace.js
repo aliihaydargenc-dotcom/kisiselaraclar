@@ -3,6 +3,9 @@ const NOTES_KEY = "kisiselaraclar:p16:notes";
 const TASKS_KEY = "kisiselaraclar:p16:tasks";
 const MEETING_KEY = "kisiselaraclar:p16:meeting-draft";
 export const P17_BACKUP_SCHEMA = "kisiselaraclar-local-backup";
+export const P17_BACKUP_FILE_LIMIT = 8 * 1024 * 1024;
+export const P17_BACKUP_ENTRY_LIMIT = 100;
+export const P17_BACKUP_VALUE_LIMIT = 2 * 1024 * 1024;
 
 function safeParse(value, fallback) {
   try {
@@ -136,22 +139,54 @@ export function createWorkspaceBackup(storage, now = new Date()) {
   };
 }
 
-export function restoreWorkspaceBackup(storage, payload) {
+function utf8Bytes(value) {
+  return new TextEncoder().encode(String(value ?? "")).byteLength;
+}
+
+export function validateWorkspaceBackup(payload) {
   if (!payload || typeof payload !== "object" || payload.schema !== P17_BACKUP_SCHEMA || payload.version !== 1) {
     throw new Error("Bu dosya Kişisel Araçlar yedeği değil.");
   }
   if (!payload.entries || typeof payload.entries !== "object" || Array.isArray(payload.entries)) {
     throw new Error("Yedek içeriği okunamadı.");
   }
-  if (!storage?.setItem) throw new Error("Tarayıcı depolaması kullanılamıyor.");
-
-  let restored = 0;
-  for (const [key, value] of Object.entries(payload.entries)) {
-    if (!String(key).startsWith(STORAGE_PREFIX) || typeof value !== "string") continue;
-    storage.setItem(key, value);
-    restored += 1;
+  const rawEntries = Object.entries(payload.entries);
+  if (rawEntries.length > P17_BACKUP_ENTRY_LIMIT) {
+    throw new Error(`Yedek en fazla ${P17_BACKUP_ENTRY_LIMIT} kayıt grubu içerebilir.`);
   }
-  return restored;
+  const entries = [];
+  let totalBytes = 0;
+  for (const [key, value] of rawEntries) {
+    if (!String(key).startsWith(STORAGE_PREFIX)) continue;
+    if (typeof value !== "string") throw new Error(`${key}: yedek değeri metin olmalı.`);
+    const valueBytes = utf8Bytes(value);
+    if (valueBytes > P17_BACKUP_VALUE_LIMIT) throw new Error(`${key}: kayıt grubu 2 MB sınırını aşıyor.`);
+    totalBytes += utf8Bytes(key) + valueBytes;
+    if (totalBytes > P17_BACKUP_FILE_LIMIT) throw new Error("Yedek içeriği 8 MB güvenlik sınırını aşıyor.");
+    entries.push([key, value]);
+  }
+  return { entries, count: entries.length, totalBytes };
+}
+
+export function restoreWorkspaceBackup(storage, payload) {
+  if (!storage?.setItem) throw new Error("Tarayıcı depolaması kullanılamıyor.");
+  const validated = validateWorkspaceBackup(payload);
+  const previous = new Map();
+  try {
+    for (const [key, value] of validated.entries) {
+      previous.set(key, storage.getItem?.(key) ?? null);
+      storage.setItem(key, value);
+    }
+  } catch {
+    for (const [key, value] of previous) {
+      try {
+        if (value === null) storage.removeItem?.(key);
+        else storage.setItem(key, value);
+      } catch {}
+    }
+    throw new Error("Yedek geri yüklenemedi; tarayıcı depolaması yazmaya izin vermedi.");
+  }
+  return validated.count;
 }
 
 function normalizeSearch(value) {
@@ -219,7 +254,7 @@ function taskRows(summary) {
 
   if (!focus.length) {
     return `
-      <button type="button" class="p17-empty-focus" data-tool="tasks-calendar">
+      <button type="button" class="p17-empty-focus" data-tool="tasks-calendar" data-tool-action="new-task">
         <span class="p17-empty-icon" aria-hidden="true">＋</span>
         <span class="p17-empty-copy">
           <strong>Bugün için açık iş yok</strong>
@@ -288,13 +323,13 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
             <button type="button" class="p17-action p17-action-file" data-p17-file>
               <i aria-hidden="true">＋</i><span><strong>Dosyayla başla</strong><small>Türünü algıla</small></span>
             </button>
-            <button type="button" class="p17-action" data-tool="quick-note">
+            <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note">
               <i aria-hidden="true">N</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span>
             </button>
-            <button type="button" class="p17-action" data-tool="tasks-calendar">
+            <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task">
               <i aria-hidden="true">✓</i><span><strong>Görev ekle</strong><small>Tarih ver</small></span>
             </button>
-            <button type="button" class="p17-action" data-tool="meeting-notes">
+            <button type="button" class="p17-action" data-tool="meeting-notes" data-tool-action="meeting-focus">
               <i aria-hidden="true">M</i><span><strong>Toplantı</strong><small>Kararları ayır</small></span>
             </button>
             <button type="button" class="p17-action" data-tool="document-scan">
@@ -387,14 +422,19 @@ function downloadBackup(storage) {
 export function wireP17Workspace(root, storage, onOpenTool) {
   if (!root) return;
 
-  root.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-tool]");
-    if (!button || !root.contains(button)) return;
-    const id = String(button.dataset.tool || "");
-    if (!id || typeof onOpenTool !== "function") return;
-    event.preventDefault();
-    onOpenTool(id);
-  });
+  root._p17OpenTool = onOpenTool;
+  if (root.dataset.p17Delegated !== "true") {
+    root.dataset.p17Delegated = "true";
+    root.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-tool]");
+      if (!button || !root.contains(button)) return;
+      const id = String(button.dataset.tool || "");
+      const action = String(button.dataset.toolAction || "");
+      if (!id || typeof root._p17OpenTool !== "function") return;
+      event.preventDefault();
+      root._p17OpenTool(id, action);
+    });
+  }
   const status = root.querySelector("#p17BackupStatus");
   const setStatus = (value) => {
     if (status) status.textContent = value;
@@ -422,7 +462,9 @@ export function wireP17Workspace(root, storage, onOpenTool) {
     const file = input.files?.[0];
     if (!file) return;
     try {
+      if (file.size > P17_BACKUP_FILE_LIMIT) throw new Error("Yedek dosyası 8 MB sınırını aşıyor.");
       const payload = JSON.parse(await file.text());
+      validateWorkspaceBackup(payload);
       const entries = payload?.entries && typeof payload.entries === "object" ? Object.keys(payload.entries).length : 0;
       const accepted = globalThis.confirm?.(`${entries} kayıt grubu bu tarayıcıya geri yüklenecek. Devam edilsin mi?`);
       if (accepted === false) {

@@ -230,7 +230,7 @@ function renderCatalog() {
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
-  if (homeView) wireP17Workspace(homeView, safeStorage(), (id) => navigateTool(id));
+  if (homeView) wireP17Workspace(homeView, safeStorage(), (id, action) => navigateTool(id, { action }));
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
@@ -284,7 +284,41 @@ function installMobileTechDetails() {
   strip.after(details);
 }
 
-function finalizeToolOpen() {
+function applyToolOpenAction(action = "") {
+  if (!action) return false;
+
+  if (action === "new-note") {
+    const title = toolView.querySelector("#p16NoteTitle");
+    const text = toolView.querySelector("#p16NoteText");
+    const create = toolView.querySelector("#p16NewNote");
+    if (!text) return false;
+    const hasContent = Boolean(title?.value.trim() || text.value.trim());
+    if (hasContent) create?.click();
+    text.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => text.focus({ preventScroll: true }));
+    return true;
+  }
+
+  if (action === "new-task") {
+    const title = toolView.querySelector("#p16TaskTitle");
+    if (!title) return false;
+    toolView.querySelector(".p16-task-create")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => title.focus({ preventScroll: true }));
+    return true;
+  }
+
+  if (action === "meeting-focus") {
+    const title = toolView.querySelector("#p16MeetingTitle");
+    if (!title) return false;
+    title.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => title.focus({ preventScroll: true }));
+    return true;
+  }
+
+  return false;
+}
+
+function finalizeToolOpen(action = "") {
   enhanceFileDrops(toolView);
   installMobileTechDetails();
   const handoff = applyStagedFiles(toolView, currentToolId);
@@ -299,7 +333,8 @@ function finalizeToolOpen() {
       panel.prepend(note);
     }
   }
-  toolView.querySelector("#backToCatalog")?.focus({ preventScroll: true });
+  const actionHandled = applyToolOpenAction(action);
+  if (!actionHandled) toolView.querySelector("#backToCatalog")?.focus({ preventScroll: true });
 }
 
 function navigateCatalog({ replace = false } = {}) {
@@ -308,7 +343,7 @@ function navigateCatalog({ replace = false } = {}) {
   renderCatalog();
 }
 
-async function openTool(id, { record = true } = {}) {
+async function openTool(id, { record = true, action = "" } = {}) {
   const tool = tools.find((item) => item.id === id);
   if (!tool) {
     navigateCatalog({ replace: true });
@@ -330,7 +365,7 @@ async function openTool(id, { record = true } = {}) {
     try {
       const module = await importer();
       await module[rendererName]({ tool, toolView, integration, onBack });
-      finalizeToolOpen();
+      finalizeToolOpen(action);
     } catch (error) {
       toolView.innerHTML = `
         <button class="back-button" id="backToCatalog">← Araçlara dön</button>
@@ -487,14 +522,14 @@ async function openTool(id, { record = true } = {}) {
   });
 
   toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
-  finalizeToolOpen();
+  finalizeToolOpen(action);
 }
 
-function navigateTool(id, { replace = false, record = true } = {}) {
+function navigateTool(id, { replace = false, record = true, action = "" } = {}) {
   if (!validToolIds.includes(id)) return navigateCatalog({ replace: true });
   const method = replace ? "replaceState" : "pushState";
-  history[method]({ tool: id }, "", toolHash(id));
-  openTool(id, { record });
+  history[method]({ tool: id, action: action || null }, "", toolHash(id));
+  openTool(id, { record, action });
 }
 
 function syncRoute() {

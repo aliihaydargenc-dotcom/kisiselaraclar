@@ -113,3 +113,8 @@ Tüm `kisiselaraclar:` yerel verileri tek JSON yedeği olarak dışa aktarılabi
 ### P17.1 mobil çalışma alanı düzeltmesi
 
 Bugün çalışma merkezindeki Hızlı Başla, görev ve Devam Et kartları doğrudan araç yönlendirmesine bağlandı. Mobil çalışma alanı ağır siyah panel/kutu görünümünden çıkarılarak daha açık, kompakt ve dokunma odaklı bento düzene geçirildi; boş görev durumu doğrudan görev ekleme eylemine dönüştürüldü ve mobil dock daha hafif hale getirildi.
+
+
+### P17.2 stabilizasyon ve geliştirici denetimi
+
+P17 çalışma merkezi geliştirici gözüyle yeniden tarandı. Tekrarlanan event listener birikimi kaldırıldı; Hızlı Başla kartları gerçek işlem niyetine bağlandı; localStorage yazma hataları artık kullanıcıya gösteriliyor; toplantı aksiyonlarının aynı görevi tekrar tekrar üretmesi engellendi; takvim günü seçimi görev başlığına odaklanıyor; yedek geri yükleme boyut ve kayıt sınırlarıyla doğrulanıyor; SVG araçları harici ağ referanslarını temizliyor.

@@ -120,6 +120,19 @@ export function transparencyReport(data) {
   };
 }
 
+function isSafeSvgReference(value) {
+  const ref = String(value || "").trim();
+  return ref.startsWith("#") || /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(ref);
+}
+
+function sanitizeSvgReferences(value) {
+  return String(value || "")
+    .replace(/@import\s+(?:url\([^)]*\)|["'][^"']+["'])\s*;?/gi, "")
+    .replace(/url\(\s*(["']?)([^)"']+)\1\s*\)/gi, (match, quote, ref) =>
+      isSafeSvgReference(ref) ? match : "none"
+    );
+}
+
 export function sanitizeSvgText(input) {
   let svg = String(input ?? "").trim();
   if (!/<svg\b/i.test(svg)) throw new Error("Geçerli bir SVG kök etiketi bulunamadı.");
@@ -129,8 +142,12 @@ export function sanitizeSvgText(input) {
     .replace(/<(script|foreignObject|iframe|object|embed)\b[\s\S]*?<\/\1\s*>/gi, "")
     .replace(/<(script|foreignObject|iframe|object|embed)\b[^>]*\/?>/gi, "")
     .replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/\s(?:href|xlink:href)\s*=\s*(["'])\s*javascript:[\s\S]*?\1/gi, "")
+    .replace(/\s(?:href|xlink:href)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, (match, raw) => {
+      const ref = raw.replace(/^(["'])|(["'])$/g, "");
+      return isSafeSvgReference(ref) ? match : "";
+    })
     .replace(/url\(\s*(["']?)\s*javascript:[^)]+\)/gi, "none");
+  svg = sanitizeSvgReferences(svg);
   return svg.trim();
 }
 
