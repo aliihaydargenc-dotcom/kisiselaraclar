@@ -18,6 +18,8 @@ const categoryList = document.querySelector("#categoryList");
 const catalogView = document.querySelector("#catalogView");
 const toolView = document.querySelector("#toolView");
 const toolCountSummary = document.querySelector("#toolCountSummary");
+const headerSearchButton = document.querySelector("#headerSearchButton");
+const toolBrowser = document.querySelector("#toolBrowser");
 const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
@@ -180,6 +182,7 @@ function toolCard(tool, compact = false) {
 
 function renderCatalog() {
   currentToolId = "";
+  document.body.classList.remove("tool-open");
   setDocumentTitle();
   const query = searchInput.value;
   const list = searchTools(query, activeCategory);
@@ -222,7 +225,7 @@ function renderCatalog() {
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
-  if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç • ${categories.length} kategori`;
+  if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
 function csvTable(result) {
@@ -292,6 +295,7 @@ async function openTool(id, { record = true } = {}) {
   }
 
   currentToolId = id;
+  document.body.classList.add("tool-open");
   setDocumentTitle(tool);
   if (record) rememberRecentTool(safeStorage(), id, validToolIds);
   const integration = getIntegration(tool.integration);
@@ -512,3 +516,12 @@ window.addEventListener("popstate", syncRoute);
 renderCategories();
 history.replaceState({ tool: parseToolHash(location.hash) || null }, "", location.href);
 syncRoute();
+
+
+headerSearchButton?.addEventListener("click", () => {
+  if (currentToolId) navigateCatalog({ replace: true });
+  requestAnimationFrame(() => {
+    toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
+    searchInput.focus({ preventScroll: true });
+  });
+});

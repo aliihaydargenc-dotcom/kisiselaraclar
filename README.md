@@ -57,3 +57,8 @@ Ses/video dosyaları için yerel metadata inceleme, zaman aralığı kırpma ve 
 ## P9 UX yenilemesi
 
 Arayüz 29 araçlık katalog büyüdükten sonra yeniden düzenlendi. Üç sütunlu yoğun katalog iki sütuna düşürüldü; sidebar ve tool panel kabukları sadeleştirildi; hızlı erişim yatay şerit oldu; teknik motor bilgileri geri plana alındı. Tasarım artık daha az border/shadow kullanır ve dosya bırakma akışını ana odak olarak öne çıkarır.
+
+
+## Site shell redesign
+
+Ürün arayüzü dashboard görünümünden çıkarılarak landing-first bir web sitesi yapısına taşındı. Sticky üst navigasyon, editorial hero, ürün görseli, yatay araç keşfi ve açıklayıcı alt bölüm eklendi. Desktop sidebar kaldırıldı; arama ve kategori filtresi araç kataloğunun doğal bir parçası oldu. Bir araç açıldığında landing katmanları geri çekilerek odaklı çalışma ekranı korunur.
