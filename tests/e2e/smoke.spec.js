@@ -16,7 +16,7 @@ test("Yeni not kısayolu gerçek editöre odaklanır", async ({ page }) => {
 
 test("Görev ekle kısayolu görev başlığına odaklanır", async ({ page }) => {
   await page.goto("./");
-  await page.getByRole("button", { name: /Görev ekle/ }).click();
+  await page.locator('.p17-action[data-tool="tasks-calendar"]').click();
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
   await expect(page.locator("#p16TaskTitle")).toBeFocused();
 });
