@@ -27,8 +27,7 @@ test("arama düğmesi arama alanını odaklar", async ({ page }) => {
   await expect(page.locator("#toolSearch")).toBeFocused();
 });
 
-test("mobil dock görünür ve Bugün çalışma merkezine erişir", async ({ page }, testInfo) => {
-  test.skip(!testInfo.project.name.includes("mobile"), "Mobil projede çalışır.");
+test("@mobile mobil dock görünür ve Bugün çalışma merkezine erişir", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#mobileDock")).toBeVisible();
   await page.locator('[data-mobile-action="today"]').click();
