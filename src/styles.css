@@ -283,3 +283,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   .smart-detected{align-items:flex-start;flex-direction:column}
   .smart-tool-grid{grid-template-columns:1fr}
 }
+
+
+/* P7 PDF ↔ image bridge */
+.pdf-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pdf-control-grid label{margin:0}
+.pdf-convert-note{margin:0 0 14px;padding:11px 13px;border-radius:11px;background:#f7f8fa;color:#68717c;font-size:12px;line-height:1.5}
+@media(max-width:620px){
+  .pdf-control-grid{grid-template-columns:1fr}
+}
