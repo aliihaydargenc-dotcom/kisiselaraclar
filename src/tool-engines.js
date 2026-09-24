@@ -1,3 +1,5 @@
+import Papa from "papaparse";
+
 const encoder = new TextEncoder();
 
 function decodeUtf8Base64(input) {
@@ -13,6 +15,33 @@ function encodeUtf8Base64(input) {
     binary += String.fromCharCode(byte);
   });
   return btoa(binary);
+}
+
+export function parseCsv(input) {
+  if (!input.trim()) throw new Error("CSV içeriği boş.");
+
+  const result = Papa.parse(input, {
+    header: true,
+    skipEmptyLines: "greedy",
+    dynamicTyping: false,
+    transformHeader: (header) => header.trim()
+  });
+
+  if (result.errors?.length) {
+    const fatal = result.errors.find((error) => error.code !== "UndetectableDelimiter");
+    if (fatal) {
+      throw new Error(`CSV ayrıştırılamadı: ${fatal.message}`);
+    }
+  }
+
+  const columns = result.meta.fields || [];
+  return {
+    columns,
+    rows: result.data,
+    delimiter: result.meta.delimiter || ",",
+    truncated: result.data.length > 200,
+    previewRows: result.data.slice(0, 200)
+  };
 }
 
 export const engines = {
@@ -38,6 +67,15 @@ export const engines = {
 
   minifyJson(input) {
     return JSON.stringify(JSON.parse(input));
+  },
+
+  previewCsv(input) {
+    return parseCsv(input);
+  },
+
+  csvToJson(input) {
+    const parsed = parseCsv(input);
+    return JSON.stringify(parsed.rows, null, 2);
   },
 
   removeDuplicateLines(input) {
