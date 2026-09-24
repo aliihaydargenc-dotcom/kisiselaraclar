@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog yirmi dokuz local-first araç içerir", () => {
-  assert.equal(tools.length, 29);
+test("katalog otuz üç local-first araç içerir", () => {
+  assert.equal(tools.length, 33);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 

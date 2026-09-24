@@ -339,6 +339,10 @@ async function openTool(id, { record = true } = {}) {
     }
   }
 
+  if (tool.inputType === "design") {
+    await renderLazy("Tasarım aracı yükleniyor", () => import("./design-ui.js"), "renderDesignTool", "Tasarım aracı yüklenemedi.");
+    return;
+  }
   if (tool.inputType === "media") {
     await renderLazy("Medya aracı yükleniyor", () => import("./media-ui.js"), "renderMediaTool", "Medya aracı yüklenemedi.");
     return;

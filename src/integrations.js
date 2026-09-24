@@ -22,6 +22,18 @@ export const integrations = {
     networkRequired: false,
     dataLeavesDevice: false
   },
+  "design-native": {
+    id: "design-native",
+    name: "Native UI Design Engine",
+    source: "Web Platform + WCAG 2.2 ilkeleri",
+    sourceUrl: "https://www.w3.org/TR/WCAG22/",
+    version: "P13",
+    license: "Bağımlılık yok",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Renk armonisi, semantik site tokenları, kontrast ve buton CSS üretimi"
+  },
   tesseractjs: {
     id: "tesseractjs",
     name: "Tesseract.js",

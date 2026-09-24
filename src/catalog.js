@@ -4,6 +4,7 @@ export const categories = [
   { id: "kod", label: "QR & Barkod" },
   { id: "arsiv", label: "Arşiv" },
   { id: "gorsel", label: "Görsel" },
+  { id: "tasarim", label: "Tasarım" },
   { id: "pdf", label: "PDF" },
   { id: "metin", label: "Metin" },
   { id: "veri", label: "Veri" },
@@ -242,6 +243,50 @@ export const tools = [
     pdfMode: "from-images",
     privacy: "browser",
     integration: "pdflib"
+  },
+  {
+    id: "color-harmony",
+    category: "tasarim",
+    title: "Renk Armonisi",
+    description: "Bir başlangıç renginden analog, tamamlayıcı, üçlü, dörtlü veya monokrom palet üret.",
+    aliases: ["renk", "palet", "uyum", "armoni", "analog", "tamamlayıcı", "triadic", "monokrom", "color palette"],
+    inputType: "design",
+    designMode: "palette",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "site-color-system",
+    category: "tasarim",
+    title: "Site Renk Sistemi",
+    description: "Tek vurgu renginden açık/koyu site teması, semantik tokenlar ve kontrast kontrolleri üret.",
+    aliases: ["site", "tema", "renk", "token", "palette", "light", "dark", "kontrast", "css variables"],
+    inputType: "design",
+    designMode: "site-theme",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "web-button-designer",
+    category: "tasarim",
+    title: "Web Buton Tasarımcısı",
+    description: "Web için buton rengini, stilini, köşesini ve ölçülerini canlı önizleyip HTML/CSS üret.",
+    aliases: ["buton", "button", "web", "css", "html", "cta", "hover", "radius"],
+    inputType: "design",
+    designMode: "web-button",
+    privacy: "browser",
+    integration: "design-native"
+  },
+  {
+    id: "mobile-button-designer",
+    category: "tasarim",
+    title: "Mobil Buton Tasarımcısı",
+    description: "Mobil dokunma hedeflerini denetleyen buton tasarla; telefon önizlemesi ve HTML/CSS çıktısı al.",
+    aliases: ["mobil", "buton", "button", "touch", "48px", "wcag", "css", "cta"],
+    inputType: "design",
+    designMode: "mobile-button",
+    privacy: "browser",
+    integration: "design-native"
   },
   {
     id: "base64",

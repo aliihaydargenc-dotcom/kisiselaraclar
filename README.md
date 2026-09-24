@@ -77,3 +77,10 @@ Nötr SaaS görünümü bırakıldı. Ürün artık yüksek kontrastlı siyah/kr
 ## P12 mobil görsel entegrasyon
 
 P11'in renkli art-direction dili mobilde ayrı bir sistem olarak tamamlandı. Tam ekran mobil hero, kategori renkli filtre/araç satırları, üçlü hızlı dock, full-bleed smart router, swipe fayda kartları ve kategoriye göre renklenen tool çalışma ekranları eklendi. Teknik motor/lisans bilgisi mobilde disclosure içine alındı; tool aksiyonları sticky çalışma barına dönüştürüldü.
+
+
+## P13 tasarım araçları
+
+Tasarım kategorisine dört local-first araç eklendi: Renk Armonisi, Site Renk Sistemi, Web Buton Tasarımcısı ve Mobil Buton Tasarımcısı. Renk motoru, WCAG kontrast hesabı ve CSS üretimi sıfır dış bağımlılıkla tarayıcıda çalışır; tasarım arayüzü yalnız araç açıldığında lazy-load edilir.
+
+Araştırma ve lisans kararları `docs/DESIGN_TOOL_RESEARCH.md` içinde kayıtlıdır. MIT kaynaklardan etkileşim/tasarım fikirleri referans alındı; AGPL kaynak kodu projeye kopyalanmadı.
