@@ -3,44 +3,125 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f7f5" />
-  <meta name="description" content="PDF, görsel, OCR, QR, arşiv, veri ve geliştirici araçları. Türkçe ve local-first: dosyalar mümkün olduğunca cihazında işlenir." />
+  <meta name="theme-color" content="#f6f6f3" />
+  <meta name="description" content="PDF, görsel, OCR, QR, arşiv, veri ve medya araçları. Türkçe ve local-first: dosyalar mümkün olduğunca cihazında işlenir." />
   <meta name="robots" content="index,follow" />
-  <title>Kişisel Araçlar — Local-first araç kutusu</title>
+  <title>Kişisel Araçlar — Dosyanı yüklemeden işini hallet</title>
   <link rel="stylesheet" href="./src/styles.css" />
 </head>
 <body>
   <a class="skip-link" href="#mainContent">İçeriğe geç</a>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <span class="eyebrow">KİŞİSEL ARAÇLAR</span>
-        <h1>Dosyanla başla.</h1>
-        <p>Dönüştür, sıkıştır, birleştir, tara. Dosyaların mümkün olduğunca cihazında kalır.</p>
-        <span id="toolCountSummary" class="tool-count-summary"></span>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="./" aria-label="Kişisel Araçlar ana sayfa">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kişisel Araçlar</span>
+      </a>
+      <nav class="site-nav" aria-label="Ana navigasyon">
+        <a href="#mainContent">Araçlar</a>
+        <a href="#why">Nasıl çalışır?</a>
+      </nav>
+      <button class="nav-search" id="headerSearchButton" type="button">
+        <span>Ara</span>
+        <kbd>/</kbd>
+      </button>
+    </div>
+  </header>
+
+  <div class="site-page">
+    <section class="site-hero" id="home">
+      <div class="site-hero-copy">
+        <div class="hero-kicker">
+          <span aria-hidden="true"></span>
+          <strong id="toolCountSummary">29 araç</strong>
+          <em>•</em>
+          <span>Türkçe</span>
+          <em>•</em>
+          <span>Local-first</span>
+        </div>
+        <h1>Dosyanı yüklemeden<br />işini hallet.</h1>
+        <p>PDF birleştir, görsel sıkıştır, OCR yap, videodan ses çıkar. Günlük dosya işlerini tek yerde ve mümkün olduğunca cihazında tamamla.</p>
+        <div class="hero-actions">
+          <a class="hero-primary" href="#mainContent">Araçları keşfet <span aria-hidden="true">↓</span></a>
+          <span class="hero-trust"><i aria-hidden="true">●</i> Hesap gerekmez</span>
+        </div>
       </div>
-      <div class="privacy-badge" title="Dosya tabanlı araçlar tarayıcıda çalışır">
-        <span aria-hidden="true">●</span>
-        Cihazında işler
+
+      <div class="hero-showcase" aria-hidden="true">
+        <div class="showcase-window">
+          <div class="showcase-bar"><i></i><i></i><i></i></div>
+          <div class="showcase-drop">
+            <span class="showcase-plus">+</span>
+            <strong>Dosyanı buraya bırak</strong>
+            <small>Türünü cihazında algılarız</small>
+          </div>
+          <div class="showcase-row">
+            <div><span>PDF</span><strong>Birleştir</strong></div>
+            <div><span>IMG</span><strong>Sıkıştır</strong></div>
+            <div><span>MP3</span><strong>Dönüştür</strong></div>
+          </div>
+        </div>
       </div>
-    </header>
+    </section>
 
     <main class="workspace" id="mainContent">
-      <aside class="sidebar">
-        <label class="search-label" for="toolSearch">
-          <span>Araç ara</span>
-          <kbd>/</kbd>
-        </label>
-        <input id="toolSearch" class="search-input" type="search" placeholder="PDF, OCR, sıkıştır, QR..." autocomplete="off" />
-        <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
-      </aside>
-
       <section class="content">
+        <div class="tool-browser" id="toolBrowser">
+          <div class="tool-browser-head">
+            <div>
+              <span class="eyebrow">ARAÇLAR</span>
+              <h2>Ne yapmak istiyorsun?</h2>
+            </div>
+            <div class="browser-search-wrap">
+              <label class="search-label" for="toolSearch">
+                <span>Araç ara</span>
+                <kbd>/</kbd>
+              </label>
+              <input id="toolSearch" class="search-input" type="search" placeholder="PDF, OCR, sıkıştır, QR..." autocomplete="off" />
+            </div>
+          </div>
+          <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
+        </div>
+
         <div id="catalogView"></div>
         <div id="toolView" class="tool-view hidden" aria-live="polite"></div>
       </section>
     </main>
+
+    <section class="site-benefits" id="why" aria-labelledby="whyTitle">
+      <div class="benefits-heading">
+        <span class="eyebrow">NEDEN BÖYLE?</span>
+        <h2 id="whyTitle">Araç değil, iş akışı.</h2>
+        <p>Bir dosyayı işlemek için sekme sekme dolaşmak yerine ihtiyacın olan araçları aynı yerde topluyoruz.</p>
+      </div>
+      <div class="benefit-grid">
+        <article>
+          <span class="benefit-index">01</span>
+          <h3>Dosya önce sende</h3>
+          <p>Desteklenen işlemler tarayıcıda çalışır. Gereksiz sunucu yüklemesi yapılmaz.</p>
+        </article>
+        <article>
+          <span class="benefit-index">02</span>
+          <h3>Dosyayı tanır</h3>
+          <p>Dosyanı bıraktığında türüne göre uygun araçlar öne çıkar; katalogda kaybolmazsın.</p>
+        </article>
+        <article>
+          <span class="benefit-index">03</span>
+          <h3>Tek tasarım, tek akış</h3>
+          <p>PDF, görsel, OCR, arşiv ve medya araçları aynı sade kullanım modelini paylaşır.</p>
+        </article>
+      </div>
+    </section>
   </div>
+
+  <footer class="site-footer">
+    <div>
+      <a class="site-brand footer-brand" href="./"><span class="brand-mark" aria-hidden="true">K</span><span>Kişisel Araçlar</span></a>
+      <p>Günlük dosya işleri için Türkçe, local-first araçlar.</p>
+    </div>
+    <span>GitHub Pages üzerinde çalışır.</span>
+  </footer>
 
   <script type="module" src="./src/main.js"></script>
 </body>

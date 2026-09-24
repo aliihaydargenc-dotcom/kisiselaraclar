@@ -231,3 +231,19 @@ Tasarım yönü:
 - yalnız ana aksiyonlarda güçlü koyu kontrast
 - teknik bilgiyi geri planda tutma
 - araç işlevini ve dosya akışını ön plana çıkarma
+
+
+## Site shell redesign
+
+P9 sonrasında ürünün hâlâ dashboard hissi vermesi nedeniyle ana bilgi mimarisi yeniden kuruldu.
+
+- desktop sidebar tamamen kaldırıldı
+- sticky marka/navigasyon header eklendi
+- gerçek landing hero ve ürün showcase alanı eklendi
+- araç arama + kategori filtresi ana katalog üst çubuğuna taşındı
+- smart router iki kolonlu ana CTA yüzeyine dönüştürüldü
+- desktop araç kataloğu site düzeninde 3 sütunlu keşif gridine geçti
+- "Nasıl çalışır?" / güven anlatısı için editorial alt bölüm eklendi
+- footer eklendi
+- araç açıldığında landing, katalog toolbar ve tanıtım blokları gizlenerek odaklı tool-page modu kullanılır
+- mobilde aynı yapı tek sütunda, sabit marka header ile çalışır
