@@ -230,7 +230,7 @@ function renderCatalog() {
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
-  if (homeView) wireP17Workspace(homeView, safeStorage());
+  if (homeView) wireP17Workspace(homeView, safeStorage(), (id) => navigateTool(id));
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
