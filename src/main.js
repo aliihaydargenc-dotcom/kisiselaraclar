@@ -347,6 +347,10 @@ async function openTool(id, { record = true } = {}) {
     await renderLazy("Veri analizi yükleniyor", () => import("./data-lab-ui.js"), "renderDataLabTool", "Veri analizi yüklenemedi.");
     return;
   }
+  if (tool.inputType === "p15") {
+    await renderLazy("Laboratuvar aracı yükleniyor", () => import("./p15-ui.js"), "renderP15Tool", "Laboratuvar aracı yüklenemedi.");
+    return;
+  }
   if (tool.inputType === "media") {
     await renderLazy("Medya aracı yükleniyor", () => import("./media-ui.js"), "renderMediaTool", "Medya aracı yüklenemedi.");
     return;
