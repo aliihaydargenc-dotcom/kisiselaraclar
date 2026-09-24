@@ -284,3 +284,22 @@ P11, önceki nötr/minimal SaaS görünümünü tamamen terk eden art-direction 
 - tool ekranları da gri SaaS panelinden çıkarılıp krem/ink/blue workshop diline taşındı
 - scroll progress ve düşük yoğunluklu noise eklendi
 - mobil kimlik de aynı renk ve tipografi sistemiyle yeniden işlendi
+
+
+## P12 — Mobil görsel kimlik entegrasyonu
+
+P11 art-direction mobilde yalnız responsive override olarak bırakılmadı; mobil akış baştan P11 kimliğine göre birleştirildi.
+
+- tam ekran siyah mobil hero, acid büyük tipografi ve daha güçlü renk sahnesi
+- mobil hero kartlarının oran/konumları yeniden kuruldu
+- 3 aksiyonlu alt dock: Dosya seç / Araçlar / Ara
+- kategori rail'inde kategoriye özgü vurgu rengi
+- smart router mobilde tam genişlik elektrik mavi sahneye dönüştürüldü
+- hızlı kestirmeler karanlık yatay renk şeridi olarak bütünleştirildi
+- tool listeleri kategori rengini sol şerit ve dokunma state'i olarak kullanır
+- fayda blokları mobilde yatay swipe renk sahnelerine dönüştürüldü
+- açılan aracın kategorisi body data attribute üzerinden tüm tool sayfasının vurgu rengini belirler
+- motor/lisans/veri bilgileri mobilde sürekli görünmez; Teknik bilgi disclosure içine taşındı
+- araç aksiyonları mobilde sticky alt çalışma barı olarak erişilebilir kalır
+- dosya seçici, durum, preview, sonuç ve output yüzeyleri kategori rengiyle eşleşir
+- 390 px altı için ayrıca tipografi, kart ve action bar yoğunluğu ayarlandı
