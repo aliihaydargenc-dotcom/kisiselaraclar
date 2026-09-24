@@ -10,6 +10,30 @@ export const integrations = {
     networkRequired: false,
     dataLeavesDevice: false
   },
+  "image-native": {
+    id: "image-native",
+    name: "Web Platform Image API",
+    source: "Canvas, createImageBitmap ve Blob API",
+    sourceUrl: "https://developer.mozilla.org/",
+    version: "tarayıcı",
+    license: "Web standardı",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Görsel kırpma, yeniden boyutlandırma, sıkıştırma, format dönüşümü ve metadata temizleme"
+  },
+  exifreader: {
+    id: "exifreader",
+    name: "ExifReader",
+    source: "mattiasw/ExifReader",
+    sourceUrl: "https://github.com/mattiasw/ExifReader",
+    version: "4.45.2",
+    license: "MPL-2.0",
+    execution: "browser",
+    networkRequired: false,
+    dataLeavesDevice: false,
+    purpose: "Görsel EXIF/IPTC/XMP metadata alanlarını yerel olarak okuma"
+  },
   papaparse: {
     id: "papaparse",
     name: "PapaParse",

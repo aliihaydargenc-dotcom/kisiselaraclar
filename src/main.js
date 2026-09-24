@@ -103,6 +103,19 @@ async function openTool(id) {
 
   const integration = getIntegration(tool.integration);
 
+  if (tool.inputType === "image") {
+    catalogView.classList.add("hidden");
+    toolView.classList.remove("hidden");
+    toolView.innerHTML = '<div class="tool-panel"><p>Görsel aracı yükleniyor...</p></div>';
+    try {
+      const { renderImageTool } = await import("./image-ui.js");
+      renderImageTool({ tool, toolView, integration, onBack: renderCatalog });
+    } catch (error) {
+      toolView.innerHTML = `<div class="tool-panel"><p>Hata: ${escapeHtml(error instanceof Error ? error.message : "Görsel aracı yüklenemedi.")}</p></div>`;
+    }
+    return;
+  }
+
   if (tool.inputType === "pdf") {
     catalogView.classList.add("hidden");
     toolView.classList.remove("hidden");

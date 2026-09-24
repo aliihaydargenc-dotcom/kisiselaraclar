@@ -96,3 +96,40 @@ pre { margin: 0; padding: 16px; min-height: 110px; white-space: pre-wrap; overfl
 .pdf-status { margin-top: 18px; padding: 12px 14px; border-radius: 12px; background: #f7f8fa; color: #5f6875; font-size: 13px; }
 .pdf-canvas-wrap { overflow: auto; padding: 14px; border: 1px solid #e1e4e9; border-radius: 14px; background: #eef1f4; }
 .pdf-canvas-wrap canvas { display: block; max-width: 100%; height: auto !important; margin: 0 auto; background: white; box-shadow: 0 8px 24px rgba(17,24,39,.12); }
+
+
+/* P3 image tools */
+.image-tool-panel{overflow:hidden}
+.image-source-meta{margin:-4px 0 14px;padding:10px 12px;border-radius:11px;background:#f7f8fa;color:#626b77;font-size:12px}
+.image-simple-preview,.image-crop-host{margin:14px 0 18px;padding:14px;border:1px solid #e1e4e9;border-radius:16px;background:#eef1f4;text-align:center;overflow:auto}
+.image-simple-preview img{display:block;max-width:100%;max-height:520px;margin:0 auto;border-radius:10px;background:white;box-shadow:0 8px 24px rgba(17,24,39,.1)}
+.image-crop-stage{position:relative;display:inline-block;max-width:100%;line-height:0;user-select:none}
+.image-crop-stage>img{display:block;max-width:100%;max-height:62vh;width:auto;height:auto;background:white}
+.image-crop-box{position:absolute;border:2px solid #fff;box-shadow:0 0 0 1px rgba(17,24,39,.65),0 0 0 9999px rgba(17,24,39,.44);cursor:move;touch-action:none}
+.image-crop-grid{position:absolute;inset:0;background:linear-gradient(to right,transparent 33.1%,rgba(255,255,255,.5) 33.3%,rgba(255,255,255,.5) 33.7%,transparent 33.9%,transparent 66.1%,rgba(255,255,255,.5) 66.3%,rgba(255,255,255,.5) 66.7%,transparent 66.9%),linear-gradient(to bottom,transparent 33.1%,rgba(255,255,255,.5) 33.3%,rgba(255,255,255,.5) 33.7%,transparent 33.9%,transparent 66.1%,rgba(255,255,255,.5) 66.3%,rgba(255,255,255,.5) 66.7%,transparent 66.9%);pointer-events:none}
+.image-crop-handle{position:absolute;right:-10px;bottom:-10px;width:22px;height:22px;border:2px solid white;border-radius:50%;background:#171a20;cursor:nwse-resize;touch-action:none}
+.image-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.image-control-grid label{margin:0}
+.image-check{display:flex!important;align-items:center;gap:8px;font-weight:650!important;margin:10px 0!important}
+.image-check input{width:17px;height:17px}
+.image-range{width:100%;margin-top:13px;accent-color:#171a20}
+.image-output{display:grid;grid-template-columns:minmax(120px,220px) 1fr;gap:16px;align-items:center;margin-top:20px;padding:14px;border:1px solid #dce8df;background:#f3faf5;border-radius:15px}
+.image-output img{display:block;max-width:100%;max-height:180px;margin:auto;border-radius:9px;background:white;object-fit:contain}
+.image-output-info{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.image-output-info strong{font-size:13px;color:#3d5544}
+.image-status{margin-top:16px;padding:12px 14px;border-radius:12px;background:#f7f8fa;color:#5f6875;font-size:13px}
+.metadata-summary{margin:12px 0;padding:12px 14px;border-radius:12px;background:#f2f7ff;color:#40566f;font-size:13px}
+.metadata-summary[data-sensitive="true"]{background:#fff7e8;color:#7b5a1c}
+.metadata-table-wrap{max-height:390px;overflow:auto;border:1px solid #e1e4e9;border-radius:13px;margin-bottom:12px}
+.metadata-table{width:100%;border-collapse:collapse;background:white;font-size:12px}
+.metadata-table th,.metadata-table td{padding:9px 10px;border-bottom:1px solid #eceef1;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.metadata-table th{position:sticky;top:0;background:#f7f8fa;z-index:1}
+.metadata-table td:first-child{width:32%;font-weight:750;color:#4f5865}
+.metadata-note{padding:11px 13px;border-radius:11px;background:#fafbfc;color:#737b86;font-size:12px;line-height:1.5}
+@media(max-width:620px){
+  .image-control-grid{grid-template-columns:1fr}
+  .image-output{grid-template-columns:1fr}
+  .image-output-info{align-items:stretch;flex-direction:column}
+  .image-output-info .primary-button{width:100%}
+  .image-crop-host,.image-simple-preview{padding:8px}
+}

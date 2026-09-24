@@ -1,4 +1,5 @@
 export const categories = [
+  { id: "gorsel", label: "Görsel" },
   { id: "pdf", label: "PDF" },
   { id: "metin", label: "Metin" },
   { id: "veri", label: "Veri" },
@@ -7,6 +8,61 @@ export const categories = [
 ];
 
 export const tools = [
+  {
+    id: "image-crop",
+    category: "gorsel",
+    title: "Görsel Kırp",
+    description: "Fotoğrafı cihazında aç, kırpma alanını sürükleyip boyutlandır ve yeni görseli indir.",
+    aliases: ["görsel", "resim", "fotoğraf", "kırp", "crop", "kes", "oran"],
+    inputType: "image",
+    imageMode: "crop",
+    privacy: "browser",
+    integration: "image-native"
+  },
+  {
+    id: "image-resize",
+    category: "gorsel",
+    title: "Görsel Boyutlandır",
+    description: "Görselin piksel ölçülerini en-boy oranını koruyarak veya serbestçe değiştir.",
+    aliases: ["görsel", "resim", "fotoğraf", "boyut", "resize", "piksel", "genişlik", "yükseklik"],
+    inputType: "image",
+    imageMode: "resize",
+    privacy: "browser",
+    integration: "image-native"
+  },
+  {
+    id: "image-compress",
+    category: "gorsel",
+    title: "Görsel Sıkıştır",
+    description: "JPEG veya WebP kalite seviyesini ayarla; dosya boyutunu cihazında küçült.",
+    aliases: ["görsel", "resim", "fotoğraf", "sıkıştır", "compress", "küçült", "kalite", "webp", "jpeg"],
+    inputType: "image",
+    imageMode: "compress",
+    privacy: "browser",
+    integration: "image-native"
+  },
+  {
+    id: "image-convert",
+    category: "gorsel",
+    title: "Görsel Format Dönüştür",
+    description: "JPEG, PNG ve WebP arasında tarayıcı içinde dönüşüm yap.",
+    aliases: ["görsel", "resim", "fotoğraf", "dönüştür", "convert", "format", "webp", "jpeg", "png"],
+    inputType: "image",
+    imageMode: "convert",
+    privacy: "browser",
+    integration: "image-native"
+  },
+  {
+    id: "image-metadata",
+    category: "gorsel",
+    title: "EXIF / Metadata",
+    description: "Fotoğraf metadata alanlarını görüntüle; istersen metadata içermeyen yeni bir kopya üret.",
+    aliases: ["görsel", "fotoğraf", "exif", "metadata", "gps", "konum", "temizle", "sil"],
+    inputType: "image",
+    imageMode: "metadata",
+    privacy: "browser",
+    integration: "exifreader"
+  },
   {
     id: "pdf-preview",
     category: "pdf",

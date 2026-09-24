@@ -2,7 +2,7 @@
 
 Türkçe öncelikli, tarayıcıda mümkün olduğunca yerel çalışan (local-first) günlük araçlar platformu.
 
-Bu repo şu anda **araştırma ve mimari hazırlık aşamasındadır**. Vercel/deployment bilinçli olarak son aşamaya bırakılmıştır.
+Bu repo şu anda **yerel araç çekirdeğinin geliştirme aşamasındadır**. CSV, PDF ve görsel araçları tarayıcı içinde çalışır; Vercel/deployment bilinçli olarak son aşamaya bırakılmıştır.
 
 ## Ürün ilkeleri
 
@@ -16,6 +16,6 @@ Bu repo şu anda **araştırma ve mimari hazırlık aşamasındadır**. Vercel/d
 
 ## Şu anki çalışma
 
-İlk kaynak havuzu; genel amaçlı araç koleksiyonları, PDF, görsel, medya, veri/CSV/JSON, arşiv, OCR, QR/barkod ve geliştirici araçları kategorilerinde inceleniyor.
+Mevcut çekirdek; metin/veri/geliştirici araçları, CSV, PDF ve P3 görsel işleme araçlarını içeriyor. Arşiv, OCR, QR/barkod ve medya araçları sonraki paketlerde değerlendirilecek.
 
 Araştırma sonuçları `docs/` altında tutulacak. Henüz üçüncü taraf uygulama kodu körlemesine kopyalanmamıştır.

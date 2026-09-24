@@ -15,6 +15,8 @@ Türkçe-first, local-first, farklı açık kaynak motorların tek tasarım ve a
 - PapaParse tabanlı CSV aracı
 - GitHub Actions kalite kapısı
 - Ana bundle / lazy bundle boyut bütçesi
+- P3 browser-native görsel işleme çekirdeği
+- ExifReader tabanlı metadata okuma
 
 ## P2 — PDF local toolkit
 
@@ -35,19 +37,33 @@ Mimari:
 - İlk güvenlik/perf sınırı: dosya başına 25 MB.
 - pdf-lib fonksiyonları bellek içinde üretilen gerçek PDF fixture'larıyla test edilir.
 
+## P3 — Görsel araçları
+
+Motorlar:
+- Web Platform Canvas / createImageBitmap / Blob API — browser-native
+- ExifReader 4.45.2 — MPL-2.0
+
+Yeni araçlar:
+- sürüklenebilir alanla görsel kırpma ve oran presetleri
+- en-boy oranı korumalı yeniden boyutlandırma
+- kalite kontrollü WebP/JPEG sıkıştırma
+- JPEG / PNG / WebP format dönüşümü
+- EXIF/IPTC/XMP metadata görüntüleme
+- Canvas re-encode ile metadata temizlenmiş kopya üretme
+
+Mimari:
+- Görsel UI modülü yalnız ilgili araç açıldığında lazy-load edilir.
+- ExifReader yalnız metadata aracı kullanıldığında dinamik import edilir.
+- Görsel dosyaları sunucuya gönderilmez.
+- Dosya sınırı 30 MB, decode sonrası güvenlik sınırı 50 megapikseldir.
+- Cropper.js değerlendirildi; bu aşamada ek bağımlılık yerine browser-native crop overlay seçildi.
+- JPEG, PNG ve WebP düzenleme çekirdeği desteklenir.
+
 ## Sıradaki anlamlı paket
 
-**P3 — Görsel araçları**
+**P4 — QR / barkod + arşiv araçları araştırması**
 
-Öncelik:
-1. Cropper.js veya browser-native yaklaşım ile kırpma
-2. yeniden boyutlandırma
-3. kalite kontrollü sıkıştırma
-4. WebP/JPEG/PNG dönüşümü
-5. EXIF görüntüleme/silme için ExifReader değerlendirmesi
-6. yine lazy-load + entegrasyon manifesti
-
-P3 doğrulanmadan Vercel deployment başlatılmayacak.
+P4 öncesi P3 kalite kapıları ve gerçek tarayıcı testi korunacak.
 
 ## Backlog
 
