@@ -8,8 +8,8 @@ test("Türkçe arama diakritik ve ı karakterini normalize eder", () => {
   assert.equal(normalizeSearch("  SIKIŞTIR  "), "sikistir");
 });
 
-test("katalog on iki local-first araç içerir", () => {
-  assert.equal(tools.length, 12);
+test("katalog on yedi local-first araç içerir", () => {
+  assert.equal(tools.length, 17);
   assert.ok(tools.every((tool) => tool.privacy === "browser"));
 });
 
@@ -17,6 +17,8 @@ test("Türkçe alias ile araç bulunabilir", () => {
   assert.equal(searchTools("tekrarlanan satır")[0]?.id, "duplicates");
   assert.equal(searchTools("tarih", "zaman")[0]?.id, "unix-time");
   assert.equal(searchTools("csv json", "veri")[0]?.id, "csv-json");
+  assert.equal(searchTools("fotoğraf sıkıştır", "gorsel")[0]?.id, "image-compress");
+  assert.equal(searchTools("exif konum", "gorsel")[0]?.id, "image-metadata");
 });
 
 test("base64 unicode roundtrip çalışır", () => {
@@ -43,6 +45,13 @@ test("CSV JSON dönüşümü başlıkları anahtar olarak kullanır", () => {
     { ad: "Ali", puan: "10" },
     { ad: "Zehra", puan: "20" }
   ]);
+});
+
+test("ExifReader entegrasyonu local-first olarak kayıtlıdır", () => {
+  const integration = getIntegration("exifreader");
+  assert.equal(integration.version, "4.45.2");
+  assert.equal(integration.license, "MPL-2.0");
+  assert.equal(integration.dataLeavesDevice, false);
 });
 
 test("PapaParse entegrasyon manifesti veri dışarı çıkmaz olarak işaretlidir", () => {

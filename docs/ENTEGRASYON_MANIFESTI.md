@@ -39,6 +39,31 @@ Bu dosya ürün içinde kullanılan dış motorların kaynak, lisans ve veri dav
 - Entegrasyon: PDF UI modülü ile lazy-load.
 - Bakım notu: Kütüphane olgun fakat upstream kod hareketi PDF.js kadar hızlı değil; API yüzeyi dar tutulur ve fixture testleriyle korunur.
 
+## Görsel İşleme — Native Web Platform
+
+- Motorlar: Canvas 2D, createImageBitmap, Blob/Object URL
+- Harici dependency: **yok**
+- Kullanım: kırpma, yeniden boyutlandırma, JPEG/WebP kalite kontrollü encode, JPEG/PNG/WebP dönüşümü, metadata temizleme
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Dosya sınırı: **30 MB**
+- Decode güvenlik sınırı: **50 megapiksel**
+- Cropper.js 2.2.0 değerlendirildi; P3 için ek runtime bağımlılığı yerine küçük browser-native crop overlay tercih edildi.
+- Metadata temizleme: görsel yeni bir dosyaya re-encode edilir; eski EXIF/IPTC/XMP blokları çıktıya taşınmaz.
+
+## ExifReader
+
+- Kaynak: https://github.com/mattiasw/ExifReader
+- npm paketi: **exifreader 4.45.2**
+- Lisans: **MPL-2.0**
+- Kullanım: EXIF/IPTC/XMP ve yaygın görsel metadata alanlarını okuma
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Entegrasyon: yalnız EXIF / Metadata aracı seçildiğinde dinamik import.
+- Gizlilik: GPS/konum benzeri metadata bulunduğunda kullanıcı arayüzünde ayrıca işaretlenir.
+
 ## Native Web Platform
 
 Base64, URL, JSON, metin, SHA-256 ve tarih araçlarında tarayıcının yerleşik API'leri kullanılır.
