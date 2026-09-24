@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   FEATURED_TOOL_IDS,
+  classifyFile,
+  classifyFileSelection,
   loadRecentToolIds,
   normalizeRecentToolIds,
   parseToolHash,
@@ -45,4 +47,46 @@ test("hızlı erişim son kullanılanları öne alıp featured ile tamamlar", ()
   const result = quickToolIds(["unix-time", "pdf-merge"], valid, 4);
   assert.deepEqual(result.slice(0, 2), ["unix-time", "pdf-merge"]);
   assert.equal(result.length, 4);
+});
+
+
+test("akıllı yönlendirici PDF için belge araçlarını önerir", () => {
+  const valid = ["pdf-preview", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page", "zip-create"];
+  const result = classifyFileSelection([{ name: "rapor.pdf", type: "application/pdf", size: 1200 }], valid);
+  assert.equal(result.family, "pdf");
+  assert.deepEqual(result.toolIds, ["pdf-preview", "pdf-merge", "pdf-extract", "pdf-rotate", "ocr-pdf-page"]);
+});
+
+test("akıllı yönlendirici desteklenen görselleri tanır", () => {
+  assert.equal(classifyFile({ name: "foto.JPG", type: "" }), "image");
+  const result = classifyFileSelection([{ name: "foto.webp", type: "image/webp", size: 50 }], [
+    "image-compress", "image-resize", "ocr-image", "barcode-scan"
+  ]);
+  assert.deepEqual(result.toolIds, ["image-compress", "image-resize", "ocr-image", "barcode-scan"]);
+});
+
+test("birden fazla PDF birleştirme akışına öncelik verir", () => {
+  const files = [
+    { name: "a.pdf", type: "application/pdf" },
+    { name: "b.pdf", type: "application/pdf" }
+  ];
+  const result = classifyFileSelection(files, ["pdf-merge", "zip-create"]);
+  assert.equal(result.family, "pdf-multi");
+  assert.deepEqual(result.toolIds, ["pdf-merge", "zip-create"]);
+});
+
+test("karışık çoklu dosya güvenli paketleme akışına gider", () => {
+  const files = [
+    { name: "a.pdf", type: "application/pdf" },
+    { name: "b.csv", type: "text/csv" }
+  ];
+  const result = classifyFileSelection(files, ["zip-create", "pdf-merge", "csv-json"]);
+  assert.equal(result.family, "multi");
+  assert.deepEqual(result.toolIds, ["zip-create"]);
+});
+
+test("CSV, ZIP ve GZIP dosya aileleri doğru tanınır", () => {
+  assert.equal(classifyFile({ name: "data.csv" }), "csv");
+  assert.equal(classifyFile({ name: "arsiv.zip" }), "zip");
+  assert.equal(classifyFile({ name: "yedek.gz" }), "gzip");
 });
