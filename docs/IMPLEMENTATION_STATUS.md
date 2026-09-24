@@ -17,6 +17,8 @@ Türkçe-first, local-first, farklı açık kaynak motorların tek tasarım ve a
 - Ana bundle / lazy bundle boyut bütçesi
 - P3 browser-native görsel işleme çekirdeği
 - ExifReader tabanlı metadata okuma
+- P4 QR üretme / çok formatlı barkod okuma
+- P4 ZIP / GZIP arşiv araçları
 
 ## P2 — PDF local toolkit
 
@@ -59,11 +61,33 @@ Mimari:
 - Cropper.js değerlendirildi; bu aşamada ek bağımlılık yerine browser-native crop overlay seçildi.
 - JPEG, PNG ve WebP düzenleme çekirdeği desteklenir.
 
+## P4 — QR / barkod + arşiv
+
+Motorlar:
+- qrcode-generator 2.0.4 — MIT
+- @zxing/browser 0.2.1 + @zxing/library 0.23.0 — MIT / Apache-2.0
+- fflate 0.8.3 — MIT
+
+Yeni araçlar:
+- metin/URL → SVG QR kod üretme
+- JPEG/PNG/WebP görselden QR ve yaygın 1D/2D barkodları okuma
+- çoklu dosyadan ZIP oluşturma
+- ZIP merkez dizinini önce inceleyip güvenli biçimde çıkarma
+- tek dosya için GZIP sıkıştırma / açma
+
+Güvenlik ve mimari:
+- Kod ve arşiv UI modülleri ilgili araç açılana kadar lazy-load edilir.
+- QR/barkod görselleri ve arşiv dosyaları sunucuya gönderilmez.
+- ZIP oluşturma: dosya başına 100 MB, toplam 150 MB, en fazla 1000 giriş.
+- ZIP çıkarma: merkez dizininden açılmış boyut ön kontrolü; toplam 300 MB üstü reddedilir.
+- ZIP64 bu sürümde bilinçli olarak reddedilir.
+- Arşiv yollarında ../ ve mutlak yol parçaları temizlenir.
+- GZIP trailer ISIZE alanı açmadan önce kontrol edilir.
+- ZXing yalnız tarama aracı çalıştırıldığında yüklenir.
+
 ## Sıradaki anlamlı paket
 
-**P4 — QR / barkod + arşiv araçları araştırması**
-
-P4 öncesi P3 kalite kapıları ve gerçek tarayıcı testi korunacak.
+**P5 — OCR + belge/görsel metin araçları araştırması**
 
 ## Backlog
 

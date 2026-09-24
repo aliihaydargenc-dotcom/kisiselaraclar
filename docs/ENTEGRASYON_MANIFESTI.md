@@ -39,6 +39,42 @@ Bu dosya ürün içinde kullanılan dış motorların kaynak, lisans ve veri dav
 - Entegrasyon: PDF UI modülü ile lazy-load.
 - Bakım notu: Kütüphane olgun fakat upstream kod hareketi PDF.js kadar hızlı değil; API yüzeyi dar tutulur ve fixture testleriyle korunur.
 
+## qrcode-generator
+
+- Kaynak: https://github.com/kazuhikoarase/qrcode-generator
+- npm paketi: **qrcode-generator 2.0.4**
+- Lisans: **MIT**
+- Kullanım: metin ve URL'den SVG QR kod üretme
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Entegrasyon: QR oluşturma aracı açıldığında lazy-load edilen kod modülünde.
+
+## ZXing Browser / ZXing Library
+
+- Kaynaklar: https://github.com/zxing-js/browser ve https://github.com/zxing-js/library
+- npm paketleri: **@zxing/browser 0.2.1**, **@zxing/library 0.23.0**
+- Lisans: **MIT / Apache-2.0**
+- Kullanım: JPEG/PNG/WebP görselinden QR, EAN, UPC, Code 39/93/128, Data Matrix, Aztec, PDF417 ve diğer desteklenen formatları okuma
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Entegrasyon: yalnız barkod okuma işlemi başladığında dinamik import.
+- Not: @zxing/library bakım modundadır; entegrasyon yüzeyi dar tutulur ve sürüm sabitlenir.
+
+## fflate
+
+- Kaynak: https://github.com/101arrowz/fflate
+- npm paketi: **fflate 0.8.3**
+- Lisans: **MIT**
+- Kullanım: ZIP oluşturma/çıkarma ve GZIP sıkıştırma/açma
+- Çalışma yeri: **browser**
+- Ağ gereksinimi: **yok**
+- Kullanıcı verisi cihazdan çıkar mı?: **hayır**
+- Güvenlik sınırları: dosya başına 100 MB, ZIP oluştururken toplam 150 MB, açılmış çıktı toplamı 300 MB, en fazla 1000 giriş.
+- ZIP çıkarma öncesinde central directory okunur; ZIP64, aşırı çıkış boyutu ve bozuk merkez dizini reddedilir.
+- Arşiv dosya yolları download öncesinde traversal parçalarından temizlenir.
+
 ## Görsel İşleme — Native Web Platform
 
 - Motorlar: Canvas 2D, createImageBitmap, Blob/Object URL
