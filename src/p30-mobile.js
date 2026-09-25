@@ -23,7 +23,8 @@ function updateConnection() {
   document.querySelectorAll("[data-p30-connection]").forEach((node) => {
     node.classList.toggle("is-offline", !online);
     const label = node.querySelector("strong");
-    if (label) label.textContent = online ? "Çevrimiçi · senkron hazır" : "Çevrimdışı · cihazda çalışıyor";
+    const message = online ? "Çevrimiçi · senkron hazır" : "Çevrimdışı · cihazda çalışıyor";
+    if (label && label.textContent !== message) label.textContent = message;
   });
 }
 
