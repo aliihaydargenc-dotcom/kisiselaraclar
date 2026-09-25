@@ -265,7 +265,7 @@ function wireNote(root) {
     calendarCursor = new Date(`${selectedDate}T12:00:00`);
     update();
   });
-  globalThis.addEventListener?.("pagehide", flushPendingUpdate, { once: true });
+  globalThis.addEventListener?.("pagehide", flushPendingUpdate);
 
   list.addEventListener("click", (event) => {
     const button = event.target.closest("[data-note]");
@@ -373,7 +373,7 @@ function wireNote(root) {
       return;
     }
     const saved = putJson(P16_TASKS_KEY, normalizeTasks([...tasks, {
-      id: uid("task"), title: taskTitle, date: taskDate, time: "", done: false, createdAt: Date.now()
+      id: uid("task"), title: taskTitle, date: taskDate, time: "", done: false, createdAt: Date.now(), updatedAt: Date.now()
     }]));
     status(root, saved ? `Görev oluşturuldu · ${taskDate}` : "Görev kaydedilemedi.");
   };
@@ -423,6 +423,12 @@ function wireNote(root) {
 
   if (!notes.length) create();
   else loadActive();
+
+  return () => {
+    flushPendingUpdate();
+    clearTimeout(timer);
+    globalThis.removeEventListener?.("pagehide", flushPendingUpdate);
+  };
 }
 
 function meetingBody() {
@@ -516,6 +522,11 @@ function wireMeeting(root) {
     Object.values(nodes).forEach((node) => { if (node.type !== "date") node.value = ""; });
     const saved = putJson(P16_MEETING_KEY, data());
     status(root, saved ? "Toplantı taslağı temizlendi." : "Taslak temizlendi ancak cihazda kaydedilemedi.");
+  };
+
+  return () => {
+    clearTimeout(timer);
+    if (root.isConnected) saveDraft();
   };
 }
 

@@ -44,3 +44,21 @@ Build revisionlı precache manifest, offline fallback, 192/512 maskable icon set
 - 60 KB üstü senkron payload cloud state'i kısmi veriyle overwrite etmez.
 - Mobil ana ekran renderları MutationObserver gerektirmez.
 - Aynı speech result index'i metinde duplicate üretmez.
+
+
+## P34.2 — Sync v2 ve lifecycle
+
+Durum: uygulanıyor / release kapısından geçecek.
+
+- `workspace_notes` ve `workspace_tasks` Appwrite tabloları oluşturuldu.
+- Her kayıt `local_id`, `updated_at`, `deleted_at` ve `payload` taşır.
+- Row security açık; istemci yalnız kendi satırlarını okuyup güncelleyebilir.
+- İlk açılışta legacy `sync_state` önce hydrate edilir, ardından entity migration çalışır.
+- Migration başarıyla tamamlandıktan sonra not ve görev koleksiyonları legacy blobtan çıkarılır; `sync_state` toplantı taslağı ve diğer küçük local-first kayıtlar için fallback olarak kalır.
+- Silmeler tombstone ile korunur; başka cihazdaki eski kayıt silinen içeriği yeniden diriltmez.
+- Çakışma çözümü kayıt bazında `updatedAt` üzerinden last-write-wins kullanır.
+- 30 saniyelik arka plan kontrolü yalnız entity tablolarını çeker; legacy satırı gereksiz yere yeniden yazmaz.
+- Araç ekranları cleanup fonksiyonu döndürebilir. Ana router yeni araca/home'a geçerken eski cleanup'ı çalıştırır.
+- Not editörü debounce ve `pagehide` listener'ını unmount sırasında temizler.
+- Sesli yazma hem ana ekranda hem `voice-note` aracında aynı `SpeechTranscriptBuffer` motorunu kullanır.
+- Kayıt sürerken textarea düzenlenebilir. Kullanıcının elle düzelttiği mevcut recognition indexi final sonuç geldiğinde yeniden append edilmez.

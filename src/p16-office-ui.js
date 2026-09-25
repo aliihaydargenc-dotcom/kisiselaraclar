@@ -19,5 +19,6 @@ export async function renderP16OfficeTool({ tool, toolView, integration, onBack 
   if (!view) throw new Error("P16 ofis görünümü bulunamadı.");
   toolView.innerHTML = shell(tool, integration, view.body());
   toolView.querySelector("#backToCatalog").addEventListener("click", onBack);
-  view.wire(toolView);
+  const cleanup = view.wire(toolView);
+  return typeof cleanup === "function" ? cleanup : undefined;
 }

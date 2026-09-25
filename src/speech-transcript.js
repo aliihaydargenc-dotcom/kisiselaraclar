@@ -1,8 +1,12 @@
-export function polishTranscript(value) {
-  const text = String(value ?? "")
+function normalizeTranscriptBody(value) {
+  return String(value ?? "")
     .replace(/\s+/g, " ")
     .replace(/(\p{L}[\p{L}\p{N}'’-]*)(?:\s+\1){1,}/giu, "$1")
     .trim();
+}
+
+export function polishTranscript(value) {
+  const text = normalizeTranscriptBody(value);
   if (!text) return "";
   return text.replace(
     /(^|[.!?]\s+)([a-zçğıöşü])/g,
@@ -16,9 +20,9 @@ function normalizeWord(word) {
 
 export function mergeSpeechTranscript(baseValue, segmentValue) {
   const base = polishTranscript(baseValue);
-  const segment = polishTranscript(segmentValue);
+  const segment = normalizeTranscriptBody(segmentValue);
   if (!segment) return base;
-  if (!base) return segment;
+  if (!base) return polishTranscript(segment);
 
   const baseWords = base.split(" ");
   const segmentWords = segment.split(" ");

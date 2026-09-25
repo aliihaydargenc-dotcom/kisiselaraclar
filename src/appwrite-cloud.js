@@ -1,15 +1,25 @@
+import { entityRowId, mergeEntityCollection } from "./workspace-sync.js";
+
 const CONFIG = Object.freeze({
   endpoint: "https://fra.cloud.appwrite.io/v1",
   projectId: "6ab62a5b002fec4a3519",
   databaseId: "main",
   tableId: "sync_state",
+  entityTables: Object.freeze({
+    notes: "workspace_notes",
+    tasks: "workspace_tasks"
+  }),
   username: "alihaydar",
   loginEmail: "alihaydar@kisiselaraclar.local"
 });
 
 const PREFIX = "kisiselaraclar:";
 const META_KEY = "kisiselaraclar-cloud:last-sync";
+const ENTITY_META_KEY = "__ka_cloud_v2_meta";
 const CHANGE_EVENT = "kisiselaraclar:local-change";
+const REMOTE_CHANGE_EVENT = "kisiselaraclar:remote-change";
+const NOTES_KEY = "kisiselaraclar:p16:notes";
+const TASKS_KEY = "kisiselaraclar:p16:tasks";
 export const CLOUD_SYNC_LIMIT = 60000;
 export const SYNC_STATE_EVENT = "kisiselaraclar:sync-state";
 const LIMIT = CLOUD_SYNC_LIMIT;
@@ -17,6 +27,8 @@ let user = null;
 let lastHash = "";
 let timer = 0;
 let inFlight = null;
+let entitySyncReady = false;
+let periodicTimer = 0;
 
 function sdk() {
   const kit = globalThis.Appwrite;
@@ -67,6 +79,48 @@ export function collectSyncEntries(target = storage()) {
     }
   } catch {}
   return entries;
+}
+
+function collectLegacyEntries(target = storage()) {
+  const entries = collectSyncEntries(target);
+  if (entitySyncReady) {
+    delete entries[NOTES_KEY];
+    delete entries[TASKS_KEY];
+  }
+  return entries;
+}
+
+function readEntityMeta() {
+  try {
+    const value = JSON.parse(storage()?.getItem(ENTITY_META_KEY) || "null");
+    return value?.schema === 2 ? value : { schema: 2, notes: {}, tasks: {} };
+  } catch {
+    return { schema: 2, notes: {}, tasks: {} };
+  }
+}
+
+function writeEntityMeta(meta) {
+  try { storage()?.setItem(ENTITY_META_KEY, JSON.stringify({ schema: 2, notes: meta.notes || {}, tasks: meta.tasks || {} })); } catch {}
+}
+
+function parseLocalArray(key) {
+  try {
+    const value = JSON.parse(storage()?.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function applyEntityItems(key, items) {
+  const target = storage();
+  if (!target) return false;
+  const next = JSON.stringify(items || []);
+  const previous = target.getItem(key) || "[]";
+  if (previous === next) return false;
+  target.setItem(key, next);
+  try { globalThis.dispatchEvent?.(new CustomEvent(REMOTE_CHANGE_EVENT, { detail: { key } })); } catch {}
+  return true;
 }
 
 export function syncEntriesHash(entries) {
@@ -130,7 +184,10 @@ function applyEntries(entries, replace = false) {
       const key = target.key(i);
       if (key?.startsWith(PREFIX)) existing.push(key);
     }
-    existing.forEach((key) => { if (!(key in entries)) target.removeItem(key); });
+    existing.forEach((key) => {
+      if ((key === NOTES_KEY || key === TASKS_KEY) && !(key in entries)) return;
+      if (!(key in entries)) target.removeItem(key);
+    });
   }
   Object.entries(entries || {}).forEach(([key, value]) => {
     if (key.startsWith(PREFIX) && typeof value === "string") target.setItem(key, value);
@@ -154,6 +211,68 @@ function setSyncState(state, text, title = "") {
   } catch {}
 }
 
+async function listEntityRows(tableId) {
+  const { db, kit } = sdk();
+  const queries = kit.Query?.limit ? [kit.Query.limit(5000)] : [];
+  const result = await db.listRows({
+    databaseId: CONFIG.databaseId,
+    tableId,
+    queries
+  });
+  return Array.isArray(result?.rows) ? result.rows : [];
+}
+
+async function upsertEntityRow(userId, tableId, write) {
+  const { db, kit } = sdk();
+  const role = kit.Role.user(userId);
+  await db.upsertRow({
+    databaseId: CONFIG.databaseId,
+    tableId,
+    rowId: write.rowId || entityRowId(write.localId),
+    data: {
+      local_id: write.localId,
+      updated_at: Number(write.updatedAt),
+      deleted_at: Number(write.deletedAt || 0),
+      payload: String(write.payload || "{}")
+    },
+    permissions: [
+      kit.Permission.read(role),
+      kit.Permission.update(role),
+      kit.Permission.delete(role)
+    ]
+  });
+}
+
+async function syncEntityCollection(userId, type, key, baseline) {
+  const tableId = CONFIG.entityTables[type];
+  const cloudRows = await listEntityRows(tableId);
+  const localItems = parseLocalArray(key);
+  const result = mergeEntityCollection({
+    type,
+    localItems,
+    cloudRows,
+    baseline,
+    now: Date.now()
+  });
+  for (const write of result.writes) {
+    await upsertEntityRow(userId, tableId, write);
+  }
+  applyEntityItems(key, result.items);
+  return result.baseline;
+}
+
+async function syncEntityCollections(userId) {
+  const meta = readEntityMeta();
+  const next = {
+    schema: 2,
+    notes: await syncEntityCollection(userId, "notes", NOTES_KEY, meta.notes),
+    tasks: await syncEntityCollection(userId, "tasks", TASKS_KEY, meta.tasks)
+  };
+  writeEntityMeta(next);
+  entitySyncReady = true;
+  return next;
+}
+
 async function readCloudState(id) {
   const { db } = sdk();
   try {
@@ -164,7 +283,7 @@ async function readCloudState(id) {
   }
 }
 
-async function writeCloudState(id, entries) {
+async function writeCloudState(id, entries = collectLegacyEntries()) {
   const { db, kit } = sdk();
   const payload = createSyncPayload(entries);
   const role = kit.Role.user(id);
@@ -185,7 +304,7 @@ async function writeCloudState(id, entries) {
   setSyncState("synced", "Bulut ✓", "Senkron tamamlandı");
 }
 
-async function hydrate(current) {
+async function hydrateLegacy(current) {
   const local = collectSyncEntries();
   const localHash = syncEntriesHash(local);
   const meta = readMeta();
@@ -226,6 +345,17 @@ async function hydrate(current) {
   } else {
     lastHash = localHash;
     writeMeta(cloud.updatedAt, localHash);
+  }
+}
+
+async function hydrate(current) {
+  await hydrateLegacy(current);
+  try {
+    await syncEntityCollections(current.$id);
+    await writeCloudState(current.$id, collectLegacyEntries());
+  } catch (error) {
+    entitySyncReady = false;
+    console.warn("Entity senkronu devreye alınamadı; güvenli legacy mod sürüyor:", error);
   }
 }
 
@@ -379,7 +509,10 @@ export async function syncNow(force = false) {
   const localHash = syncEntriesHash(entries);
   if (!force && localHash === lastHash) return;
   setSyncState("syncing", "Bulut ↑", "Senkronize ediliyor");
-  inFlight = writeCloudState(user.$id, entries)
+  inFlight = (async () => {
+    if (entitySyncReady) await syncEntityCollections(user.$id);
+    await writeCloudState(user.$id, entitySyncReady ? collectLegacyEntries() : entries);
+  })()
     .catch((error) => {
       const limit = error?.code === "SYNC_PAYLOAD_LIMIT";
       setSyncState(
@@ -393,12 +526,29 @@ export async function syncNow(force = false) {
   return inFlight;
 }
 
+async function syncEntitiesOnly() {
+  if (!user || inFlight || !entitySyncReady) return;
+  inFlight = syncEntityCollections(user.$id)
+    .then(() => {
+      lastHash = syncEntriesHash(collectSyncEntries());
+    })
+    .catch((error) => {
+      console.warn("Arka plan entity senkronu:", error);
+    })
+    .finally(() => { inFlight = null; });
+  return inFlight;
+}
+
 function watcher() {
   globalThis.addEventListener(CHANGE_EVENT, () => schedule());
   globalThis.addEventListener("storage", (event) => { if (event.key?.startsWith(PREFIX)) schedule(200); });
   setInterval(() => {
     if (syncEntriesHash(collectSyncEntries()) !== lastHash) schedule(200);
   }, 8000);
+  clearInterval(periodicTimer);
+  periodicTimer = setInterval(() => {
+    if (entitySyncReady && navigator.onLine !== false) void syncEntitiesOnly();
+  }, 30000);
 }
 
 export async function ensurePrivateSession() {

@@ -1,4 +1,5 @@
 import { P16_NOTES_KEY, P16_TASKS_KEY, monthMatrix, normalizeNotes, normalizeTasks, tasksToIcs, uid } from "./p16-office-tools.js";
+import { SpeechTranscriptBuffer, mergeSpeechTranscript, polishTranscript } from "./speech-transcript.js";
 import { downloadText, e, getJson, localDateValue, putJson, status, statusLine } from "./p16-office-ui-shared.js";
 
 function tasksBody() {
@@ -82,7 +83,8 @@ function wireTasks(root) {
       date: root.querySelector("#p16TaskDate").value,
       time: root.querySelector("#p16TaskTime").value,
       done: false,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     });
     title.value = "";
     const saved = render();
@@ -99,7 +101,10 @@ function wireTasks(root) {
     const done = event.target.closest("[data-task-done]");
     if (done) {
       const task = tasks.find((item) => item.id === done.dataset.taskDone);
-      if (task) task.done = done.checked;
+      if (task) {
+        task.done = done.checked;
+        task.updatedAt = Date.now();
+      }
       const saved = render();
       if (!saved) status(root, "Değişiklik cihazda kaydedilemedi.");
       return;
@@ -132,6 +137,7 @@ function wireTasks(root) {
     } catch (error) { status(root, error.message); }
   };
   render();
+  return () => {};
 }
 
 function voiceBody() {
@@ -160,18 +166,20 @@ function voiceBody() {
 function wireVoice(root) {
   const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
   const text = root.querySelector("#p16VoiceText");
-  const start = root.querySelector("#p16VoiceStart");
-  const stop = root.querySelector("#p16VoiceStop");
+  const startButton = root.querySelector("#p16VoiceStart");
+  const stopButton = root.querySelector("#p16VoiceStop");
   const mic = root.querySelector("#p16Mic");
   const savedRoot = root.querySelector("#p16VoiceSaved");
   let notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
   let activeId = notes.find((note) => note.kind === "voice")?.id || "";
-  let finalText = "";
-
-  const polish = (value) => String(value || "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/(^|[.!?]\s+)([a-zçğıöşü])/g, (_, prefix, letter) => `${prefix}${letter.toLocaleUpperCase("tr-TR")}`);
+  let recognition = null;
+  let listening = false;
+  let manualEdit = false;
+  let committed = "";
+  let highestResultIndex = -1;
+  let manualIgnoreThrough = -1;
+  const finalizedIndexes = new Set();
+  const buffer = new SpeechTranscriptBuffer();
 
   const voiceNotes = () => notes.filter((note) => note.kind === "voice");
 
@@ -189,15 +197,30 @@ function wireVoice(root) {
   const loadActive = () => {
     const note = notes.find((item) => item.id === activeId);
     text.value = note?.text || "";
-    finalText = text.value ? `${text.value.trim()} ` : "";
+    committed = text.value;
     renderSaved();
   };
 
   const persist = () => putJson(P16_NOTES_KEY, notes);
 
+  const setListeningUi = (active) => {
+    listening = active;
+    startButton.disabled = active;
+    stopButton.disabled = !active;
+    mic.classList.toggle("active", active);
+    text.readOnly = false;
+  };
+
+  const finish = () => {
+    if (!manualEdit) text.value = mergeSpeechTranscript(committed, buffer.text);
+    text.value = polishTranscript(text.value);
+    setListeningUi(false);
+    status(root, "Dinleme durdu. Metni kontrol edip kaydedebilirsin.");
+  };
+
   savedRoot.addEventListener("click", (event) => {
     const button = event.target.closest("[data-voice-note-id]");
-    if (!button) return;
+    if (!button || listening) return;
     activeId = button.dataset.voiceNoteId;
     loadActive();
     text.focus();
@@ -205,51 +228,76 @@ function wireVoice(root) {
   });
 
   root.querySelector("#p16VoiceNew").onclick = () => {
+    if (listening) return;
     activeId = "";
     text.value = "";
-    finalText = "";
+    committed = "";
+    buffer.reset();
+    finalizedIndexes.clear();
     renderSaved();
     text.focus();
     status(root, "Yeni sesli not hazır.");
   };
 
+  text.addEventListener("input", () => {
+    if (!listening) return;
+    manualEdit = true;
+    manualIgnoreThrough = Math.max(manualIgnoreThrough, highestResultIndex);
+  });
+
   if (!SpeechRecognition) {
-    start.disabled = true;
+    startButton.disabled = true;
     status(root, "Bu tarayıcı konuşma tanıma API'sini desteklemiyor. Kayıtlı sesli notlarını yine düzenleyebilirsin.");
   } else {
-    const rec = new SpeechRecognition();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.onstart = () => {
-      start.disabled = true;
-      stop.disabled = false;
-      mic.classList.add("active");
-      status(root, "Dinleniyor… Metni bitince düzenleyebilirsin.");
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      setListeningUi(true);
+      status(root, "Dinleniyor… Yazı alanını kayıt sürerken de düzeltebilirsin.");
     };
-    rec.onend = () => {
-      start.disabled = false;
-      stop.disabled = true;
-      mic.classList.remove("active");
-      text.value = polish(text.value);
-      status(root, "Dinleme durdu. Metni kontrol edip kaydedebilirsin.");
-    };
-    rec.onerror = (event) => status(root, `Ses tanıma hatası: ${event.error || "bilinmeyen hata"}.`);
-    rec.onresult = (event) => {
-      let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        const part = event.results[i][0]?.transcript || "";
-        if (event.results[i].isFinal) finalText += `${part.trim()} `;
-        else interim += part;
+
+    recognition.onresult = (event) => {
+      highestResultIndex = Math.max(highestResultIndex, Number(event.results?.length || 0) - 1);
+      const newlyFinal = [];
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        if (!result?.isFinal || finalizedIndexes.has(index)) continue;
+        finalizedIndexes.add(index);
+        if (manualEdit && index <= manualIgnoreThrough) continue;
+        const part = String(result?.[0]?.transcript || "").trim();
+        if (part) newlyFinal.push(part);
       }
-      text.value = polish(`${finalText}${interim}`);
+
+      const sessionText = buffer.updateFromEvent(event);
+      if (manualEdit) {
+        for (const part of newlyFinal) text.value = mergeSpeechTranscript(text.value, part);
+      } else {
+        text.value = mergeSpeechTranscript(committed, sessionText);
+      }
     };
-    start.onclick = () => {
-      finalText = text.value ? `${text.value.trim()} ` : "";
-      rec.lang = root.querySelector("#p16VoiceLang").value;
-      try { rec.start(); }
+
+    recognition.onend = finish;
+    recognition.onerror = (event) => {
+      setListeningUi(false);
+      status(root, `Ses tanıma hatası: ${event.error || "bilinmeyen hata"}.`);
+    };
+
+    startButton.onclick = () => {
+      committed = polishTranscript(text.value);
+      buffer.reset();
+      finalizedIndexes.clear();
+      manualEdit = false;
+      highestResultIndex = -1;
+      manualIgnoreThrough = -1;
+      recognition.lang = root.querySelector("#p16VoiceLang").value;
+      try { recognition.start(); }
       catch { status(root, "Dinleme başlatılamadı. Mikrofon iznini ve tarayıcı desteğini kontrol et."); }
     };
-    stop.onclick = () => rec.stop();
+    stopButton.onclick = () => {
+      try { recognition.stop(); } catch { finish(); }
+    };
   }
 
   root.querySelector("#p16VoiceCopy").onclick = async () => {
@@ -258,27 +306,42 @@ function wireVoice(root) {
   };
 
   root.querySelector("#p16VoiceSave").onclick = () => {
-    const value = polish(text.value);
+    const value = polishTranscript(text.value);
     if (!value) { status(root, "Kaydedilecek metin yok."); return; }
     const now = Date.now();
     if (activeId) {
       const index = notes.findIndex((note) => note.id === activeId);
       if (index >= 0) notes[index] = { ...notes[index], kind: "voice", text: value, updatedAt: now };
     } else {
-      const item = { id: uid("note"), title: `Sesli Not · ${new Date(now).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`, text: value, kind: "voice", pinned: false, completed: false, noteDate: localDateValue(), updatedAt: now };
+      const item = {
+        id: uid("note"),
+        title: `Sesli Not · ${new Date(now).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`,
+        text: value,
+        kind: "voice",
+        pinned: false,
+        completed: false,
+        noteDate: localDateValue(),
+        updatedAt: now
+      };
       notes.unshift(item);
       activeId = item.id;
     }
     notes = normalizeNotes(notes);
     const saved = persist();
     text.value = value;
+    committed = value;
     renderSaved();
     status(root, saved ? "Sesli not kaydedildi." : "Sesli not cihazda kaydedilemedi.");
   };
 
   loadActive();
-}
 
+  return () => {
+    try { recognition?.abort?.(); } catch {}
+    recognition = null;
+    listening = false;
+  };
+}
 
 const VIEWS = {
   "tasks-calendar": { body: tasksBody, wire: wireTasks },

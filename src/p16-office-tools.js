@@ -130,7 +130,8 @@ export function normalizeTasks(value) {
       date: /^\d{4}-\d{2}-\d{2}$/.test(String(item.date || "")) ? String(item.date) : "",
       time: /^\d{2}:\d{2}$/.test(String(item.time || "")) ? String(item.time) : "",
       done: Boolean(item.done),
-      createdAt: Number(item.createdAt) || Date.now()
+      createdAt: Number(item.createdAt) || Date.now(),
+      updatedAt: Number(item.updatedAt) || Number(item.createdAt) || Date.now()
     }))
     .sort((a, b) => {
       if (a.done !== b.done) return Number(a.done) - Number(b.done);
@@ -268,7 +269,8 @@ export function actionLinesToTasks(value, date = "") {
       date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : "",
       time: "",
       done: false,
-      createdAt: Date.now() + index
+      createdAt: Date.now() + index,
+      updatedAt: Date.now() + index
     }));
 }
 

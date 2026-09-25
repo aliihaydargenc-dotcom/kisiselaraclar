@@ -31,3 +31,15 @@ test("P34 restart birleşimi tekrar eden kuyruk kelimelerini tekilleştirir", ()
   assert.equal(mergeSpeechTranscript("Bugün raporu göndereceğim", "raporu göndereceğim ve çıkacağım"), "Bugün raporu göndereceğim ve çıkacağım");
   assert.equal(polishTranscript("merhaba merhaba dünya"), "Merhaba dünya");
 });
+
+
+test("P34.2 yeni recognition segmenti cümle ortasında gereksiz büyük harf üretmez", () => {
+  assert.equal(
+    mergeSpeechTranscript("Yarın raporu kontrol et ve düzelt", "sonra mail at"),
+    "Yarın raporu kontrol et ve düzelt sonra mail at"
+  );
+  assert.equal(
+    mergeSpeechTranscript("İlk cümle.", "sonra yeni cümle"),
+    "İlk cümle. Sonra yeni cümle"
+  );
+});

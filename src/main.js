@@ -47,6 +47,23 @@ let currentToolId = "";
 let smartFiles = [];
 let catalogExpanded = false;
 let desktopToolNavApi = null;
+let activeToolCleanup = null;
+let activeHomeCleanup = null;
+
+function runCleanup(cleanup) {
+  if (typeof cleanup !== "function") return;
+  try { cleanup(); } catch (error) { console.warn("UI cleanup:", error); }
+}
+
+function disposeTool() {
+  runCleanup(activeToolCleanup);
+  activeToolCleanup = null;
+}
+
+function disposeHome() {
+  runCleanup(activeHomeCleanup);
+  activeHomeCleanup = null;
+}
 
 function safeStorage() {
   try {
@@ -203,6 +220,8 @@ function toolCard(tool, compact = false) {
 }
 
 function renderCatalog() {
+  disposeTool();
+  disposeHome();
   currentToolId = "";
   document.body.classList.remove("tool-open");
   delete document.body.dataset.toolCategory;
@@ -262,7 +281,14 @@ function renderCatalog() {
     requestAnimationFrame(() => catalogView.querySelector(".catalog-head")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   });
   const activeHomeRoot = useDesktopHome ? desktopHomeView : homeView;
-  if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }), () => renderCatalog());
+  if (activeHomeRoot) {
+    activeHomeCleanup = wireP17Workspace(
+      activeHomeRoot,
+      safeStorage(),
+      (id, action) => navigateTool(id, { action }),
+      () => renderCatalog()
+    ) || null;
+  }
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
   announceUiRendered();
 }
@@ -395,6 +421,8 @@ function navigateCatalog({ replace = false } = {}) {
 }
 
 async function openTool(id, { record = true, action = "" } = {}) {
+  disposeHome();
+  disposeTool();
   delete toolView.dataset.officeMode;
   const tool = tools.find((item) => item.id === id);
   if (!tool) {
@@ -416,7 +444,8 @@ async function openTool(id, { record = true, action = "" } = {}) {
     toolView.innerHTML = loadingPanel(label);
     try {
       const module = await importer();
-      await module[rendererName]({ tool, toolView, integration, onBack });
+      const cleanup = await module[rendererName]({ tool, toolView, integration, onBack });
+      activeToolCleanup = typeof cleanup === "function" ? cleanup : null;
       finalizeToolOpen(action);
     } catch (error) {
       toolView.innerHTML = `
@@ -656,6 +685,13 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("popstate", syncRoute);
+window.addEventListener("pagehide", () => {
+  disposeTool();
+  disposeHome();
+}, { once: true });
+window.addEventListener("kisiselaraclar:remote-change", () => {
+  if (!currentToolId) renderCatalog();
+});
 desktopHomeQuery?.addEventListener?.("change", () => {
   if (!currentToolId) renderCatalog();
 });

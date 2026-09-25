@@ -427,3 +427,115 @@ test("P27 voice-note aracı kayıtlı sesli notu boş açmaz", async ({ page }) 
   await expect(page.locator("#p16VoiceText")).toHaveValue("Kayıtlı sesli not metni");
   await expect(page.locator("[data-voice-note-id=voice-existing]")).toBeVisible();
 });
+
+
+test("@mobile P34.2 ana ekran sesli yazma kayıt sürerken elle düzeltilebilir", async ({ page }) => {
+  await page.addInitScript(() => {
+    class FakeSpeechRecognition {
+      constructor() {
+        window.__fakeSpeechRecognition = this;
+        this.continuous = true;
+        this.interimResults = true;
+        this.lang = "";
+      }
+      start() { this.onstart?.(); }
+      stop() { this.onend?.(); }
+      abort() { window.__voiceAbortCount = (window.__voiceAbortCount || 0) + 1; }
+    }
+    window.SpeechRecognition = FakeSpeechRecognition;
+  });
+
+  await page.goto("./");
+  await page.locator("#p25VoiceRecorder").click();
+  await page.evaluate(() => {
+    const rec = window.__fakeSpeechRecognition;
+    rec.onresult?.({
+      resultIndex: 0,
+      results: [Object.assign([{ transcript: "yarın raporu kontrol et" }], { isFinal: false })]
+    });
+  });
+
+  const transcript = page.locator("#p25VoiceTranscript");
+  await expect(transcript).not.toHaveAttribute("readonly");
+  await transcript.fill("Yarın raporu kontrol et ve düzelt");
+
+  await page.evaluate(() => {
+    const rec = window.__fakeSpeechRecognition;
+    rec.onresult?.({
+      resultIndex: 0,
+      results: [Object.assign([{ transcript: "yarın raporu kontrol et ve gönder" }], { isFinal: true })]
+    });
+  });
+  await expect(transcript).toHaveValue("Yarın raporu kontrol et ve düzelt");
+
+  await page.evaluate(() => {
+    const rec = window.__fakeSpeechRecognition;
+    rec.onresult?.({
+      resultIndex: 1,
+      results: [
+        Object.assign([{ transcript: "yarın raporu kontrol et ve gönder" }], { isFinal: true }),
+        Object.assign([{ transcript: "sonra mail at" }], { isFinal: true })
+      ]
+    });
+  });
+  await expect(transcript).toHaveValue("Yarın raporu kontrol et ve düzelt sonra mail at");
+
+  await page.locator("#p25VoiceRecorder").click();
+  await expect(transcript).not.toHaveAttribute("readonly");
+});
+
+test("@mobile P34.2 ana ekrandan çıkınca aktif konuşma tanıma cleanup edilir", async ({ page }) => {
+  await page.addInitScript(() => {
+    class FakeSpeechRecognition {
+      constructor() {
+        window.__fakeSpeechRecognition = this;
+        this.continuous = true;
+        this.interimResults = true;
+      }
+      start() { this.onstart?.(); }
+      stop() { this.onend?.(); }
+      abort() { window.__voiceAbortCount = (window.__voiceAbortCount || 0) + 1; }
+    }
+    window.SpeechRecognition = FakeSpeechRecognition;
+    window.__voiceAbortCount = 0;
+  });
+
+  await page.goto("./");
+  await page.locator("#p25VoiceRecorder").click();
+  await page.locator('[data-mobile-action="task"]').click();
+  await expect(page.locator("#p16TaskTitle")).toBeVisible();
+  expect(await page.evaluate(() => window.__voiceAbortCount)).toBeGreaterThanOrEqual(1);
+});
+
+test("@mobile P34.2 voice-note aynı recognition indexini tekrar append etmez", async ({ page }) => {
+  await page.addInitScript(() => {
+    class FakeSpeechRecognition {
+      constructor() {
+        window.__fakeToolRecognition = this;
+        this.continuous = true;
+        this.interimResults = true;
+        this.lang = "";
+      }
+      start() { this.onstart?.(); }
+      stop() { this.onend?.(); }
+      abort() {}
+    }
+    window.SpeechRecognition = FakeSpeechRecognition;
+  });
+
+  await page.goto("./#tool=voice-note");
+  await page.locator("#p16VoiceStart").click();
+  await page.evaluate(() => {
+    const rec = window.__fakeToolRecognition;
+    rec.onresult?.({
+      resultIndex: 0,
+      results: [Object.assign([{ transcript: "merhaba" }], { isFinal: false })]
+    });
+    rec.onresult?.({
+      resultIndex: 0,
+      results: [Object.assign([{ transcript: "merhaba dünya" }], { isFinal: true })]
+    });
+  });
+
+  await expect(page.locator("#p16VoiceText")).toHaveValue("Merhaba dünya");
+});

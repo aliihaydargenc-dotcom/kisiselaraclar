@@ -106,7 +106,9 @@ function normalizedTasks(storage) {
         title: String(item.title || "").trim(),
         date: /^\d{4}-\d{2}-\d{2}$/.test(String(item.date || "")) ? String(item.date) : "",
         time: /^\d{2}:\d{2}$/.test(String(item.time || "")) ? String(item.time) : "",
-        done: Boolean(item.done)
+        done: Boolean(item.done),
+        createdAt: Number(item.createdAt) || Number(item.updatedAt) || Date.now(),
+        updatedAt: Number(item.updatedAt) || Number(item.createdAt) || Date.now()
       }))
     : [];
 }
@@ -586,7 +588,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
       const id = String(checkbox.dataset.p25TaskToggle || "");
       const tasks = storageJson(storage, TASKS_KEY, []);
       if (!Array.isArray(tasks)) return;
-      const next = tasks.map((task) => String(task?.id || "") === id ? { ...task, done: checkbox.checked } : task);
+      const next = tasks.map((task) => String(task?.id || "") === id ? { ...task, done: checkbox.checked, updatedAt: Date.now() } : task);
       if (writeJson(storage, TASKS_KEY, next) && typeof onRefresh === "function") onRefresh();
     });
   });
@@ -607,6 +609,10 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   let recognitionError = "";
   let committedTranscript = "";
   const speechBuffer = new SpeechTranscriptBuffer();
+  const finalizedSpeechIndexes = new Set();
+  let manualVoiceEdit = false;
+  let highestSpeechIndex = -1;
+  let manualIgnoreThrough = -1;
   let editingVoiceNoteId = "";
 
   const setVoiceUi = (listening, message = "") => {
@@ -615,7 +621,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
     if (voiceTitle) voiceTitle.textContent = listening ? "Dinleniyor · durdurmak için dokun" : "Sesli not başlat";
     if (voiceStatus) voiceStatus.textContent = message || (listening ? "Konuşman aşağıdaki alana yazılıyor" : "Dokun ve konuş");
     if (voiceEditor) voiceEditor.hidden = !listening && !transcriptNode?.value && !recognitionError && !editingVoiceNoteId;
-    if (transcriptNode) transcriptNode.readOnly = listening;
+    if (transcriptNode) transcriptNode.readOnly = false;
     if (saveButton) saveButton.disabled = listening;
   };
 
@@ -638,6 +644,10 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
     editingVoiceNoteId = "";
     committedTranscript = "";
     speechBuffer.reset();
+    finalizedSpeechIndexes.clear();
+    manualVoiceEdit = false;
+    highestSpeechIndex = -1;
+    manualIgnoreThrough = -1;
     recognitionError = "";
     if (transcriptNode) {
       transcriptNode.value = "";
@@ -690,8 +700,10 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   };
 
   const finishVoiceSession = () => {
-    const current = mergeSpeechTranscript(committedTranscript, speechBuffer.text);
-    if (transcriptNode && current) transcriptNode.value = current;
+    const current = manualVoiceEdit
+      ? polishTranscript(transcriptNode?.value || "")
+      : mergeSpeechTranscript(committedTranscript, speechBuffer.text);
+    if (transcriptNode) transcriptNode.value = current;
     if (recognitionError) {
       if (editorMeta) editorMeta.textContent = recognitionError;
       setVoiceUi(false, "Mikrofon kullanılamadı");
@@ -721,9 +733,24 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
     };
 
     recognition.onresult = (event) => {
+      highestSpeechIndex = Math.max(highestSpeechIndex, Number(event.results?.length || 0) - 1);
+      const newlyFinal = [];
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        if (!result?.isFinal || finalizedSpeechIndexes.has(index)) continue;
+        finalizedSpeechIndexes.add(index);
+        if (manualVoiceEdit && index <= manualIgnoreThrough) continue;
+        const part = String(result?.[0]?.transcript || "").trim();
+        if (part) newlyFinal.push(part);
+      }
+
       const sessionText = speechBuffer.updateFromEvent(event);
-      const current = mergeSpeechTranscript(committedTranscript, sessionText);
-      if (transcriptNode) transcriptNode.value = current;
+      if (!transcriptNode) return;
+      if (manualVoiceEdit) {
+        for (const part of newlyFinal) transcriptNode.value = mergeSpeechTranscript(transcriptNode.value, part);
+      } else {
+        transcriptNode.value = mergeSpeechTranscript(committedTranscript, sessionText);
+      }
     };
 
     recognition.onerror = (event) => {
@@ -741,8 +768,14 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
 
     recognition.onend = () => {
       if (listeningRequested && !manualStop && !recognitionError && root.isConnected) {
-        committedTranscript = mergeSpeechTranscript(committedTranscript, speechBuffer.text);
+        committedTranscript = manualVoiceEdit
+          ? polishTranscript(transcriptNode?.value || "")
+          : mergeSpeechTranscript(committedTranscript, speechBuffer.text);
         speechBuffer.reset();
+        finalizedSpeechIndexes.clear();
+        manualVoiceEdit = false;
+        highestSpeechIndex = -1;
+        manualIgnoreThrough = -1;
         setTimeout(() => {
           if (!listeningRequested || !root.isConnected) return;
           try { recognition.start(); } catch {}
@@ -773,6 +806,10 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
       recognitionError = "";
       committedTranscript = "";
       speechBuffer.reset();
+      finalizedSpeechIndexes.clear();
+      manualVoiceEdit = false;
+      highestSpeechIndex = -1;
+      manualIgnoreThrough = -1;
       editingVoiceNoteId = "";
       if (transcriptNode) transcriptNode.value = "";
       if (voiceEditor) voiceEditor.hidden = false;
@@ -786,6 +823,12 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         finishVoiceSession();
       }
     });
+  });
+
+  transcriptNode?.addEventListener("input", () => {
+    if (!listeningRequested) return;
+    manualVoiceEdit = true;
+    manualIgnoreThrough = Math.max(manualIgnoreThrough, highestSpeechIndex);
   });
 
   root.querySelectorAll("[data-p25-voice-note-id]").forEach((button) => {
@@ -858,4 +901,13 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
       input.value = "";
     }
   });
+
+  const cleanup = () => {
+    listeningRequested = false;
+    manualStop = true;
+    try { recognition?.abort?.(); } catch {}
+    recognition = null;
+  };
+  root._p17Cleanup = cleanup;
+  return cleanup;
 }
