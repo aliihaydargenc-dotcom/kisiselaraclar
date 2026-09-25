@@ -4,7 +4,6 @@
   :root{--m-edge:14px}
   html,body{max-width:100%;overflow-x:clip}
   body:not(.tool-open){background:#f6f7fb;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
-  body:not(.tool-open) :is(.site-page,.ticker,.site-benefits,.site-footer){display:none!important}
   .desktop-home-view{display:none!important}
   .site-header{z-index:500}
   body:not(.tool-open) .site-header{
@@ -166,4 +165,58 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 @media(max-width:430px){
   .p25-card-head{align-items:flex-start}.p25-card-title,.p25-card-title>div{min-width:0}
+}
+
+
+/* P35 — mobile application shell */
+@media(max-width:1179px){
+  body:not(.tool-open) .site-header{
+    background:rgba(255,255,255,.97);
+    border-bottom:1px solid var(--app-line);
+    box-shadow:0 1px 0 rgba(31,34,48,.02);
+  }
+  .site-header-inner{width:calc(100% - 28px)}
+  .site-brand{color:var(--app-text)}
+  .brand-mark{background:var(--app-accent);color:#fff}
+  .workspace{padding:14px var(--m-edge) calc(88px + env(safe-area-inset-bottom))}
+  .mobile-dock{
+    min-height:60px;
+    padding:5px;
+    border-color:var(--app-line);
+    border-radius:20px;
+    box-shadow:0 14px 34px rgba(31,34,48,.16);
+  }
+  .mobile-dock button{min-height:50px}
+  .mobile-dock-icon{display:grid;place-items:center;width:21px;height:21px;margin:0 auto 2px}
+  .mobile-dock-icon svg{
+    width:20px;
+    height:20px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .mobile-dock strong{font-size:11px;letter-spacing:-.01em}
+  .mobile-tools-drawer{
+    width:min(90vw,390px);
+    background:var(--app-bg);
+    box-shadow:22px 0 48px rgba(31,34,48,.18);
+  }
+  .tool-browser{
+    border-color:var(--app-line);
+    border-radius:18px;
+    box-shadow:var(--app-shadow-sm);
+  }
+  .tool-browser-head h2{font-size:24px}
+  .p30-mobile-status{
+    border:1px solid var(--app-line);
+    background:var(--app-surface);
+  }
+  body.tool-open .workspace{padding:12px 12px 24px}
+}
+@media(max-width:620px){
+  .workspace{padding-left:12px;padding-right:12px}
+  .mobile-dock{left:8px;right:8px;bottom:calc(7px + env(safe-area-inset-bottom))}
+  .mobile-tools-drawer{width:min(92vw,380px)}
 }

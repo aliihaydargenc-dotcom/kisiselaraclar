@@ -33,7 +33,7 @@ function tasksBody() {
         <div id="p16CalendarGrid" class="p16-calendar-grid"></div>
       </aside>
     </div>
-    ${statusLine("Görevler ve takvim bu cihazda tutulur.")}`;
+    ${statusLine("")}`;
 }
 
 function wireTasks(root) {
@@ -160,7 +160,7 @@ function voiceBody() {
         <button class="secondary-button" id="p16VoiceCopy">Kopyala</button>
       </div>
     </div>
-    ${statusLine("Sesli notların bu cihazda ve bulut senkronunda Notlar ile birlikte tutulur.")}`;
+    ${statusLine("")}`;
 }
 
 function wireVoice(root) {

@@ -363,6 +363,9 @@ function voiceRows(summary) {
     </button>`).join("");
 }
 
+const NOTE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v4h4"/><path d="M9 12h6M9 16h5"/></svg>';
+const TASK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>';
+const MEETING_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14v11H9l-4 3z"/><path d="M8 9h8M8 12h5"/></svg>';
 const VOICE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11.5v.5a6 6 0 0 0 12 0v-.5M12 18v3m-3 0h6"/></svg>';
 
 function planRows(summary) {
@@ -392,9 +395,8 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
     <section class="p17-workspace p25-workspace" id="p17Workspace" aria-labelledby="p17Title">
       <div class="p25-head">
         <div>
-          <span class="eyebrow">KİŞİSEL ALAN</span>
           <h2 id="p17Title">Bugün</h2>
-          <p>Notlarını, sesli notlarını ve günün planını tek yerden yönet.</p>
+          <p>Notların, sesli kayıtların ve görevlerin tek çalışma alanında.</p>
         </div>
         <span class="p17-date">${escapeHtml(dateLabel(now))}</span>
       </div>
@@ -408,10 +410,10 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <article class="p25-card p25-notes">
           <div class="p25-card-head">
             <div class="p25-card-title">
-              <span class="p25-icon p25-icon-note" aria-hidden="true">✎</span>
-              <div><h3>Not Defteri</h3><p>Hızlıca yaz, son notlarına dön.</p></div>
+              <span class="p25-icon p25-icon-note" aria-hidden="true">${NOTE_ICON}</span>
+              <div><h3>Notlar</h3><p>Yaz, düzenle ve kaldığın yerden devam et.</p></div>
             </div>
-            <button type="button" class="p25-link" data-tool="quick-note">Tüm notlar <span>→</span></button>
+            <button type="button" class="p25-link" data-tool="quick-note">Notları aç <span>→</span></button>
           </div>
 
           <form class="p25-quick-note" id="p25QuickNoteForm">
@@ -427,9 +429,9 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
           <div class="p25-card-head">
             <div class="p25-card-title">
               <span class="p25-icon p25-icon-voice" aria-hidden="true">${VOICE_ICON}</span>
-              <div><h3>Sesli Notlar</h3><p>Konuş, metne dönüştür ve kaydet.</p></div>
+              <div><h3>Sesli not</h3><p>Konuş; metni kaydetmeden önce düzenle.</p></div>
             </div>
-            <button type="button" class="p25-link" data-tool="quick-note" data-tool-action="voice-notes">Tüm sesli notlar <span>→</span></button>
+            <button type="button" class="p25-link" data-tool="quick-note" data-tool-action="voice-notes">Sesli notları aç <span>→</span></button>
           </div>
 
           <button type="button" class="p25-voice-recorder" id="p25VoiceRecorder" data-p25-voice-trigger aria-pressed="false">
@@ -458,10 +460,10 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <article class="p25-card p25-plan">
           <div class="p25-card-head">
             <div class="p25-card-title">
-              <span class="p25-icon p25-icon-plan" aria-hidden="true">✓</span>
-              <div><h3>Günlük Plan</h3><p>Bugünün işlerini tamamla.</p></div>
+              <span class="p25-icon p25-icon-plan" aria-hidden="true">${TASK_ICON}</span>
+              <div><h3>Görevler</h3><p>Bugünün işlerini tek yerde takip et.</p></div>
             </div>
-            <button type="button" class="p25-link" data-tool="tasks-calendar">Planlayıcı <span>→</span></button>
+            <button type="button" class="p25-link" data-tool="tasks-calendar">Tüm görevler <span>→</span></button>
           </div>
 
           <div class="p25-progress">
@@ -479,12 +481,12 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
 
       <div class="p25-footer-grid">
         <section class="p25-quick-actions">
-          <div class="p25-footer-head"><div><span class="eyebrow">HIZLI ERİŞİM</span><h3>Sık kullandıkların</h3></div></div>
+          <div class="p25-footer-head"><div><h3>Hızlı işlemler</h3></div></div>
           <div class="p25-action-row">
-            <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note"><i>✎</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span></button>
+            <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note"><i>${NOTE_ICON}</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span></button>
             <button type="button" class="p17-action" data-p25-voice-trigger><i>${VOICE_ICON}</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
-            <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task"><i>✓</i><span><strong>Görev ekle</strong><small>Gününe ekle</small></span></button>
-            <button type="button" class="p17-action" data-tool="meeting-notes"><i>M</i><span><strong>Toplantı</strong><small>Not oluştur</small></span></button>
+            <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task"><i>${TASK_ICON}</i><span><strong>Görev ekle</strong><small>Gününe ekle</small></span></button>
+            <button type="button" class="p17-action" data-tool="meeting-notes"><i>${MEETING_ICON}</i><span><strong>Toplantı</strong><small>Not oluştur</small></span></button>
           </div>
         </section>
 

@@ -25,14 +25,12 @@ const toolView = document.querySelector("#toolView");
 const homeView = document.querySelector("#homeView");
 const desktopHomeView = document.querySelector("#desktopHomeView");
 const desktopHomeQuery = globalThis.matchMedia?.("(min-width: 1180px)");
-const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
 const mobileDock = document.querySelector("#mobileDock");
 const mobileToolsDrawer = document.querySelector("#mobileToolsDrawer");
 const mobileToolsBackdrop = document.querySelector("#mobileToolsBackdrop");
 const mobileToolsClose = document.querySelector("#mobileToolsClose");
-const heroSearchButton = document.querySelector("#heroSearchButton");
 const scrollProgress = document.querySelector("#scrollProgress");
 const desktopToolNavRoot = document.querySelector("#desktopToolNav");
 const validToolIds = tools.map((tool) => tool.id);
@@ -289,7 +287,6 @@ function renderCatalog() {
       () => renderCatalog()
     ) || null;
   }
-  if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
   announceUiRendered();
 }
 
@@ -744,18 +741,18 @@ mobileDock?.addEventListener("click", (event) => {
   }
 
   if (button.dataset.mobileAction === "note") {
-    navigateTool("quick-note", { action: "new-note" });
+    navigateTool("quick-note");
     return;
   }
 
   if (button.dataset.mobileAction === "task") {
-    navigateTool("tasks-calendar", { action: "new-task" });
+    navigateTool("tasks-calendar");
     return;
   }
 
   if (button.dataset.mobileAction === "search") {
     if (currentToolId) prepareCatalogForMobileAction();
-    openMobileTools({ focus: false });
+    openMobileTools({ focus: true });
   }
 });
 
@@ -768,10 +765,6 @@ document.addEventListener("keydown", (event) => {
 mountMobilePlatform({ mobileDock });
 
 
-heroSearchButton?.addEventListener("click", () => {
-  toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
-  requestAnimationFrame(() => searchInput.focus({ preventScroll: true }));
-});
 
 function updateScrollProgress() {
   if (!scrollProgress) return;
