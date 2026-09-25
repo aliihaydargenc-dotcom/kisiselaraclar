@@ -139,6 +139,7 @@ test("P19.2 Hızlı Not tek tasarım dili ve sıkı editör akışı kullanır",
   await page.goto("./");
   await page.locator('.p17-action[data-tool="quick-note"]').first().click();
   await expect(page.locator('.tool-view[data-office-mode="quick-note"]')).toBeVisible();
+  await expect(page.locator('#p16NoteText')).toBeVisible();
 
   const metrics = await page.evaluate(() => {
     const root = document.querySelector('.tool-view[data-office-mode="quick-note"]');
