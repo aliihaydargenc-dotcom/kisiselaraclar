@@ -15,6 +15,7 @@ export function putJson(key, value) {
   if (!target?.setItem) return false;
   try {
     target.setItem(key, JSON.stringify(value));
+    try { globalThis.dispatchEvent?.(new CustomEvent("kisiselaraclar:local-change", { detail: { key } })); } catch {}
     return true;
   } catch {
     return false;
