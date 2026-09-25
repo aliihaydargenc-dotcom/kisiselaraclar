@@ -212,6 +212,10 @@ test("@mobile P25 kişisel ana ekran ve alt navigasyon çalışır", async ({ pa
   await expect(page.locator('[data-mobile-action="search"]')).toContainText("Ara");
   await expect(page.locator('[data-mobile-action="today"]')).toHaveAttribute("aria-current", "page");
   await expect(page.locator("[data-p30-connection]")).toContainText(/Çevrimiçi|Çevrimdışı/);
+  const dockRows = await page.locator("#mobileDock button").evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)));
+  expect(new Set(dockRows).size).toBe(1);
+  const dockFont = await page.locator("#mobileDock strong").first().evaluate((item) => parseFloat(getComputedStyle(item).fontSize));
+  expect(dockFont).toBeGreaterThanOrEqual(10);
 
   await page.locator('[data-mobile-action="note"]').click();
   await expect(page.locator("#p16NoteText")).toBeVisible();

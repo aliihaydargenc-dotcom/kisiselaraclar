@@ -6,10 +6,17 @@ import {
   P17_BACKUP_VALUE_LIMIT,
   buildWorkspaceSummary,
   createWorkspaceBackup,
+  mergeSpeechTranscript,
   restoreWorkspaceBackup,
   searchWorkspaceContent,
   validateWorkspaceBackup
 } from "../src/p17-workspace.js";
+
+test("P31 sesli yazma ardışık tekrarları tekilleştirir", () => {
+  assert.equal(mergeSpeechTranscript("Bugün raporu", "raporu göndereceğim"), "Bugün raporu göndereceğim");
+  assert.equal(mergeSpeechTranscript("Merhaba", "merhaba merhaba"), "Merhaba");
+  assert.equal(mergeSpeechTranscript("", "bugün bugün toplantı var"), "Bugün toplantı var");
+});
 
 function storageOf(initial = {}) {
   const map = new Map(Object.entries(initial));
