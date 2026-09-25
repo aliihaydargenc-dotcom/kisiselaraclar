@@ -143,3 +143,24 @@
 @media(min-width:1500px){
   .desktop-tool-nav{left:22px}
 }
+
+/* The personal workspace is the first screen on phones as well. */
+@media(max-width:620px){
+  body:not(.tool-open){background:#f6f7fb;color:#20223a}
+  body:not(.tool-open) :is(.site-hero,.ticker,.site-benefits,.site-footer){display:none}
+  body:not(.tool-open) .tools-stage{background:#f6f7fb;color:#20223a}
+  body:not(.tool-open) .workspace{padding-top:calc(76px + env(safe-area-inset-top));padding-bottom:100px}
+  .site-header,body.tool-open .site-header{background:#20213b;border-bottom:1px solid #393a5b}
+  .site-brand,body.tool-open .site-brand,body.tool-open .site-brand>span:last-child{color:#fff}
+  .brand-mark,body.tool-open .brand-mark{background:#5755f1;color:#fff}
+  .site-nav{display:none}
+  .header-controls{gap:0}
+  .nav-search,body.tool-open .nav-search{border:1px solid #555779;background:#353758;color:#fff}
+  .nav-search kbd::before{color:#fff}
+  .mobile-dock{border:1px solid #d9dbea;border-radius:16px;background:#fff;box-shadow:0 12px 36px #20213b24}
+  .mobile-dock button{border-radius:11px}
+  .mobile-dock button:first-child{background:#4644dc;color:#fff}
+  .mobile-dock button:last-child{background:#efefff;color:#3534a6}
+  body.tool-open .workspace{padding-top:calc(84px + env(safe-area-inset-top))}
+  body.tool-open .tool-title-row h2{font:850 clamp(30px,9vw,40px)/1 var(--sans)}
+}
