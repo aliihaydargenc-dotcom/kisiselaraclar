@@ -140,15 +140,7 @@
   body.tool-open pre{white-space:pre-wrap;overflow-wrap:anywhere}
   body.tool-open .mobile-dock{display:none!important}
 
-  .p16-note-layout,.p16-task-layout,.p16-meeting-head,.p16-meeting-grid,.p16-sign-grid,.p16-compare-grid{grid-template-columns:minmax(0,1fr)!important}
-  .p16-note-editor{order:1;padding:10px}.p16-note-sidebar{order:2;padding:10px}
-  .p16-note-editor-meta,.p16-note-bottom{flex-wrap:wrap}.p16-note-meta-left,.p16-note-date-label{width:100%}
-  .p16-note-formatbar,.p16-tabs{max-width:100%;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap}
-  .p16-note-formatbar button,.p16-tabs button{flex:0 0 auto}
-  body.tool-open .p16-note-title{min-height:48px!important;max-height:92px!important;font-size:18px!important}
-  body.tool-open .p16-note-text{min-height:46vh!important;max-height:none!important}
-  .p16-note-bottom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.p16-note-list{max-height:290px}
-  .p16-note-item-top strong{white-space:normal;overflow-wrap:anywhere}
+  .p16-task-layout,.p16-meeting-head,.p16-meeting-grid,.p16-sign-grid,.p16-compare-grid{grid-template-columns:minmax(0,1fr)!important}
   .p16-task-create{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:10px}
   .p16-task-create #p16TaskTitle,.p16-task-create button{grid-column:1/-1}
   .p16-task-layout>section,.p16-calendar{width:100%;min-width:0;padding:10px}
@@ -173,8 +165,5 @@
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 @media(max-width:430px){
-  .p16-note-editor .action-row{display:grid!important;grid-template-columns:1fr 1fr!important}
-  .p16-note-editor .action-row>button{width:100%;min-height:44px}
-  .p16-note-editor #p16NoteToTask{grid-column:1/-1}
   .p25-card-head{align-items:flex-start}.p25-card-title,.p25-card-title>div{min-width:0}
 }

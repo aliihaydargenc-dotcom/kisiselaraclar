@@ -37,11 +37,14 @@ function noteBody() {
         <div class="p16-note-editor-meta">
           <div class="p16-note-meta-left">
             <button type="button" class="p16-note-state" id="p16CompleteNote" aria-pressed="false">○ Aktif</button>
-            <label class="p16-note-date-label">Not tarihi
+            <label class="p16-note-date-label"><span>Not tarihi</span>
               <input id="p16NoteDate" type="date" class="text-control p16-note-date" />
             </label>
           </div>
-          <span id="p16NoteUpdated">Henüz düzenlenmedi</span>
+          <div class="p16-note-save-meta">
+            <span id="p16Status" class="p16-note-feedback" role="status" aria-live="polite"></span>
+            <span id="p16NoteUpdated">Henüz düzenlenmedi</span>
+          </div>
         </div>
         <textarea id="p16NoteTitle" class="text-control p16-note-title" rows="1" placeholder="Başlık zorunlu değil" aria-label="Not başlığı"></textarea>
         <div class="p16-note-formatbar" role="toolbar" aria-label="Not biçimlendirme">
@@ -59,18 +62,17 @@ function noteBody() {
         </div>
         <textarea id="p16NoteText" class="text-control p16-note-text" spellcheck="true" placeholder="Yazmaya başla…"></textarea>
         <div class="p16-note-bottom">
-          <div class="p16-note-hint">Değişiklikler otomatik kaydedilir.</div>
+          <div class="p16-note-hint"><span aria-hidden="true">✓</span> Otomatik kaydedilir</div>
           <div class="action-row">
-            <button class="primary-button" id="p16NoteToTask">Göreve dönüştür</button>
-            <button class="secondary-button" id="p16PinNote">Sabitle</button>
-            <button class="secondary-button" id="p16CopyNote">Kopyala</button>
-            <button class="secondary-button" id="p16DownloadNote">.md indir</button>
+            <button class="primary-button" id="p16NoteToTask">✓ Göreve çevir</button>
+            <button class="secondary-button" id="p16PinNote">☆ Sabitle</button>
+            <button class="secondary-button" id="p16CopyNote">⧉ Kopyala</button>
+            <button class="secondary-button" id="p16DownloadNote">↓ İndir</button>
             <button class="text-button p16-danger" id="p16DeleteNote">Sil</button>
           </div>
         </div>
       </section>
-    </div>
-    ${statusLine("Notlar bu tarayıcıda otomatik kaydedilir.")}`;
+    </div>`;
 }
 
 function wireNote(root) {
@@ -102,7 +104,7 @@ function wireNote(root) {
 
   const persist = () => {
     const saved = putJson(P16_NOTES_KEY, notes);
-    status(root, saved ? "Kaydedildi · yalnız bu cihazda." : "Kaydedilemedi · tarayıcı depolamasını kontrol et.");
+    status(root, saved ? "Kaydedildi" : "Kaydedilemedi");
     return saved;
   };
   const current = () => notes.find((item) => item.id === active);
@@ -198,7 +200,7 @@ function wireNote(root) {
     title.value = item?.title || "";
     text.value = item?.text || "";
     noteDate.value = item?.noteDate || localDateValue();
-    root.querySelector("#p16PinNote").textContent = item?.pinned ? "Sabitlemeyi kaldır" : "Sabitle";
+    root.querySelector("#p16PinNote").textContent = item?.pinned ? "★ Sabit" : "☆ Sabitle";
     complete.textContent = item?.completed ? "✓ Tamamlandı" : "○ Aktif";
     complete.classList.toggle("completed", Boolean(item?.completed));
     complete.setAttribute("aria-pressed", item?.completed ? "true" : "false");

@@ -107,6 +107,7 @@ test("P19 Hızlı Not masaüstünde geniş editör ve Markdown checklist kullan�
 
   const body = page.locator("#p16NoteText");
   await body.fill("Raporu gönder\nSunumu güncelle");
+  await expect(page.locator('.tool-view[data-office-mode="quick-note"]')).not.toContainText("yalnız bu cihazda");
   await body.evaluate((el) => el.setSelectionRange(0, el.value.length));
   await page.locator('[data-note-format="check"]').click();
   await expect(body).toHaveValue("- [ ] Raporu gönder\n- [ ] Sunumu güncelle");
