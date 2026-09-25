@@ -6,6 +6,8 @@ import {
   buildMeetingMarkdown,
   diffText,
   monthMatrix,
+  normalizeNotes,
+  noteMonthMatrix,
   normalizeTasks,
   taskToIcs,
   tasksToIcs
@@ -119,4 +121,21 @@ test("not biçimlendirici madde ve numaralı liste uygular", () => {
   assert.equal(bullet.value, "- Bir\n- İki");
   const numbered = applyNoteMarkdownFormat("Bir\nİki", 0, 7, "number");
   assert.equal(numbered.value, "1. Bir\n2. İki");
+});
+
+
+test("eski notlar takvim tarihi olmadan da gün anahtarı kazanır", () => {
+  const updatedAt = new Date(2026, 8, 25, 9, 30).getTime();
+  const notes = normalizeNotes([{ id: "n1", title: "Test", updatedAt }]);
+  assert.equal(notes[0].noteDate, "2026-09-25");
+});
+
+test("not takvimi gün başına not sayısını üretir", () => {
+  const matrix = noteMonthMatrix(2026, 8, [
+    { id: "1", title: "A", noteDate: "2026-09-25", updatedAt: 1 },
+    { id: "2", title: "B", noteDate: "2026-09-25", updatedAt: 2 },
+    { id: "3", title: "C", noteDate: "2026-09-26", updatedAt: 3 }
+  ]);
+  assert.equal(matrix.cells.find((item) => item?.date === "2026-09-25")?.noteCount, 2);
+  assert.equal(matrix.cells.find((item) => item?.date === "2026-09-26")?.noteCount, 1);
 });

@@ -17,18 +17,33 @@ export function safeJsonParse(value, fallback) {
   }
 }
 
+function dateKeyFromTimestamp(value = Date.now()) {
+  const date = new Date(Number(value) || Date.now());
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function normalizeNotes(value) {
   if (!Array.isArray(value)) return [];
   return value
     .filter((item) => item && typeof item === "object")
-    .map((item) => ({
-      id: String(item.id || uid("note")),
-      title: String(item.title || ""),
-      text: String(item.text || ""),
-      pinned: Boolean(item.pinned),
-      completed: Boolean(item.completed),
-      updatedAt: Number(item.updatedAt) || Date.now()
-    }))
+    .map((item) => {
+      const updatedAt = Number(item.updatedAt) || Date.now();
+      const noteDate = /^\d{4}-\d{2}-\d{2}$/.test(String(item.noteDate || ""))
+        ? String(item.noteDate)
+        : dateKeyFromTimestamp(updatedAt);
+      return {
+        id: String(item.id || uid("note")),
+        title: String(item.title || ""),
+        text: String(item.text || ""),
+        pinned: Boolean(item.pinned),
+        completed: Boolean(item.completed),
+        noteDate,
+        updatedAt
+      };
+    })
     .sort((a, b) =>
       Number(b.pinned) - Number(a.pinned) ||
       Number(a.completed) - Number(b.completed) ||
@@ -351,6 +366,29 @@ export function tasksToIcs(tasks, options = {}) {
     "END:VCALENDAR",
     ""
   ].join("\r\n");
+}
+
+export function noteMonthMatrix(year, monthIndex, notes = []) {
+  const yearNumber = Number(year);
+  const month = Number(monthIndex);
+  const first = new Date(yearNumber, month, 1);
+  const days = new Date(yearNumber, month + 1, 0).getDate();
+  const mondayOffset = (first.getDay() + 6) % 7;
+  const noteCounts = new Map();
+
+  normalizeNotes(notes).forEach((note) => {
+    if (!note.noteDate) return;
+    noteCounts.set(note.noteDate, (noteCounts.get(note.noteDate) || 0) + 1);
+  });
+
+  const cells = Array.from({ length: 42 }, (_, index) => {
+    const day = index - mondayOffset + 1;
+    if (day < 1 || day > days) return null;
+    const date = `${yearNumber}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return { day, date, noteCount: noteCounts.get(date) || 0 };
+  });
+
+  return { year: yearNumber, month, cells };
 }
 
 export function monthMatrix(year, monthIndex, tasks = []) {

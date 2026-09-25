@@ -139,3 +139,8 @@ Kodda desktop-shell.css ve mobile-shell.css final responsive katmanlar olarak ay
 Hızlı Not ayrı bir masaüstü çalışma alanına yükseltildi. Masaüstünde yaklaşık 1320 px genişlik, 300 px not listesi ve kalan alanı kullanan editör bulunur. Başlık textarea olarak otomatik büyür ve yatay taşma üretmez.
 
 Not içi araç çubuğu Markdown tabanlı kalın, italik, üstünü çizme, madde listesi, numaralı liste, checklist, checklist tamamlandı, H2 ve link ekleme işlemlerini destekler. Not seviyesinde Aktif/Tamamlandı durumu, not araması ve Tümü/Aktif/Tamamlandı filtreleri eklendi. Eski notlar completed:false ile geriye uyumlu biçimde açılır.
+
+
+## P19.1 Not Takvimi
+
+Hızlı Not sol paneline Liste / Takvim görünümü eklendi. Takvim, son düzenleme zamanı yerine notun kendi `noteDate` alanını kullanır. Eski notlar geriye uyumlu olarak son güncellenme tarihlerinden bir not tarihi kazanır. Ay görünümünde gün başına not sayısı görünür; bir güne basınca o güne ait notlar açılır ve doğrudan o güne yeni not oluşturulabilir. Editörde Not tarihi alanı ayrıca değiştirilebilir.

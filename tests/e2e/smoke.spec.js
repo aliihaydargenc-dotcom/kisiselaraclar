@@ -91,3 +91,22 @@ test("P19 Hızlı Not masaüstünde geniş editör ve Markdown checklist kullan�
   await expect(page.locator("#p16CompleteNote")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".p16-note-item.active")).toContainText("Tamamlandı");
 });
+
+
+test("P19.1 Hızlı Not takvim görünümü not tarihini gösterir", async ({ page }) => {
+  await page.goto("./");
+  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+
+  const date = page.locator("#p16NoteDate");
+  await date.fill("2026-09-15");
+  await date.dispatchEvent("change");
+
+  await page.locator('[data-note-view="calendar"]').click();
+  await expect(page.locator("#p16NoteCalendar")).toBeVisible();
+  await expect(page.locator('[data-note-date="2026-09-15"]')).toHaveClass(/selected/);
+  await expect(page.locator('[data-note-date="2026-09-15"] b')).toHaveText("1");
+
+  await page.locator('[data-note-create-date="2026-09-15"]').click();
+  await expect(page.locator("#p16NoteDate")).toHaveValue("2026-09-15");
+  await expect(page.locator('[data-note-date="2026-09-15"] b')).toHaveText("2");
+});
