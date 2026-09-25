@@ -1,17 +1,21 @@
 import { test, expect } from "@playwright/test";
 
-test("desktop Figma düzeni hero içinde çalışma merkezi kullanır", async ({ page }, testInfo) => {
+test("desktop özel çalışma alanını pazarlama hero'su yerine öne çıkarır", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
   await page.goto("./");
   await expect(page.locator("#desktopHomeView #p17Workspace")).toBeVisible();
   await expect(page.locator("#homeView #p17Workspace")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+  await expect(page.locator(".site-hero-copy")).toBeHidden();
+  await expect(page.locator(".ticker")).toBeHidden();
+  await expect(page.locator(".site-benefits")).toBeHidden();
 
   const hero = await page.locator(".site-hero").boundingBox();
   const home = await page.locator("#desktopHomeView").boundingBox();
   expect(hero).not.toBeNull();
   expect(home).not.toBeNull();
-  expect(home.x).toBeGreaterThan(hero.x + hero.width * 0.42);
+  expect(Math.abs(home.x - hero.x)).toBeLessThanOrEqual(2);
+  expect(home.width).toBeGreaterThan(hero.width * 0.95);
 });
 
 test("Yeni not kısayolu gerçek editöre odaklanır", async ({ page }) => {
@@ -34,13 +38,21 @@ test("arama düğmesi arama alanını odaklar", async ({ page }) => {
   await expect(page.locator("#toolSearch")).toBeFocused();
 });
 
-test("@mobile mobil Figma düzeni çalışma merkezi ve kompakt keşif kullanır", async ({ page }) => {
+test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#mobileDock")).toBeVisible();
   await expect(page.locator("#homeView #p17Workspace")).toBeVisible();
   await expect(page.locator("#desktopHomeView #p17Workspace")).toHaveCount(0);
+  await expect(page.locator(".site-page")).toBeHidden();
+  await expect(page.locator(".ticker")).toBeHidden();
   await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
   await expect(page.locator(".smart-router.is-empty")).toBeHidden();
+
+  const viewport = await page.evaluate(() => ({
+    inner: innerWidth,
+    scroll: document.documentElement.scrollWidth
+  }));
+  expect(viewport.scroll).toBeLessThanOrEqual(viewport.inner + 1);
 
   const headingSize = await page.locator(".tool-browser-head h2").evaluate((el) =>
     Number.parseFloat(getComputedStyle(el).fontSize)
@@ -54,8 +66,13 @@ test("@mobile mobil Figma düzeni çalışma merkezi ve kompakt keşif kullanır
   });
   await expect(page.locator(".smart-router.has-files")).toBeVisible();
 
-  await page.locator('[data-mobile-action="today"]').click();
-  await expect(page.locator("#p17Workspace")).toBeVisible();
+  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+  await expect(page.locator("#p16NoteText")).toBeVisible();
+  const noteViewport = await page.evaluate(() => ({
+    inner: innerWidth,
+    scroll: document.documentElement.scrollWidth
+  }));
+  expect(noteViewport.scroll).toBeLessThanOrEqual(noteViewport.inner + 1);
 });
 
 
@@ -116,6 +133,7 @@ test("P19.2 Hızlı Not tek tasarım dili ve sıkı editör akışı kullanır",
   test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
   await page.goto("./");
   await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+  await expect(page.locator('.tool-view[data-office-mode="quick-note"]')).toBeVisible();
 
   const metrics = await page.evaluate(() => {
     const root = document.querySelector('.tool-view[data-office-mode="quick-note"]');
