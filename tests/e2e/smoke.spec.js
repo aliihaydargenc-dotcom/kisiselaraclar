@@ -50,7 +50,7 @@ test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page 
   await expect(page.locator("#desktopHomeView #p17Workspace")).toHaveCount(0);
   await expect(page.locator(".site-page")).toBeHidden();
   await expect(page.locator(".ticker")).toBeHidden();
-  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeHidden();
   await expect(page.locator(".smart-router.is-empty")).toBeHidden();
 
   const viewport = await page.evaluate(() => ({
@@ -64,12 +64,19 @@ test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page 
   );
   expect(headingSize).toBeLessThanOrEqual(30);
 
+  await page.locator('[data-mobile-action="search"]').click();
+  await expect(page.locator("#mobileToolsDrawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+  await expect(page.locator("#toolSearch")).toBeFocused();
+
   await page.locator("#smartFileInput").setInputFiles({
     name: "ornek.pdf",
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4\n")
   });
   await expect(page.locator(".smart-router.has-files")).toBeVisible();
+  await page.locator("#mobileToolsClose").click();
+  await expect(page.locator("#mobileToolsDrawer")).toHaveAttribute("aria-hidden", "true");
 
   await page.locator('.p17-action[data-tool="quick-note"]').first().click();
   await expect(page.locator("#p16NoteText")).toBeVisible();
@@ -245,6 +252,12 @@ test("@mobile P30 nottan görev oluşturur ve PWA manifesti sunar", async ({ pag
 
   await page.goto("./#tool=quick-note");
   await expect(page.locator("#p16NoteText")).toBeVisible();
+  await expect(page.locator(".p16-note-mobile-tabs")).toBeVisible();
+  await page.locator('[data-note-mobile-view="list"]').click();
+  await expect(page.locator(".p16-note-sidebar")).toBeVisible();
+  await expect(page.locator(".p16-note-editor")).toBeHidden();
+  await page.locator('[data-note-mobile-view="editor"]').click();
+  await expect(page.locator(".p16-note-editor")).toBeVisible();
   await page.locator("#p16NoteTitle").fill("Mobil P30 görevi");
   await page.locator("#p16NoteText").fill("Bu not görev listesine aktarılacak.");
   await page.locator("#p16NoteToTask").click();

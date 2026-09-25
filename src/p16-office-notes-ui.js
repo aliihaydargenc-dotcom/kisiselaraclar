@@ -5,6 +5,10 @@ const NOTE_MONTHS = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz",
 
 function noteBody() {
   return `
+    <div class="p16-note-mobile-tabs" role="group" aria-label="Mobil not görünümü">
+      <button type="button" class="active" data-note-mobile-view="editor">Düzenle</button>
+      <button type="button" data-note-mobile-view="list">Notlar</button>
+    </div>
     <div class="p16-note-layout">
       <aside class="p16-note-sidebar">
         <div class="p16-side-head">
@@ -80,6 +84,14 @@ function wireNote(root) {
   const noteDate = root.querySelector("#p16NoteDate");
   const updated = root.querySelector("#p16NoteUpdated");
   const toolbar = root.querySelector(".p16-note-formatbar");
+  const setMobileView = (mode) => {
+    const listMode = mode === "list";
+    root.classList.toggle("p16-note-mobile-list", listMode);
+    root.querySelectorAll("[data-note-mobile-view]").forEach((button) => {
+      button.classList.toggle("active", button.dataset.noteMobileView === mode);
+      button.setAttribute("aria-pressed", button.dataset.noteMobileView === mode ? "true" : "false");
+    });
+  };
   let notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
   let active = notes[0]?.id || "";
   let filter = "all";
@@ -258,6 +270,7 @@ function wireNote(root) {
     if (!button) return;
     active = button.dataset.note;
     loadActive();
+    setMobileView("editor");
   });
   calendar.addEventListener("click", (event) => {
     const monthButton = event.target.closest("[data-note-month]");
@@ -286,6 +299,10 @@ function wireNote(root) {
   });
 
   search.addEventListener("input", renderNavigation);
+  root.querySelector(".p16-note-mobile-tabs")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-note-mobile-view]");
+    if (button) setMobileView(button.dataset.noteMobileView);
+  });
   root.querySelector(".p16-note-kinds").addEventListener("click", (event) => {
     const button = event.target.closest("[data-note-kind]");
     if (!button) return;
@@ -332,7 +349,10 @@ function wireNote(root) {
     applyFormat(action);
   });
 
-  root.querySelector("#p16NewNote").onclick = () => create(view === "calendar" ? selectedDate : localDateValue());
+  root.querySelector("#p16NewNote").onclick = () => {
+    create(view === "calendar" ? selectedDate : localDateValue());
+    setMobileView("editor");
+  };
   root.querySelector("#p16NoteToTask").onclick = () => {
     flushPendingUpdate();
     const item = current();

@@ -29,6 +29,9 @@ const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
 const mobileDock = document.querySelector("#mobileDock");
+const mobileToolsDrawer = document.querySelector("#mobileToolsDrawer");
+const mobileToolsBackdrop = document.querySelector("#mobileToolsBackdrop");
+const mobileToolsClose = document.querySelector("#mobileToolsClose");
 const heroSearchButton = document.querySelector("#heroSearchButton");
 const scrollProgress = document.querySelector("#scrollProgress");
 const desktopToolNavRoot = document.querySelector("#desktopToolNav");
@@ -569,9 +572,24 @@ async function openTool(id, { record = true, action = "" } = {}) {
 
 function navigateTool(id, { replace = false, record = true, action = "" } = {}) {
   if (!validToolIds.includes(id)) return navigateCatalog({ replace: true });
+  closeMobileTools();
   const method = replace ? "replaceState" : "pushState";
   history[method]({ tool: id, action: action || null }, "", toolHash(id));
   openTool(id, { record, action });
+}
+
+function openMobileTools({ focus = true } = {}) {
+  if (desktopHomeQuery?.matches || !mobileToolsDrawer) return;
+  document.body.classList.add("mobile-tools-open");
+  mobileToolsDrawer.setAttribute("aria-hidden", "false");
+  if (mobileToolsBackdrop) mobileToolsBackdrop.hidden = false;
+  if (focus) requestAnimationFrame(() => searchInput.focus({ preventScroll: true }));
+}
+
+function closeMobileTools() {
+  document.body.classList.remove("mobile-tools-open");
+  mobileToolsDrawer?.setAttribute("aria-hidden", "true");
+  if (mobileToolsBackdrop) mobileToolsBackdrop.hidden = true;
 }
 
 function syncRoute() {
@@ -654,10 +672,7 @@ headerSearchButton?.addEventListener("click", () => {
     return;
   }
   if (currentToolId) navigateCatalog({ replace: true });
-  requestAnimationFrame(() => {
-    toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
-    searchInput.focus({ preventScroll: true });
-  });
+  openMobileTools();
 });
 
 
@@ -676,6 +691,7 @@ mobileDock?.addEventListener("click", (event) => {
   if (!button) return;
 
   if (button.dataset.mobileAction === "today") {
+    closeMobileTools();
     if (currentToolId) prepareCatalogForMobileAction();
     requestAnimationFrame(() => {
       const today = document.querySelector("#p17Workspace");
@@ -696,11 +712,14 @@ mobileDock?.addEventListener("click", (event) => {
 
   if (button.dataset.mobileAction === "search") {
     if (currentToolId) prepareCatalogForMobileAction();
-    requestAnimationFrame(() => {
-      toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
-      searchInput.focus({ preventScroll: true });
-    });
+    openMobileTools();
   }
+});
+
+mobileToolsClose?.addEventListener("click", closeMobileTools);
+mobileToolsBackdrop?.addEventListener("click", closeMobileTools);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.classList.contains("mobile-tools-open")) closeMobileTools();
 });
 
 mountMobilePlatform({ mobileDock });

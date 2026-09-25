@@ -899,23 +899,8 @@ body.tool-open .site-footer{margin-top:30px}
     overflow:hidden;font-size:11px;line-height:1.45
   }
 
-  .mobile-dock{
-    position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));
-    z-index:100;display:grid;grid-template-columns:1.25fr .75fr;gap:6px;
-    padding:6px;border:1px solid rgba(214,214,208,.9);
-    border-radius:18px;background:rgba(250,250,247,.92);
-    box-shadow:0 12px 36px rgba(25,25,23,.14);
-    backdrop-filter:blur(20px)
-  }
-  .mobile-dock button{
-    min-height:50px;border:0;border-radius:13px;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    cursor:pointer;font-size:11px
-  }
-  .mobile-dock button:first-child{background:var(--ink);color:#fff}
-  .mobile-dock button:last-child{background:#ededE9;color:var(--ink)}
-  .mobile-dock-icon{font-size:18px;font-weight:400;line-height:1}
-  .mobile-dock strong{font-size:11px}
+  .mobile-dock{position:fixed;z-index:100;display:grid}
+  .mobile-dock button{display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
   body.tool-open .mobile-dock{display:none}
   body.tool-open{padding-bottom:0}
 
@@ -1866,36 +1851,6 @@ body.tool-open textarea:focus{
   .footer-row{
     align-items:flex-end;
     margin-top:38px;font-size:9px
-  }
-
-  .mobile-dock{
-    left:8px;right:8px;
-    bottom:calc(7px + env(safe-area-inset-bottom));
-    grid-template-columns:1.25fr .8fr .7fr;
-    gap:5px;padding:5px;
-    min-height:var(--m-dock);
-    border:1px solid rgba(223,255,63,.38);
-    background:rgba(8,9,13,.94);
-    box-shadow:0 18px 44px rgba(0,0,0,.40);
-    backdrop-filter:blur(20px)
-  }
-  .mobile-dock button{
-    min-width:0;min-height:54px;
-    padding:0 8px;border-radius:0
-  }
-  .mobile-dock button:first-child{
-    background:var(--acid);color:var(--ink)
-  }
-  .mobile-dock button:nth-child(2){
-    background:var(--blue);color:#fff
-  }
-  .mobile-dock button:last-child{
-    border:1px solid rgba(244,239,223,.18);
-    background:#171820;color:var(--cream)
-  }
-  .mobile-dock-icon{font-size:17px}
-  .mobile-dock strong{
-    font-size:9px;white-space:nowrap
   }
 
   /* Tool mode */

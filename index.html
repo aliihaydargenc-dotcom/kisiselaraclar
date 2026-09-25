@@ -133,12 +133,15 @@
     <main class="workspace" id="mainContent">
       <section class="content">
         <div id="homeView" class="home-view"></div>
+        <button class="mobile-tools-backdrop" id="mobileToolsBackdrop" type="button" aria-label="Araç menüsünü kapat" hidden></button>
+        <div class="mobile-tools-drawer" id="mobileToolsDrawer" aria-hidden="true">
         <div class="tool-browser" id="toolBrowser">
           <div class="tool-browser-head">
             <div>
               <span class="eyebrow">ARAÇLAR</span>
               <h2>Aracını bul.</h2>
             </div>
+            <button class="mobile-tools-close" id="mobileToolsClose" type="button" aria-label="Araç menüsünü kapat">×</button>
             <div class="browser-search-wrap">
               <label class="search-label" for="toolSearch">
                 <span>Araç ara</span>
@@ -151,6 +154,7 @@
         </div>
 
         <div id="catalogView"></div>
+        </div>
         <div id="toolView" class="tool-view hidden" aria-live="polite"></div>
       </section>
     </main>
