@@ -350,6 +350,7 @@ function navigateCatalog({ replace = false } = {}) {
 }
 
 async function openTool(id, { record = true, action = "" } = {}) {
+  delete toolView.dataset.officeMode;
   const tool = tools.find((item) => item.id === id);
   if (!tool) {
     navigateCatalog({ replace: true });

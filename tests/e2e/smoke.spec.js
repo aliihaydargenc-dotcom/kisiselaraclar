@@ -57,3 +57,37 @@ test("@mobile mobil Figma düzeni çalışma merkezi ve kompakt keşif kullanır
   await page.locator('[data-mobile-action="today"]').click();
   await expect(page.locator("#p17Workspace")).toBeVisible();
 });
+
+
+test("P19 Hızlı Not masaüstünde geniş editör ve Markdown checklist kullanır", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+
+  const toolWidth = await page.locator('.tool-view[data-office-mode="quick-note"]').evaluate((el) => el.getBoundingClientRect().width);
+  expect(toolWidth).toBeGreaterThan(1000);
+
+  const title = page.locator("#p16NoteTitle");
+  await title.fill("Bu başlık masaüstünde yatay kaydırma oluşturmadan iki satıra kadar büyüyebilmeli ve rahatça okunabilmeli");
+  const titleMetrics = await title.evaluate((el) => ({
+    scrollWidth: el.scrollWidth,
+    clientWidth: el.clientWidth,
+    height: el.getBoundingClientRect().height
+  }));
+  expect(titleMetrics.scrollWidth).toBeLessThanOrEqual(titleMetrics.clientWidth + 1);
+  expect(titleMetrics.height).toBeGreaterThan(54);
+
+  const body = page.locator("#p16NoteText");
+  await body.fill("Raporu gönder\nSunumu güncelle");
+  await body.evaluate((el) => el.setSelectionRange(0, el.value.length));
+  await page.locator('[data-note-format="check"]').click();
+  await expect(body).toHaveValue("- [ ] Raporu gönder\n- [ ] Sunumu güncelle");
+
+  await body.evaluate((el) => el.setSelectionRange(0, el.value.length));
+  await page.locator('[data-note-format="check-done"]').click();
+  await expect(body).toHaveValue("- [x] Raporu gönder\n- [x] Sunumu güncelle");
+
+  await page.locator("#p16CompleteNote").click();
+  await expect(page.locator("#p16CompleteNote")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".p16-note-item.active")).toContainText("Tamamlandı");
+});

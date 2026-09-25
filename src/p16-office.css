@@ -88,3 +88,35 @@
  .p16-task{grid-template-columns:minmax(0,1fr) auto}
  .p16-task small{grid-column:1}
 }
+
+
+/* P19 — Quick Note workspace */
+body.tool-open .tool-view[data-office-mode="quick-note"]{max-width:1320px}
+.p16-note-layout{grid-template-columns:300px minmax(0,1fr);gap:16px}
+.p16-note-sidebar,.p16-note-editor{min-width:0}
+.p16-side-head>div{display:grid;gap:2px}.p16-side-head small,.p16-note-editor-meta>span,.p16-note-hint{color:#777970;font-size:.7rem}
+.p16-note-search{margin:0 0 8px!important}
+.p16-note-filters,.p16-note-formatbar{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.p16-note-filters{margin-bottom:10px}.p16-note-filters::-webkit-scrollbar,.p16-note-formatbar::-webkit-scrollbar{display:none}
+.p16-note-filters button,.p16-note-state,.p16-note-formatbar button{border:1px solid var(--p16-line);background:transparent;color:inherit;cursor:pointer}
+.p16-note-filters button{flex:0 0 auto;padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:750}
+.p16-note-filters button.active,.p16-note-state.completed{background:var(--p16-ink);color:#fff;border-color:var(--p16-ink)}
+.p16-note-list{max-height:min(68vh,720px);overflow-y:auto;overflow-x:hidden}
+.p16-note-item{width:100%;min-width:0;overflow:hidden}
+.p16-note-item-top{display:flex;align-items:center;gap:7px;min-width:0}
+.p16-note-item-top strong{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p16-note-item-top i{flex:0 0 auto;font-size:.58rem;font-style:normal;font-weight:800}
+.p16-note-item.completed:not(.active){opacity:.68}
+.p16-note-item em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#74766f;font-size:.72rem;font-style:normal}
+.p16-note-editor{padding:18px;gap:10px}
+.p16-note-editor-meta{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.p16-note-editor-meta>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p16-note-state{padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:800}
+body.tool-open .p16-note-title{min-height:54px;max-height:108px;margin:0;resize:none;overflow-x:hidden;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--sans);font-size:1.35rem;font-weight:800;line-height:1.18}
+.p16-note-formatbar{padding:7px;border:1px solid var(--p16-line)}
+.p16-note-formatbar button{flex:0 0 auto;min-height:34px;padding:6px 9px;font-size:.72rem;font-weight:760}
+.p16-note-toolbar-sep{flex:0 0 1px;width:1px;background:var(--p16-line)}
+body.tool-open .p16-note-text{min-height:520px;margin:0;font-size:15px;line-height:1.65}
+.p16-note-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}.p16-note-bottom .action-row{margin-top:0}
+@media(max-width:1000px){body.tool-open .tool-view[data-office-mode="quick-note"]{max-width:none}.p16-note-layout{grid-template-columns:250px minmax(0,1fr)}body.tool-open .p16-note-text{min-height:440px}}
+@media(max-width:780px){.p16-note-layout{grid-template-columns:1fr}.p16-note-editor{order:1;padding:12px}.p16-note-sidebar{order:2}.p16-note-formatbar{margin:0 -2px}.p16-note-formatbar button{min-height:40px}body.tool-open .p16-note-title{font-size:1.15rem}body.tool-open .p16-note-text{min-height:330px;font-size:16px}.p16-note-bottom{display:grid;gap:8px}.p16-note-bottom .action-row{display:grid;grid-template-columns:1fr 1fr;width:100%}.p16-note-list{max-height:420px}}

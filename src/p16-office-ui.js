@@ -12,6 +12,7 @@ const groups = {
 };
 
 export async function renderP16OfficeTool({ tool, toolView, integration, onBack }) {
+  toolView.dataset.officeMode = tool.officeMode;
   const load = groups[tool.officeMode];
   if (!load) throw new Error("P16 ofis aracı tanımlı değil.");
   const view = await load();
