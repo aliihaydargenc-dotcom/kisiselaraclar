@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0a0b10" />
+  <meta name="theme-color" content="#f5f6fa" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Kişisel Araçlar" />
   <meta name="description" content="Not, görev, toplantı ve günlük araçlarını tek özel çalışma alanında kullan." />
   <meta name="robots" content="index,follow" />
@@ -74,62 +74,8 @@
 
   <aside class="desktop-tool-nav" id="desktopToolNav" aria-label="Masaüstü araç menüsü"></aside>
 
-  <div class="site-page">
-    <section class="site-hero" id="home">
-      <div class="hero-grid" aria-hidden="true"></div>
-
-      <div class="site-hero-copy">
-        <div class="hero-kicker">
-          <span class="hero-kicker-dot" aria-hidden="true"></span>
-          <strong id="toolCountSummary">68 araç</strong>
-          <span>özel alan</span>
-          <span>senkron</span>
-        </div>
-
-        <h1><span>İşini seç.</span><em>Hemen bitir.</em></h1>
-
-        <p>Not al, görev planla, belge tara, PDF imzala veya dosyanı bırak. İlk ekranda gereken işi başlat; ayrıntıya yalnız ihtiyacın olduğunda in.</p>
-
-        <div class="hero-actions">
-          <a class="hero-primary" href="#mainContent">
-            Hemen başla
-            <span aria-hidden="true">↓</span>
-          </a>
-          <button class="hero-secondary" id="heroSearchButton" type="button">Araç ara ↗</button>
-        </div>
-      </div>
-
-      <div id="desktopHomeView" class="desktop-home-view" aria-live="polite"></div>
-
-      <div class="hero-playground" aria-hidden="true">
-        <div class="float-card float-card-blue">
-          <span>PDF</span>
-          <strong>Birleştir.</strong>
-          <b>01</b>
-        </div>
-        <div class="float-card float-card-acid">
-          <span>OCR</span>
-          <strong>Oku.</strong>
-          <b>02</b>
-        </div>
-        <div class="float-card float-card-coral">
-          <span>MP3</span>
-          <strong>Dönüştür.</strong>
-          <b>03</b>
-        </div>
-        <div class="float-orb"></div>
-      </div>
-    </section>
-  </div>
-
-  <div class="ticker" aria-hidden="true">
-    <div class="ticker-track">
-      <span>OFİS</span><i>✦</i><span>GÖRSEL</span><i>✦</i><span>TASARIM</span><i>✦</i><span>GELİŞTİRİCİ</span><i>✦</i><span>VERİ</span><i>✦</i><span>PDF</span><i>✦</i><span>MEDYA</span><i>✦</i><span>OCR</span><i>✦</i><span>QR</span><i>✦</i>
-      <span>GÖRSEL</span><i>✦</i><span>TASARIM</span><i>✦</i><span>GELİŞTİRİCİ</span><i>✦</i><span>VERİ</span><i>✦</i><span>PDF</span><i>✦</i><span>MEDYA</span><i>✦</i><span>OCR</span><i>✦</i><span>QR</span><i>✦</i>
-    </div>
-  </div>
-
   <div class="tools-stage">
+    <div id="desktopHomeView" class="desktop-home-view" aria-live="polite"></div>
     <main class="workspace" id="mainContent">
       <section class="content">
         <div id="homeView" class="home-view"></div>
@@ -160,56 +106,22 @@
     </main>
   </div>
 
-  <section class="site-benefits" id="why" aria-labelledby="whyTitle">
-    <div class="benefits-wrap">
-      <div class="benefits-heading">
-        <span class="eyebrow">OLAY BU</span>
-        <h2 id="whyTitle">Az laf.<br><em>Çok iş.</em></h2>
-      </div>
 
-      <div class="benefit-grid">
-        <article class="benefit-acid">
-          <span>01</span>
-          <h3>Dosya sende.</h3>
-          <p>Gereksiz yere sunucuya yollamıyoruz.</p>
-        </article>
-        <article class="benefit-blue">
-          <span>02</span>
-          <h3>Dosyayı bırak.</h3>
-          <p>Uygun araçları kendisi öne çıkarsın.</p>
-        </article>
-        <article class="benefit-coral">
-          <span>03</span>
-          <h3>İşini bitir.</h3>
-          <p>Tek giriş. Kendi verin. Cihazlar arasında devam et.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div class="footer-mega">Kişisel<br><em>Araçlar.</em></div>
-    <div class="footer-row">
-      <span>68 araç · Türkçe · local-first</span>
-      <a href="#home">Başa dön ↑</a>
-    </div>
-  </footer>
-
-  <nav class="mobile-dock" id="mobileDock" aria-label="Mobil hızlı işlemler">
+  <nav class="mobile-dock" id="mobileDock" aria-label="Mobil ana navigasyon">
     <button type="button" data-mobile-action="today">
-      <span class="mobile-dock-icon" aria-hidden="true">⌂</span>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
       <strong>Ana</strong>
     </button>
     <button type="button" data-mobile-action="note">
-      <span class="mobile-dock-icon" aria-hidden="true">N</span>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v4h4"/><path d="M9 12h6M9 16h5"/></svg></span>
       <strong>Not</strong>
     </button>
     <button type="button" data-mobile-action="task">
-      <span class="mobile-dock-icon" aria-hidden="true">✓</span>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
       <strong>Görev</strong>
     </button>
     <button type="button" data-mobile-action="search">
-      <span class="mobile-dock-icon" aria-hidden="true">⌕</span>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg></span>
       <strong>Ara</strong>
     </button>
   </nav>

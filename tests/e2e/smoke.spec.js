@@ -1,22 +1,21 @@
 import { test, expect } from "@playwright/test";
 
-test("desktop özel çalışma alanını pazarlama hero'su yerine öne çıkarır", async ({ page }, testInfo) => {
+test("P35 desktop uygulama kabuğu çalışma alanını doğrudan öne çıkarır", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
   await page.goto("./");
   await expect(page.locator("#desktopHomeView #p17Workspace")).toBeVisible();
   await expect(page.locator("#homeView #p17Workspace")).toHaveCount(0);
   await expect(page.locator("#toolBrowser")).toBeHidden();
   await expect(page.locator("#desktopToolNav")).toBeVisible();
-  await expect(page.locator(".site-hero-copy")).toBeHidden();
-  await expect(page.locator(".ticker")).toBeHidden();
-  await expect(page.locator(".site-benefits")).toBeHidden();
+  await expect(page.locator(".site-hero")).toHaveCount(0);
+  await expect(page.locator(".ticker")).toHaveCount(0);
+  await expect(page.locator(".site-benefits")).toHaveCount(0);
+  await expect(page.locator(".site-footer")).toHaveCount(0);
 
-  const hero = await page.locator(".site-hero").boundingBox();
   const home = await page.locator("#desktopHomeView").boundingBox();
-  expect(hero).not.toBeNull();
   expect(home).not.toBeNull();
-  expect(Math.abs(home.x - hero.x)).toBeLessThanOrEqual(2);
-  expect(home.width).toBeGreaterThan(hero.width * 0.95);
+  expect(home.width).toBeGreaterThan(900);
+  expect(home.y).toBeGreaterThanOrEqual(60);
 });
 
 test("Yeni not kısayolu gerçek editöre odaklanır", async ({ page }) => {
@@ -48,8 +47,8 @@ test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page 
   await expect(page.locator("#mobileDock")).toBeVisible();
   await expect(page.locator("#homeView #p17Workspace")).toBeVisible();
   await expect(page.locator("#desktopHomeView #p17Workspace")).toHaveCount(0);
-  await expect(page.locator(".site-page")).toBeHidden();
-  await expect(page.locator(".ticker")).toBeHidden();
+  await expect(page.locator(".site-page")).toHaveCount(0);
+  await expect(page.locator(".ticker")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeHidden();
   await expect(page.locator(".smart-router.is-empty")).toBeHidden();
 
@@ -77,7 +76,8 @@ test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page 
   await page.locator("#mobileToolsClose").click();
   await expect(page.locator("#mobileToolsDrawer")).toHaveAttribute("aria-hidden", "true");
 
-  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+  await page.locator('[data-mobile-action="note"]').click();
+  await expect(page).toHaveURL(/#tool=quick-note/);
   await expect(page.locator("#p16NoteText")).toBeVisible();
   const noteViewport = await page.evaluate(() => ({
     inner: innerWidth,
@@ -225,13 +225,14 @@ test("@mobile P25 kişisel ana ekran ve alt navigasyon çalışır", async ({ pa
   expect(dockFont).toBeGreaterThanOrEqual(10);
 
   await page.locator('[data-mobile-action="note"]').click();
+  await expect(page).toHaveURL(/#tool=quick-note/);
   await expect(page.locator("#p16NoteText")).toBeVisible();
-  await expect(page.locator("#p16NoteText")).toBeFocused();
+  await expect(page.locator(".p16-note-mobile-tabs")).toBeVisible();
 
   await page.goto("./");
   await page.locator('[data-mobile-action="task"]').click();
+  await expect(page).toHaveURL(/#tool=tasks-calendar/);
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
-  await expect(page.locator("#p16TaskTitle")).toBeFocused();
 });
 
 test("@mobile P30 farklı telefon genişliklerinde taşmadan çalışır", async ({ page }) => {
@@ -296,6 +297,11 @@ test("P23 masaüstü başlık araması araç çekmecesi aramasını açar", asyn
 });
 
 
+test("P35 görev ekranı teknik depolama açıklaması göstermiyor", async ({ page }) => {
+  await page.goto("./#tool=tasks-calendar");
+  await expect(page.locator("#toolView")).not.toContainText("bu cihazda tutulur");
+});
+
 test("P24 görev ekleme render hatası vermeden kaydeder", async ({ page }) => {
   await page.goto("./#tool=tasks-calendar");
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
@@ -358,9 +364,9 @@ test("P25 masaüstü ana ekranda üç ana kullanım alanı öne çıkar", async 
   await page.goto("./");
   await expect(page.locator(".p25-core-grid")).toBeVisible();
   await expect(page.locator(".p25-card")).toHaveCount(3);
-  await expect(page.locator(".p25-notes h3")).toHaveText("Not Defteri");
-  await expect(page.locator(".p25-voice h3")).toHaveText("Sesli Notlar");
-  await expect(page.locator(".p25-plan h3")).toHaveText("Günlük Plan");
+  await expect(page.locator(".p25-notes h3")).toHaveText("Notlar");
+  await expect(page.locator(".p25-voice h3")).toHaveText("Sesli not");
+  await expect(page.locator(".p25-plan h3")).toHaveText("Görevler");
   await expect(page.locator(".p25-quick-actions")).toBeVisible();
 });
 

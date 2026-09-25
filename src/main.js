@@ -744,18 +744,18 @@ mobileDock?.addEventListener("click", (event) => {
   }
 
   if (button.dataset.mobileAction === "note") {
-    navigateTool("quick-note", { action: "new-note" });
+    navigateTool("quick-note");
     return;
   }
 
   if (button.dataset.mobileAction === "task") {
-    navigateTool("tasks-calendar", { action: "new-task" });
+    navigateTool("tasks-calendar");
     return;
   }
 
   if (button.dataset.mobileAction === "search") {
     if (currentToolId) prepareCatalogForMobileAction();
-    openMobileTools({ focus: false });
+    openMobileTools({ focus: true });
   }
 });
 

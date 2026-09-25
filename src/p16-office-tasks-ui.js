@@ -1,6 +1,6 @@
 import { P16_NOTES_KEY, P16_TASKS_KEY, monthMatrix, normalizeNotes, normalizeTasks, tasksToIcs, uid } from "./p16-office-tools.js";
 import { SpeechTranscriptBuffer, mergeSpeechTranscript, polishTranscript } from "./speech-transcript.js";
-import { downloadText, e, getJson, localDateValue, putJson, status, statusLine } from "./p16-office-ui-shared.js";
+import { downloadText, e, getJson, localDateValue, putJson, status } from "./p16-office-ui-shared.js";
 
 function tasksBody() {
   const today = localDateValue();
@@ -33,7 +33,7 @@ function tasksBody() {
         <div id="p16CalendarGrid" class="p16-calendar-grid"></div>
       </aside>
     </div>
-    ${statusLine("Görevler ve takvim bu cihazda tutulur.")}`;
+    `;
 }
 
 function wireTasks(root) {
@@ -160,7 +160,7 @@ function voiceBody() {
         <button class="secondary-button" id="p16VoiceCopy">Kopyala</button>
       </div>
     </div>
-    ${statusLine("Sesli notların bu cihazda ve bulut senkronunda Notlar ile birlikte tutulur.")}`;
+    `;
 }
 
 function wireVoice(root) {
