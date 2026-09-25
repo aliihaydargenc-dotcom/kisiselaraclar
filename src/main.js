@@ -90,7 +90,7 @@ function smartRouterMarkup() {
   const extra = smartFiles.length > 2 ? ` • +${smartFiles.length - 2}` : "";
 
   return `
-    <section class="smart-router" aria-labelledby="smartRouterTitle">
+    <section class="smart-router ${smartFiles.length ? "has-files" : "is-empty"}" aria-labelledby="smartRouterTitle">
       <div class="smart-router-copy">
         <span class="eyebrow">DOSYAYLA BAŞLA</span>
         <h2 id="smartRouterTitle">Dosyanı bırak. Uygun araçları bulalım.</h2>
@@ -616,10 +616,8 @@ mobileDock?.addEventListener("click", (event) => {
 
   if (button.dataset.mobileAction === "file") {
     prepareCatalogForMobileAction();
-    requestAnimationFrame(() => {
-      document.querySelector("#smartDropZone")?.scrollIntoView({ behavior: "smooth", block: "center" });
-      document.querySelector("#smartFileInput")?.click();
-    });
+    const input = document.querySelector("#smartFileInput");
+    input?.click();
     return;
   }
 

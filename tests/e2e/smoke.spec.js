@@ -27,9 +27,24 @@ test("arama düğmesi arama alanını odaklar", async ({ page }) => {
   await expect(page.locator("#toolSearch")).toBeFocused();
 });
 
-test("@mobile mobil dock görünür ve Bugün çalışma merkezine erişir", async ({ page }) => {
+test("@mobile mobil akış tek ve kompakt ürün hiyerarşisi kullanır", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#mobileDock")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+  await expect(page.locator(".smart-router.is-empty")).toBeHidden();
+
+  const headingSize = await page.locator(".tool-browser-head h2").evaluate((el) =>
+    Number.parseFloat(getComputedStyle(el).fontSize)
+  );
+  expect(headingSize).toBeLessThanOrEqual(30);
+
+  await page.locator("#smartFileInput").setInputFiles({
+    name: "ornek.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  await expect(page.locator(".smart-router.has-files")).toBeVisible();
+
   await page.locator('[data-mobile-action="today"]').click();
   await expect(page.locator("#p17Workspace")).toBeVisible();
 });
