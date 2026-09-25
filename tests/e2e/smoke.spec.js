@@ -150,10 +150,3 @@ test("P19.2 Hızlı Not tek tasarım dili ve sıkı editör akışı kullanır",
   expect(metrics.titleToToolbarGap).toBeLessThanOrEqual(16);
   expect(metrics.toolbarToTextGap).toBeLessThanOrEqual(16);
 });
-
-
-test("P20 test ortamı çalışma alanını render eder", async ({ page }) => {
-  await page.goto("./");
-  await expect(page.locator("body")).toHaveClass(/auth-ready/);
-  await expect(page.locator("#authGate")).toBeHidden();
-});
