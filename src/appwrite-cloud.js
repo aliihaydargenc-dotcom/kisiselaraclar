@@ -1,6 +1,6 @@
 const CONFIG = Object.freeze({
   endpoint: "https://fra.cloud.appwrite.io/v1",
-  projectId: "6ab6280b0033fb288d96",
+  projectId: "6ab62a5b002fec4a3519",
   databaseId: "main",
   tableId: "sync_state",
   username: "alihaydar",
