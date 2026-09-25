@@ -25,3 +25,13 @@
 @media(max-width:1179px){.p17-workspace{padding:18px;border-radius:20px}.p25-core-grid,.p25-footer-grid{grid-template-columns:1fr}.p25-action-row{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:620px){.home-view{margin-bottom:14px}.p17-workspace{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}.p25-head{align-items:center;margin:2px 2px 12px}.p25-head h2{font-size:31px}.p25-head p{display:none}.p17-date{padding:6px 8px;background:#fff;font-size:8px}.p25-core-grid{gap:8px}.p25-card{padding:12px;border-radius:16px}.p25-card-title h3{font-size:16px}.p25-card-title p{font-size:8px}.p25-icon{flex-basis:34px;height:34px;border-radius:10px}.p25-link{font-size:8px}.p25-quick-note input{height:44px;font-size:16px}.p25-voice-recorder{min-height:118px}.p25-action-row{grid-template-columns:repeat(2,1fr)}.p17-action{min-height:58px}.p25-backup{grid-template-columns:1fr}.p17-search-list{grid-template-columns:1fr}}
 @media(max-width:390px){.p17-date{display:none}.p25-card-title p,.p25-note-row time{display:none}}
+
+.p25-mic-ring svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.p25-voice-recorder.is-listening{border-color:#9ed8b9;background:#f4fff8}
+.p25-voice-recorder.is-listening .p25-mic-ring{background:rgba(34,166,106,.14);box-shadow:0 0 0 10px rgba(34,166,106,.07),0 0 0 20px rgba(34,166,106,.035)}
+.p25-voice-recorder.is-listening .p25-mic-ring span,.p25-voice-recorder.is-listening .p25-mic-ring{animation:p25-pulse 1.35s ease-in-out infinite}
+.p25-live-voice{margin:-4px 0 12px;padding:10px 11px;border:1px solid #dceee4;border-radius:11px;background:#fff;display:grid;grid-template-columns:9px minmax(0,1fr);gap:8px;align-items:start}
+.p25-live-voice[hidden]{display:none}.p25-live-dot{width:8px;height:8px;margin-top:4px;border-radius:50%;background:#27a766;box-shadow:0 0 0 4px rgba(39,167,102,.1)}
+.p25-live-voice p{margin:0;color:#4c5f55;font-size:9.5px;line-height:1.45}
+@keyframes p25-pulse{50%{transform:scale(1.045)}}
+@media(prefers-reduced-motion:reduce){.p25-voice-recorder.is-listening .p25-mic-ring{animation:none}}
