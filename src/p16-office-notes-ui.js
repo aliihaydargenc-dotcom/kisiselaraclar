@@ -12,6 +12,11 @@ function noteBody() {
           <button class="primary-button" id="p16NewNote">＋ Yeni</button>
         </div>
         <input id="p16NoteSearch" class="text-control p16-note-search" type="search" placeholder="Notlarda ara…" autocomplete="off" aria-label="Notlarda ara" />
+        <div class="p16-note-kinds" role="group" aria-label="Not türü">
+          <button type="button" class="active" data-note-kind="all">Tümü</button>
+          <button type="button" data-note-kind="written">Yazılı</button>
+          <button type="button" data-note-kind="voice">Sesli</button>
+        </div>
         <div class="p16-note-filters" role="group" aria-label="Not filtresi">
           <button type="button" class="active" data-note-filter="all">Tümü</button>
           <button type="button" data-note-filter="active">Aktif</button>
@@ -50,7 +55,7 @@ function noteBody() {
         </div>
         <textarea id="p16NoteText" class="text-control p16-note-text" spellcheck="true" placeholder="Yazmaya başla…"></textarea>
         <div class="p16-note-bottom">
-          <div class="p16-note-hint">Markdown destekli · takvim not tarihine göre çalışır; son düzenleme ayrı tutulur.</div>
+          <div class="p16-note-hint">Değişiklikler otomatik kaydedilir.</div>
           <div class="action-row">
             <button class="secondary-button" id="p16PinNote">Sabitle</button>
             <button class="secondary-button" id="p16CopyNote">Kopyala</button>
@@ -77,6 +82,7 @@ function wireNote(root) {
   let notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
   let active = notes[0]?.id || "";
   let filter = "all";
+  let kind = "all";
   let view = "list";
   let selectedDate = notes[0]?.noteDate || localDateValue();
   let calendarCursor = new Date(`${selectedDate}T12:00:00`);
@@ -96,6 +102,9 @@ function wireNote(root) {
   const visibleNotes = () => {
     const query = normalizeQuery(search.value);
     return notes.filter((item) => {
+      const isVoice = item.kind === "voice";
+      if (kind === "voice" && !isVoice) return false;
+      if (kind === "written" && isVoice) return false;
       if (filter === "active" && item.completed) return false;
       if (filter === "completed" && !item.completed) return false;
       return !query || normalizeQuery(`${item.title} ${item.text}`).includes(query);
@@ -192,7 +201,9 @@ function wireNote(root) {
     selectedDate = date;
     calendarCursor = new Date(`${date}T12:00:00`);
     filter = "all";
+    kind = "all";
     search.value = "";
+    root.querySelectorAll("[data-note-kind]").forEach((button) => button.classList.toggle("active", button.dataset.noteKind === "all"));
     root.querySelectorAll("[data-note-filter]").forEach((button) => button.classList.toggle("active", button.dataset.noteFilter === "all"));
     persist();
     loadActive();
@@ -266,6 +277,13 @@ function wireNote(root) {
   });
 
   search.addEventListener("input", renderNavigation);
+  root.querySelector(".p16-note-kinds").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-note-kind]");
+    if (!button) return;
+    kind = button.dataset.noteKind;
+    root.querySelectorAll("[data-note-kind]").forEach((item) => item.classList.toggle("active", item === button));
+    renderNavigation();
+  });
   root.querySelector(".p16-note-filters").addEventListener("click", (event) => {
     const button = event.target.closest("[data-note-filter]");
     if (!button) return;

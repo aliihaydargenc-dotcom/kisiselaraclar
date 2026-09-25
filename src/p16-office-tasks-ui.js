@@ -165,7 +165,7 @@ function wireVoice(root) {
   const mic = root.querySelector("#p16Mic");
   const savedRoot = root.querySelector("#p16VoiceSaved");
   let notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
-  let activeId = notes.find((note) => /sesli\s*not/i.test(note.title || ""))?.id || "";
+  let activeId = notes.find((note) => note.kind === "voice")?.id || "";
   let finalText = "";
 
   const polish = (value) => String(value || "")
@@ -173,7 +173,7 @@ function wireVoice(root) {
     .trim()
     .replace(/(^|[.!?]\s+)([a-zçğıöşü])/g, (_, prefix, letter) => `${prefix}${letter.toLocaleUpperCase("tr-TR")}`);
 
-  const voiceNotes = () => notes.filter((note) => /sesli\s*not/i.test(note.title || ""));
+  const voiceNotes = () => notes.filter((note) => note.kind === "voice");
 
   const renderSaved = () => {
     const list = voiceNotes();
@@ -263,9 +263,9 @@ function wireVoice(root) {
     const now = Date.now();
     if (activeId) {
       const index = notes.findIndex((note) => note.id === activeId);
-      if (index >= 0) notes[index] = { ...notes[index], text: value, updatedAt: now };
+      if (index >= 0) notes[index] = { ...notes[index], kind: "voice", text: value, updatedAt: now };
     } else {
-      const item = { id: uid("note"), title: `Sesli Not · ${new Date(now).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`, text: value, pinned: false, completed: false, noteDate: localDateValue(), updatedAt: now };
+      const item = { id: uid("note"), title: `Sesli Not · ${new Date(now).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`, text: value, kind: "voice", pinned: false, completed: false, noteDate: localDateValue(), updatedAt: now };
       notes.unshift(item);
       activeId = item.id;
     }

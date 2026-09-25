@@ -130,6 +130,15 @@ test("eski notlar takvim tarihi olmadan da gün anahtarı kazanır", () => {
   assert.equal(notes[0].noteDate, "2026-09-25");
 });
 
+test("sesli not türü başlık değişse bile korunur, eski kayıtlar tanınır", () => {
+  const [renamed, legacy] = normalizeNotes([
+    { id: "renamed", kind: "voice", title: "Toplantı fikri", updatedAt: 2 },
+    { id: "legacy", title: "Sesli Not · 14:20", updatedAt: 1 }
+  ]);
+  assert.equal(renamed.kind, "voice");
+  assert.equal(legacy.kind, "voice");
+});
+
 test("not takvimi gün başına not sayısını üretir", () => {
   const matrix = noteMonthMatrix(2026, 8, [
     { id: "1", title: "A", noteDate: "2026-09-25", updatedAt: 1 },

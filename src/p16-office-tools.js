@@ -38,6 +38,7 @@ export function normalizeNotes(value) {
         id: String(item.id || uid("note")),
         title: String(item.title || ""),
         text: String(item.text || ""),
+        kind: item.kind === "voice" || (!item.kind && /sesli\s*not/i.test(String(item.title || ""))) ? "voice" : "written",
         pinned: Boolean(item.pinned),
         completed: Boolean(item.completed),
         noteDate,

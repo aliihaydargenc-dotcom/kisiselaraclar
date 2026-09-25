@@ -93,6 +93,7 @@ function normalizedNotes(storage) {
         id: String(item.id || ""),
         title: String(item.title || ""),
         text: String(item.text || ""),
+        kind: item.kind === "voice" || (!item.kind && /sesli\s*not/i.test(String(item.title || ""))) ? "voice" : "written",
         pinned: Boolean(item.pinned),
         completed: Boolean(item.completed),
         noteDate: String(item.noteDate || ""),
@@ -142,8 +143,8 @@ export function buildWorkspaceSummary(storage, now = new Date()) {
     .filter((task) => task.date && task.date > today)
     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || "99:99").localeCompare(b.time || "99:99"));
   const sortedNotes = [...notes].sort((a, b) => b.updatedAt - a.updatedAt);
-  const voiceNotes = sortedNotes.filter((note) => /sesli\s*not/i.test(note.title || ""));
-  const regularNotes = sortedNotes.filter((note) => !/sesli\s*not/i.test(note.title || ""));
+  const voiceNotes = sortedNotes.filter((note) => note.kind === "voice");
+  const regularNotes = sortedNotes.filter((note) => note.kind !== "voice");
   const latestNote = sortedNotes[0] || null;
   const pinnedCount = notes.filter((note) => note.pinned).length;
 
@@ -338,7 +339,7 @@ function noteRows(summary) {
     const title = note.title || compactText(note.text, 42) || "Adsız not";
     const detail = compactText(note.text, 66) || (note.pinned ? "Sabitlenmiş not" : "Not");
     return `
-      <button type="button" class="p25-note-row" data-tool="quick-note">
+      <button type="button" class="p25-note-row" data-tool="quick-note" data-tool-action="note:${escapeHtml(note.id)}">
         <span class="p25-row-icon" aria-hidden="true">${note.pinned ? "★" : "✎"}</span>
         <span class="p25-row-copy">
           <strong>${escapeHtml(title)}</strong>
@@ -355,7 +356,7 @@ function voiceRows(summary) {
   if (!list.length) return '<div class="p25-empty compact">Henüz sesli not yok. Mikrofonu açıp ilk kaydını oluştur.</div>';
   return list.map((note) => `
     <button type="button" class="p25-voice-row" data-p25-voice-note-id="${escapeHtml(note.id)}">
-      <span class="p25-play" aria-hidden="true">✎</span>
+      <span class="p25-play" aria-hidden="true">${VOICE_ICON}</span>
       <span class="p25-row-copy">
         <strong>${escapeHtml(compactText(note.text, 58) || "Sesli not")}</strong>
         <small>${escapeHtml(displayTime(note.updatedAt) || "Metne dönüştürüldü")} · düzenlemek için aç</small>
@@ -363,6 +364,8 @@ function voiceRows(summary) {
       <span class="p25-row-more" aria-hidden="true">›</span>
     </button>`).join("");
 }
+
+const VOICE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11.5v.5a6 6 0 0 0 12 0v-.5M12 18v3m-3 0h6"/></svg>';
 
 function planRows(summary) {
   const list = summary.todayAllTasks.length ? summary.todayAllTasks.slice(0, 5) : summary.upcomingTasks.slice(0, 5);
@@ -409,8 +412,8 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
           </div>
 
           <form class="p25-quick-note" id="p25QuickNoteForm">
-            <input id="p25QuickNoteInput" type="text" maxlength="280" placeholder="Hızlı not ekle..." autocomplete="off" />
-            <button type="submit" aria-label="Notu kaydet">↑</button>
+            <textarea id="p25QuickNoteInput" rows="4" placeholder="Aklındakini yaz…" aria-label="Yeni not metni"></textarea>
+            <button type="submit">Notu kaydet</button>
           </form>
 
           <div class="p25-section-label"><span>Son notlar</span><strong>${summary.notes.length}</strong></div>
@@ -420,10 +423,10 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <article class="p25-card p25-voice">
           <div class="p25-card-head">
             <div class="p25-card-title">
-              <span class="p25-icon p25-icon-voice" aria-hidden="true">●</span>
+              <span class="p25-icon p25-icon-voice" aria-hidden="true">${VOICE_ICON}</span>
               <div><h3>Sesli Notlar</h3><p>Konuş, metne dönüştür ve kaydet.</p></div>
             </div>
-            <button type="button" class="p25-link" data-tool="quick-note">Notlarda aç <span>→</span></button>
+            <button type="button" class="p25-link" data-tool="quick-note" data-tool-action="voice-notes">Tüm sesli notlar <span>→</span></button>
           </div>
 
           <button type="button" class="p25-voice-recorder" id="p25VoiceRecorder" data-p25-voice-trigger aria-pressed="false">
@@ -476,7 +479,7 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
           <div class="p25-footer-head"><div><span class="eyebrow">HIZLI ERİŞİM</span><h3>Sık kullandıkların</h3></div></div>
           <div class="p25-action-row">
             <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note"><i>✎</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span></button>
-            <button type="button" class="p17-action" data-p25-voice-trigger><i>●</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
+            <button type="button" class="p17-action" data-p25-voice-trigger><i>${VOICE_ICON}</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
             <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task"><i>✓</i><span><strong>Görev ekle</strong><small>Gününe ekle</small></span></button>
             <button type="button" class="p17-action" data-tool="meeting-notes"><i>M</i><span><strong>Toplantı</strong><small>Not oluştur</small></span></button>
           </div>
@@ -666,6 +669,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
           ...next[index],
           title: String(next[index].title || "").match(/sesli\s*not/i) ? next[index].title : `Sesli Not · ${displayTime(now)}`,
           text: transcript,
+          kind: "voice",
           updatedAt: now
         };
       }
@@ -674,6 +678,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         id: makeId("note"),
         title: `Sesli Not · ${displayTime(now)}`,
         text: transcript,
+        kind: "voice",
         pinned: false,
         completed: false,
         noteDate: localDateKey(),

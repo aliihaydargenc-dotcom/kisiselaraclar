@@ -310,6 +310,23 @@ function installMobileTechDetails() {
 function applyToolOpenAction(action = "") {
   if (!action) return false;
 
+  if (action === "voice-notes") {
+    toolView.querySelector('[data-note-kind="voice"]')?.click();
+    toolView.querySelector("#p16NoteList")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return true;
+  }
+
+  if (action.startsWith("note:")) {
+    const id = action.slice(5);
+    const note = [...toolView.querySelectorAll("[data-note]")].find((item) => item.dataset.note === id);
+    if (!note) return false;
+    note.click();
+    const editor = toolView.querySelector("#p16NoteText");
+    editor?.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => editor?.focus({ preventScroll: true }));
+    return true;
+  }
+
   if (action === "new-note") {
     const title = toolView.querySelector("#p16NoteTitle");
     const text = toolView.querySelector("#p16NoteText");
