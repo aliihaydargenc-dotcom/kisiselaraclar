@@ -110,3 +110,43 @@ test("P19.1 Hızlı Not takvim görünümü not tarihini gösterir", async ({ pa
   await expect(page.locator("#p16NoteDate")).toHaveValue("2026-09-15");
   await expect(page.locator('[data-note-date="2026-09-15"] b')).toHaveText("2");
 });
+
+
+test("P19.2 Hızlı Not tek tasarım dili ve sıkı editör akışı kullanır", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
+
+  const metrics = await page.evaluate(() => {
+    const root = document.querySelector('.tool-view[data-office-mode="quick-note"]');
+    const title = root.querySelector('.tool-title-row h2');
+    const integration = root.querySelector('.integration-strip');
+    const sidebar = root.querySelector('.p16-note-sidebar');
+    const editor = root.querySelector('.p16-note-editor');
+    const noteTitle = root.querySelector('#p16NoteTitle');
+    const toolbar = root.querySelector('.p16-note-formatbar');
+    const text = root.querySelector('#p16NoteText');
+    const titleBox = noteTitle.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const textBox = text.getBoundingClientRect();
+    return {
+      headingSize: parseFloat(getComputedStyle(title).fontSize),
+      integrationDisplay: getComputedStyle(integration).display,
+      sidebarRadius: parseFloat(getComputedStyle(sidebar).borderRadius),
+      editorRadius: parseFloat(getComputedStyle(editor).borderRadius),
+      noteTitleRadius: parseFloat(getComputedStyle(noteTitle).borderRadius),
+      toolbarRadius: parseFloat(getComputedStyle(toolbar).borderRadius),
+      titleToToolbarGap: toolbarBox.top - titleBox.bottom,
+      toolbarToTextGap: textBox.top - toolbarBox.bottom
+    };
+  });
+
+  expect(metrics.headingSize).toBeLessThanOrEqual(54);
+  expect(metrics.integrationDisplay).toBe("none");
+  expect(metrics.sidebarRadius).toBeGreaterThanOrEqual(20);
+  expect(metrics.editorRadius).toBeGreaterThanOrEqual(20);
+  expect(metrics.noteTitleRadius).toBeGreaterThanOrEqual(12);
+  expect(metrics.toolbarRadius).toBeGreaterThanOrEqual(10);
+  expect(metrics.titleToToolbarGap).toBeLessThanOrEqual(16);
+  expect(metrics.toolbarToTextGap).toBeLessThanOrEqual(16);
+});
