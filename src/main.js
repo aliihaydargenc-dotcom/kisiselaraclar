@@ -13,6 +13,7 @@ import {
 import { runEngine } from "./tool-engines.js";
 import { buildP17HomeMarkup, buildP17SearchMarkup, wireP17Workspace } from "./p17-workspace.js";
 import { ensurePrivateSession } from "./appwrite-cloud.js";
+import { mountDesktopToolNav } from "./desktop-tool-nav.js";
 
 await ensurePrivateSession();
 
@@ -29,12 +30,14 @@ const toolBrowser = document.querySelector("#toolBrowser");
 const mobileDock = document.querySelector("#mobileDock");
 const heroSearchButton = document.querySelector("#heroSearchButton");
 const scrollProgress = document.querySelector("#scrollProgress");
+const desktopToolNavRoot = document.querySelector("#desktopToolNav");
 const validToolIds = tools.map((tool) => tool.id);
 
 let activeCategory = "all";
 let currentToolId = "";
 let smartFiles = [];
 let catalogExpanded = false;
+let desktopToolNavApi = null;
 
 function safeStorage() {
   try {
@@ -211,7 +214,7 @@ function renderCatalog() {
   if (homeView) homeView.innerHTML = useDesktopHome ? "" : homeMarkup;
   if (desktopHomeView) desktopHomeView.innerHTML = useDesktopHome ? homeMarkup : "";
 
-  catalogView.innerHTML = `
+  catalogView.innerHTML = useDesktopHome ? "" : `
     ${isHome ? smartRouterMarkup() : ""}
     ${activeCategory === "all" && query.trim() ? buildP17SearchMarkup(safeStorage(), query) : ""}
     ${quickTools.length ? `
@@ -243,7 +246,7 @@ function renderCatalog() {
   `;
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
-  wireSmartRouter();
+  if (!useDesktopHome) wireSmartRouter();
   catalogView.querySelector("#expandCatalog")?.addEventListener("click", () => {
     catalogExpanded = true;
     renderCatalog();
@@ -596,8 +599,12 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key === "/" && !isTyping) {
     event.preventDefault();
-    searchInput.focus();
-    searchInput.select();
+    if (desktopHomeQuery?.matches) {
+      desktopToolNavApi?.openSearch();
+    } else {
+      searchInput.focus();
+      searchInput.select();
+    }
   }
 
   if (event.key === "Escape" && currentToolId && !isTyping) {
@@ -610,12 +617,24 @@ desktopHomeQuery?.addEventListener?.("change", () => {
   if (!currentToolId) renderCatalog();
 });
 
+desktopToolNavApi = mountDesktopToolNav({
+  root: desktopToolNavRoot,
+  categories,
+  tools,
+  isDesktop: () => Boolean(desktopHomeQuery?.matches),
+  onToolOpen: (id) => navigateTool(id)
+});
+
 renderCategories();
 history.replaceState({ tool: parseToolHash(location.hash) || null }, "", location.href);
 syncRoute();
 
 
 headerSearchButton?.addEventListener("click", () => {
+  if (desktopHomeQuery?.matches) {
+    desktopToolNavApi?.openSearch();
+    return;
+  }
   if (currentToolId) navigateCatalog({ replace: true });
   requestAnimationFrame(() => {
     toolBrowser?.scrollIntoView({ behavior: "smooth", block: "start" });
