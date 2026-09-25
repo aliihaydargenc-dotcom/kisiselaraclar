@@ -401,6 +401,11 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <span class="p17-date">${escapeHtml(dateLabel(now))}</span>
       </div>
 
+      <div class="p30-mobile-status" aria-live="polite">
+        <span class="p30-connection" data-p30-connection><i aria-hidden="true"></i><strong>Bağlantı kontrol ediliyor</strong></span>
+        <button type="button" data-p30-install hidden>Telefona yükle</button>
+      </div>
+
       <div class="p25-core-grid">
         <article class="p25-card p25-notes">
           <div class="p25-card-head">

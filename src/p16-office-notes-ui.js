@@ -57,6 +57,7 @@ function noteBody() {
         <div class="p16-note-bottom">
           <div class="p16-note-hint">Değişiklikler otomatik kaydedilir.</div>
           <div class="action-row">
+            <button class="primary-button" id="p16NoteToTask">Göreve dönüştür</button>
             <button class="secondary-button" id="p16PinNote">Sabitle</button>
             <button class="secondary-button" id="p16CopyNote">Kopyala</button>
             <button class="secondary-button" id="p16DownloadNote">.md indir</button>
@@ -235,6 +236,13 @@ function wireNote(root) {
     timer = setTimeout(update, 250);
   };
 
+  const flushPendingUpdate = () => {
+    if (!timer || !root.isConnected) return;
+    clearTimeout(timer);
+    timer = undefined;
+    update();
+  };
+
   title.addEventListener("input", () => { autoGrowTitle(); scheduleUpdate(); });
   text.addEventListener("input", scheduleUpdate);
   noteDate.addEventListener("change", () => {
@@ -243,6 +251,7 @@ function wireNote(root) {
     calendarCursor = new Date(`${selectedDate}T12:00:00`);
     update();
   });
+  globalThis.addEventListener?.("pagehide", flushPendingUpdate, { once: true });
 
   list.addEventListener("click", (event) => {
     const button = event.target.closest("[data-note]");
@@ -324,6 +333,28 @@ function wireNote(root) {
   });
 
   root.querySelector("#p16NewNote").onclick = () => create(view === "calendar" ? selectedDate : localDateValue());
+  root.querySelector("#p16NoteToTask").onclick = () => {
+    flushPendingUpdate();
+    const item = current();
+    const firstLine = String(item?.text || "").split(/\r?\n/).map(previewText).find(Boolean) || "";
+    const taskTitle = String(item?.title || firstLine || "").trim();
+    if (!taskTitle) {
+      status(root, "Göreve dönüştürmek için nota bir başlık veya metin yaz.");
+      text.focus();
+      return;
+    }
+    const tasks = normalizeTasks(getJson(P16_TASKS_KEY, []));
+    const taskDate = item?.noteDate || localDateValue();
+    const exists = tasks.some((task) => task.title.toLocaleLowerCase("tr-TR") === taskTitle.toLocaleLowerCase("tr-TR") && task.date === taskDate);
+    if (exists) {
+      status(root, "Bu not zaten aynı tarih için göreve dönüştürülmüş.");
+      return;
+    }
+    const saved = putJson(P16_TASKS_KEY, normalizeTasks([...tasks, {
+      id: uid("task"), title: taskTitle, date: taskDate, time: "", done: false, createdAt: Date.now()
+    }]));
+    status(root, saved ? `Görev oluşturuldu · ${taskDate}` : "Görev kaydedilemedi.");
+  };
   root.querySelector("#p16PinNote").onclick = () => {
     const item = current();
     if (!item) return;

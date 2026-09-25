@@ -210,6 +210,8 @@ test("@mobile P25 kişisel ana ekran ve alt navigasyon çalışır", async ({ pa
   await expect(page.locator('[data-mobile-action="note"]')).toContainText("Not");
   await expect(page.locator('[data-mobile-action="task"]')).toContainText("Görev");
   await expect(page.locator('[data-mobile-action="search"]')).toContainText("Ara");
+  await expect(page.locator('[data-mobile-action="today"]')).toHaveAttribute("aria-current", "page");
+  await expect(page.locator("[data-p30-connection]")).toContainText(/Çevrimiçi|Çevrimdışı/);
 
   await page.locator('[data-mobile-action="note"]').click();
   await expect(page.locator("#p16NoteText")).toBeVisible();
@@ -219,6 +221,32 @@ test("@mobile P25 kişisel ana ekran ve alt navigasyon çalışır", async ({ pa
   await page.locator('[data-mobile-action="task"]').click();
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
   await expect(page.locator("#p16TaskTitle")).toBeFocused();
+});
+
+test("@mobile P30 farklı telefon genişliklerinde taşmadan çalışır", async ({ page }) => {
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 820 });
+    await page.goto("./");
+    await expect(page.locator("#homeView #p17Workspace")).toBeVisible();
+    const metrics = await page.evaluate(() => ({ inner: innerWidth, scroll: document.documentElement.scrollWidth }));
+    expect(metrics.scroll).toBeLessThanOrEqual(metrics.inner + 1);
+    await expect(page.locator("#mobileDock .is-active")).toHaveCount(1);
+  }
+});
+
+test("@mobile P30 nottan görev oluşturur ve PWA manifesti sunar", async ({ page, request }) => {
+  const manifest = await request.get("./manifest.webmanifest");
+  expect(manifest.ok()).toBeTruthy();
+  expect((await manifest.json()).display).toBe("standalone");
+
+  await page.goto("./#tool=quick-note");
+  await expect(page.locator("#p16NoteText")).toBeVisible();
+  await page.locator("#p16NoteTitle").fill("Mobil P30 görevi");
+  await page.locator("#p16NoteText").fill("Bu not görev listesine aktarılacak.");
+  await page.locator("#p16NoteToTask").click();
+  await expect(page.locator("#p16Status")).toContainText("Görev oluşturuldu");
+  await page.goto("./#tool=tasks-calendar");
+  await expect(page.locator("#p16TaskList")).toContainText("Mobil P30 görevi");
 });
 
 

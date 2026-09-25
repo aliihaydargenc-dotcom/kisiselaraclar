@@ -14,6 +14,7 @@ import { runEngine } from "./tool-engines.js";
 import { buildP17HomeMarkup, buildP17SearchMarkup, wireP17Workspace } from "./p17-workspace.js";
 import { ensurePrivateSession } from "./appwrite-cloud.js";
 import { mountDesktopToolNav } from "./desktop-tool-nav.js";
+import { mountMobilePlatform } from "./p30-mobile.js";
 
 await ensurePrivateSession();
 
@@ -701,6 +702,8 @@ mobileDock?.addEventListener("click", (event) => {
     });
   }
 });
+
+mountMobilePlatform({ mobileDock });
 
 
 heroSearchButton?.addEventListener("click", () => {
