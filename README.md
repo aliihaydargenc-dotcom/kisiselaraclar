@@ -123,3 +123,12 @@ P17 çalışma merkezi geliştirici gözüyle yeniden tarandı. Tekrarlanan even
 ### P17.4 mobil görsel bütünlük
 
 Mobil ana akış ekran görüntüsü üzerinden yeniden düzenlendi. Hero yüksekliği azaltıldı; araç bulma başlığı ve arama alanı uygulama ölçeğine çekildi; boş Smart Router mobilde tekrar gösterilmiyor çünkü dosya seçimi çalışma merkezi ve dock içinde zaten mevcut. Dosya seçildiğinde Smart Router önerileri yeniden görünür. Son kullanılanlar karanlık afiş görünümünden açık, kompakt şeride taşındı; kategori şeridi pill yapıya geçti; araç listesi, footer ve mobil dock daha sakin bir tek ürün dili altında birleştirildi.
+
+
+## P18 Figma responsive redesign
+
+Canlı site Figma üzerinden ayrı masaüstü ve mobil yönlere ayrıldı. Masaüstünde Bugün çalışma merkezi hero'nun sağ kolonuna taşındı; araç keşfi iki sütunlu bir çalışma düzenine dönüştü. Mobilde hero, Bugün merkezi, arama/kategori rail'i, son kullanılanlar ve tek sütun araç listesi bağımsız bir mobil kompozisyon olarak ele alındı.
+
+Figma dosyası: https://www.figma.com/design/1joVZQtaK2ah8S3lXbnnu1
+
+Kodda desktop-shell.css ve mobile-shell.css final responsive katmanlar olarak ayrıdır. Playwright hem desktop hem Pixel 7 akışında hangi çalışma merkezinin render edildiğini ve kritik kısayolları doğrular.
