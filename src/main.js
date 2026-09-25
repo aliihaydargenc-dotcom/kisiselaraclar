@@ -18,6 +18,8 @@ const categoryList = document.querySelector("#categoryList");
 const catalogView = document.querySelector("#catalogView");
 const toolView = document.querySelector("#toolView");
 const homeView = document.querySelector("#homeView");
+const desktopHomeView = document.querySelector("#desktopHomeView");
+const desktopHomeQuery = globalThis.matchMedia?.("(min-width: 901px)");
 const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
@@ -198,7 +200,10 @@ function renderCatalog() {
     .map((id) => tools.find((tool) => tool.id === id))
     .filter(Boolean);
 
-  if (homeView) homeView.innerHTML = isHome ? buildP17HomeMarkup(safeStorage()) : "";
+  const homeMarkup = isHome ? buildP17HomeMarkup(safeStorage()) : "";
+  const useDesktopHome = Boolean(desktopHomeQuery?.matches);
+  if (homeView) homeView.innerHTML = useDesktopHome ? "" : homeMarkup;
+  if (desktopHomeView) desktopHomeView.innerHTML = useDesktopHome ? homeMarkup : "";
 
   catalogView.innerHTML = `
     ${isHome ? smartRouterMarkup() : ""}
@@ -230,7 +235,8 @@ function renderCatalog() {
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
-  if (homeView) wireP17Workspace(homeView, safeStorage(), (id, action) => navigateTool(id, { action }));
+  const activeHomeRoot = useDesktopHome ? desktopHomeView : homeView;
+  if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }));
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
@@ -585,6 +591,9 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("popstate", syncRoute);
+desktopHomeQuery?.addEventListener?.("change", () => {
+  if (!currentToolId) renderCatalog();
+});
 
 renderCategories();
 history.replaceState({ tool: parseToolHash(location.hash) || null }, "", location.href);

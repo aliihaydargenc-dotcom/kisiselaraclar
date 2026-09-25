@@ -1,22 +1,29 @@
 import { test, expect } from "@playwright/test";
 
-test("ana ekran çalışma merkezi ve araç kataloğu açılır", async ({ page }) => {
+test("desktop Figma düzeni hero içinde çalışma merkezi kullanır", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
   await page.goto("./");
-  await expect(page.getByRole("heading", { name: "İşini buradan başlat." })).toBeVisible();
-  await expect(page.locator("#toolBrowser")).toBeVisible();
-  await expect(page.locator("#catalogView")).toContainText("araç");
+  await expect(page.locator("#desktopHomeView #p17Workspace")).toBeVisible();
+  await expect(page.locator("#homeView #p17Workspace")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+
+  const hero = await page.locator(".site-hero").boundingBox();
+  const home = await page.locator("#desktopHomeView").boundingBox();
+  expect(hero).not.toBeNull();
+  expect(home).not.toBeNull();
+  expect(home.x).toBeGreaterThan(hero.x + hero.width * 0.42);
 });
 
 test("Yeni not kısayolu gerçek editöre odaklanır", async ({ page }) => {
   await page.goto("./");
-  await page.getByRole("button", { name: /Yeni not/ }).click();
+  await page.locator('.p17-action[data-tool="quick-note"]').first().click();
   await expect(page.locator("#p16NoteText")).toBeVisible();
   await expect(page.locator("#p16NoteText")).toBeFocused();
 });
 
 test("Görev ekle kısayolu görev başlığına odaklanır", async ({ page }) => {
   await page.goto("./");
-  await page.locator('.p17-action[data-tool="tasks-calendar"]').click();
+  await page.locator('.p17-action[data-tool="tasks-calendar"]').first().click();
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
   await expect(page.locator("#p16TaskTitle")).toBeFocused();
 });
@@ -27,9 +34,11 @@ test("arama düğmesi arama alanını odaklar", async ({ page }) => {
   await expect(page.locator("#toolSearch")).toBeFocused();
 });
 
-test("@mobile mobil akış tek ve kompakt ürün hiyerarşisi kullanır", async ({ page }) => {
+test("@mobile mobil Figma düzeni çalışma merkezi ve kompakt keşif kullanır", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#mobileDock")).toBeVisible();
+  await expect(page.locator("#homeView #p17Workspace")).toBeVisible();
+  await expect(page.locator("#desktopHomeView #p17Workspace")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
   await expect(page.locator(".smart-router.is-empty")).toBeHidden();
 
