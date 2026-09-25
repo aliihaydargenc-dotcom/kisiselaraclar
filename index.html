@@ -15,8 +15,33 @@
   <link rel="stylesheet" href="./src/p17-workspace.css" />
   <link rel="stylesheet" href="./src/desktop-shell.css" />
   <link rel="stylesheet" href="./src/mobile-shell.css" />
+  <style>
+    body.auth-pending,body.auth-locked{overflow:hidden}
+    body.auth-pending>:not(#authGate):not(script),body.auth-locked>:not(#authGate):not(script){visibility:hidden}
+    #authGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#0a0b10;color:#f4efdf;visibility:visible}
+    body.auth-ready #authGate{display:none}
+    .auth-card{width:min(100%,470px);padding:28px;border:1px solid rgba(244,239,223,.2);background:#111218;box-shadow:18px 18px 0 #4f7cff}
+    .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}.auth-brand b{display:grid;place-items:center;width:42px;height:42px;background:#d8ff5f;color:#0a0b10;font:900 13px/1 Arial;transform:rotate(-4deg);box-shadow:5px 5px 0 #4f7cff}.auth-brand span{font:800 13px/1.2 Arial,sans-serif}
+    .auth-card h1{margin:0 0 10px;font:800 clamp(34px,7vw,54px)/.95 Arial,sans-serif;letter-spacing:-.055em}.auth-card>p{margin:0 0 22px;color:#b8b7af;font:500 13px/1.55 Arial,sans-serif}
+    .auth-form{display:grid;gap:12px}.auth-form label{display:grid;gap:6px;color:#d7d4c9;font:750 11px/1.2 Arial,sans-serif;letter-spacing:.02em}.auth-form input{width:100%;min-height:48px;padding:0 13px;border:1px solid #4a4b50;border-radius:10px;outline:0;background:#18191f;color:#fff;font:600 16px/1 Arial,sans-serif}.auth-form input:focus{border-color:#7d9aff;box-shadow:0 0 0 3px rgba(79,124,255,.18)}
+    .auth-form button{min-height:48px;padding:0 15px;border:0;border-radius:10px;background:#d8ff5f;color:#0a0b10;cursor:pointer;font:900 13px/1 Arial,sans-serif}.auth-form button:disabled{opacity:.55;cursor:wait}.auth-form button span{float:right}.auth-form small{color:#979890;font:500 10px/1.5 Arial,sans-serif}
+    .auth-setup{margin-top:18px;border-top:1px solid #303138;padding-top:14px;color:#a9a8a1;font:700 11px/1.4 Arial,sans-serif}.auth-setup summary{cursor:pointer}.auth-setup .compact{margin-top:12px}
+    #authStatus{min-height:20px;margin:16px 0 0!important;color:#9fa098!important;font:650 11px/1.45 Arial,sans-serif!important}#authStatus[data-tone=error]{color:#ff8e81!important}#authStatus[data-tone=warning]{color:#f7d36a!important}
+    .cloud-sync-badge{font-size:10px;font-weight:850;color:var(--acid,#d8ff5f);white-space:nowrap}.private-logout{border:0;background:transparent;color:inherit;cursor:pointer;font:800 10px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em}
+    @media(max-width:620px){#authGate{padding:16px}.auth-card{padding:22px;box-shadow:10px 10px 0 #4f7cff}.auth-brand{margin-bottom:28px}.auth-card h1{font-size:38px}.cloud-sync-badge{display:none}}
+  </style>
 </head>
-<body>
+<body class="auth-pending">
+  <section id="authGate" class="auth-gate" aria-live="polite">
+    <div class="auth-card">
+      <div class="auth-brand"><b>KA</b><span>Kişisel Araçlar</span></div>
+      <h1 id="authTitle">Özel alan açılıyor.</h1>
+      <p id="authCopy">Oturum ve bulut bağlantısı kontrol ediliyor.</p>
+      <div id="authBody"></div>
+      <p id="authStatus" role="status">Hazırlanıyor…</p>
+    </div>
+  </section>
+
   <a class="skip-link" href="#mainContent">İçeriğe geç</a>
   <div class="visual-noise" aria-hidden="true"></div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
@@ -46,8 +71,8 @@
         <div class="hero-kicker">
           <span class="hero-kicker-dot" aria-hidden="true"></span>
           <strong id="toolCountSummary">68 araç</strong>
-          <span>hesapsız</span>
-          <span>cihazında</span>
+          <span>özel alan</span>
+          <span>senkron</span>
         </div>
 
         <h1><span>İşini seç.</span><em>Hemen bitir.</em></h1>
@@ -141,7 +166,7 @@
         <article class="benefit-coral">
           <span>03</span>
           <h3>İşini bitir.</h3>
-          <p>Hesap, üyelik, uğraş yok.</p>
+          <p>Tek giriş. Kendi verin. Cihazlar arasında devam et.</p>
         </article>
       </div>
     </div>
@@ -170,6 +195,7 @@
     </button>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
