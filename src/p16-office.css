@@ -93,7 +93,7 @@
 /* P19.2 — Quick Note visual system */
 body.tool-open .tool-view[data-office-mode="quick-note"]{max-width:1320px}
 body.tool-open [data-office-mode=quick-note] .tool-title-row{margin-bottom:12px;padding-bottom:14px;border-bottom:1px solid var(--p16-line)}
-body.tool-open [data-office-mode=quick-note] .tool-title-row h2{font-family:var(--sans);font-size:clamp(34px,4vw,52px);font-weight:850;line-height:1;letter-spacing:-.05em}
+body.tool-open [data-office-mode=quick-note] .tool-title-row h2{font-family:var(--sans);font-size:clamp(34px,4vw,52px);font-weight:850;line-height:1}
 body.tool-open [data-office-mode=quick-note] :is(.eyebrow,.privacy-badge,.integration-strip){display:none!important}
 .p16-note-layout{grid-template-columns:310px minmax(0,1fr);gap:16px;align-items:start}
 .p16-note-sidebar,.p16-note-editor{min-width:0}
@@ -109,7 +109,7 @@ body.tool-open [data-office-mode=quick-note] :is(.eyebrow,.privacy-badge,.integr
 .p16-note-editor{padding:16px;gap:10px;align-self:start}
 .p16-note-editor-meta,.p16-note-meta-left,.p16-note-calendar-dayhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.p16-note-state{padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:800}
 body.tool-open .p16-note-title{min-height:54px;max-height:108px;margin:0;resize:none;overflow-x:hidden;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:13px!important;box-shadow:none!important;font-family:var(--sans);font-size:1.35rem;font-weight:800;line-height:1.18}
-.p16-note-formatbar{padding:6px;border:1px solid var(--p16-line);border-radius:11px;background:#f8f7f2}.p16-note-formatbar button{flex:0 0 auto;min-height:34px;padding:6px 9px;border-radius:7px;font-size:.72rem;font-weight:760}.p16-note-toolbar-sep{flex:0 0 1px;width:1px;background:var(--p16-line)}
+.p16-note-formatbar{padding:6px;border:1px solid var(--p16-line);border-radius:11px}.p16-note-formatbar button{flex:0 0 auto;min-height:34px;padding:6px 9px;border-radius:7px;font-size:.72rem;font-weight:760}.p16-note-toolbar-sep{flex:0 0 1px;width:1px;background:var(--p16-line)}
 body.tool-open .p16-note-text{min-height:440px;margin:0;border-radius:14px!important;box-shadow:none!important;font-size:15px;line-height:1.65}
 .p16-note-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}.p16-note-bottom .action-row{margin-top:0}
 body.tool-open [data-office-mode=quick-note] :is(.primary-button,.secondary-button){border-radius:10px}
