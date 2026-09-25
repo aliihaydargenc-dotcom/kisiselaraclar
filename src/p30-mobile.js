@@ -63,7 +63,7 @@ export function mountMobilePlatform({ mobileDock } = {}) {
     updateDock(mobileDock);
     updateConnection();
     updateInstallButtons();
-  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+  }).observe(document.body, { childList: true, subtree: true });
 
   updateDock(mobileDock);
   updateConnection();
