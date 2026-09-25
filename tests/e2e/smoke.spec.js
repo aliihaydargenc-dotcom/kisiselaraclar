@@ -317,3 +317,45 @@ test("P25 masaüstü ana ekranda üç ana kullanım alanı öne çıkar", async 
   await expect(page.locator(".p25-plan h3")).toHaveText("Günlük Plan");
   await expect(page.locator(".p25-quick-actions")).toBeVisible();
 });
+
+
+test("P26 ana ekranda sesli not başka araca gitmeden kaydedilir", async ({ page }) => {
+  await page.addInitScript(() => {
+    class FakeSpeechRecognition {
+      constructor() {
+        window.__fakeSpeechRecognition = this;
+        this.continuous = false;
+        this.interimResults = false;
+        this.lang = "";
+      }
+      start() { this.onstart?.(); }
+      stop() { this.onend?.(); }
+    }
+    window.SpeechRecognition = FakeSpeechRecognition;
+  });
+
+  await page.goto("./");
+  const recorder = page.locator("#p25VoiceRecorder");
+  await expect(recorder).toBeVisible();
+  await recorder.click();
+
+  await expect(page.locator("body")).not.toHaveClass(/tool-open/);
+  await expect(recorder).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#p25VoiceRecorderTitle")).toContainText("Dinleniyor");
+
+  await page.evaluate(() => {
+    const rec = window.__fakeSpeechRecognition;
+    rec.onresult?.({
+      resultIndex: 0,
+      results: [{ 0: { transcript: "Yarın raporu kontrol et" }, isFinal: true }]
+    });
+  });
+  await expect(page.locator("#p25VoiceTranscript")).toContainText("Yarın raporu kontrol et");
+
+  await recorder.click();
+  await expect(page.locator("body")).not.toHaveClass(/tool-open/);
+  await expect(page.locator(".p25-voice-list")).toContainText("Yarın raporu kontrol et");
+
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("kisiselaraclar:p16:notes") || "[]"));
+  expect(stored.some((item) => /Sesli Not/i.test(item.title) && item.text === "Yarın raporu kontrol et")).toBeTruthy();
+});
