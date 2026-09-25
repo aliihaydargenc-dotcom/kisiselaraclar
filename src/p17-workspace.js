@@ -680,9 +680,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         updatedAt: now
       });
     }
-    const saved = writeJson(storage, NOTES_KEY, next);
-    if (saved && typeof onRefresh === "function") onRefresh();
-    return saved;
+    return writeJson(storage, NOTES_KEY, next);
   };
 
   const finishVoiceSession = () => {
