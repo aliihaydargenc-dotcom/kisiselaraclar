@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   actionLinesToTasks,
+  applyNoteMarkdownFormat,
   buildMeetingMarkdown,
   diffText,
   monthMatrix,
@@ -94,4 +95,28 @@ test("ay matrisi görev sayısını doğru güne işler", () => {
   ]);
   const cell = matrix.cells.find((item) => item?.date === "2026-09-24");
   assert.equal(cell.taskCount, 2);
+});
+
+
+test("not biçimlendirici seçili metni kalın ve üstü çizili yapar", () => {
+  const bold = applyNoteMarkdownFormat("Merhaba dünya", 8, 13, "bold");
+  assert.equal(bold.value, "Merhaba **dünya**");
+  const strike = applyNoteMarkdownFormat("Bitti", 0, 5, "strike");
+  assert.equal(strike.value, "~~Bitti~~");
+});
+
+test("not biçimlendirici checklist ve tamamlanan madde üretir", () => {
+  const check = applyNoteMarkdownFormat("Raporu gönder\nSunumu güncelle", 0, 28, "check");
+  assert.equal(check.value, "- [ ] Raporu gönder\n- [ ] Sunumu güncelle");
+  const done = applyNoteMarkdownFormat(check.value, 0, check.value.length, "check-done");
+  assert.equal(done.value, "- [x] Raporu gönder\n- [x] Sunumu güncelle");
+  const reopen = applyNoteMarkdownFormat(done.value, 0, done.value.length, "check-done");
+  assert.equal(reopen.value, "- [ ] Raporu gönder\n- [ ] Sunumu güncelle");
+});
+
+test("not biçimlendirici madde ve numaralı liste uygular", () => {
+  const bullet = applyNoteMarkdownFormat("Bir\nİki", 0, 7, "bullet");
+  assert.equal(bullet.value, "- Bir\n- İki");
+  const numbered = applyNoteMarkdownFormat("Bir\nİki", 0, 7, "number");
+  assert.equal(numbered.value, "1. Bir\n2. İki");
 });

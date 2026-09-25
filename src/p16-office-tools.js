@@ -26,9 +26,82 @@ export function normalizeNotes(value) {
       title: String(item.title || ""),
       text: String(item.text || ""),
       pinned: Boolean(item.pinned),
+      completed: Boolean(item.completed),
       updatedAt: Number(item.updatedAt) || Date.now()
     }))
-    .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
+    .sort((a, b) =>
+      Number(b.pinned) - Number(a.pinned) ||
+      Number(a.completed) - Number(b.completed) ||
+      b.updatedAt - a.updatedAt
+    );
+}
+
+function noteLineRange(value, start, end) {
+  const source = String(value ?? "");
+  const safeStart = Math.max(0, Math.min(source.length, Number(start) || 0));
+  const safeEnd = Math.max(safeStart, Math.min(source.length, Number(end) || safeStart));
+  const lineStart = source.lastIndexOf("\n", Math.max(0, safeStart - 1)) + 1;
+  const nextBreak = source.indexOf("\n", safeEnd);
+  const lineEnd = nextBreak === -1 ? source.length : nextBreak;
+  return { source, start: safeStart, end: safeEnd, lineStart, lineEnd };
+}
+
+function stripNoteLinePrefix(line) {
+  const match = String(line).match(/^(\s*)(.*)$/s);
+  const indent = match?.[1] || "";
+  const body = (match?.[2] || "").replace(/^(?:#{1,6}\s+|[-*+]\s+\[(?: |x|X)\]\s+|[-*+]\s+|\d+[.)]\s+)/, "");
+  return { indent, body };
+}
+
+export function applyNoteMarkdownFormat(value, start, end, action) {
+  const range = noteLineRange(value, start, end);
+  const source = range.source;
+  const selected = source.slice(range.start, range.end);
+  const inline = {
+    bold: ["**", "**", "metin"],
+    italic: ["_", "_", "metin"],
+    strike: ["~~", "~~", "metin"]
+  };
+
+  if (inline[action]) {
+    const [before, after, placeholder] = inline[action];
+    const content = selected || placeholder;
+    const replacement = before + content + after;
+    const next = source.slice(0, range.start) + replacement + source.slice(range.end);
+    const selectionStart = range.start + before.length;
+    return { value: next, selectionStart, selectionEnd: selectionStart + content.length };
+  }
+
+  if (action === "link") {
+    const label = selected || "bağlantı";
+    const replacement = `[${label}](https://)`;
+    const next = source.slice(0, range.start) + replacement + source.slice(range.end);
+    const urlStart = range.start + label.length + 3;
+    return { value: next, selectionStart: urlStart, selectionEnd: urlStart + 8 };
+  }
+
+  const block = source.slice(range.lineStart, range.lineEnd);
+  const lines = block.split("\n");
+  const nonEmpty = lines.filter((line) => line.trim());
+  const allChecked = nonEmpty.length > 0 && nonEmpty.every((line) => /^\s*[-*+]\s+\[[xX]\]\s+/.test(line));
+
+  const mapped = lines.map((line, index) => {
+    if (!line.trim()) return line;
+    const { indent, body } = stripNoteLinePrefix(line);
+    if (action === "bullet") return `${indent}- ${body}`;
+    if (action === "number") return `${indent}${index + 1}. ${body}`;
+    if (action === "check") return `${indent}- [ ] ${body}`;
+    if (action === "check-done") return `${indent}- [${allChecked ? " " : "x"}] ${body}`;
+    if (action === "h2") return `${indent}## ${body}`;
+    return line;
+  }).join("\n");
+
+  const next = source.slice(0, range.lineStart) + mapped + source.slice(range.lineEnd);
+  return {
+    value: next,
+    selectionStart: range.lineStart,
+    selectionEnd: range.lineStart + mapped.length
+  };
 }
 
 export function normalizeTasks(value) {

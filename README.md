@@ -132,3 +132,10 @@ Canlı site Figma üzerinden ayrı masaüstü ve mobil yönlere ayrıldı. Masa�
 Figma dosyası: https://www.figma.com/design/1joVZQtaK2ah8S3lXbnnu1
 
 Kodda desktop-shell.css ve mobile-shell.css final responsive katmanlar olarak ayrıdır. Playwright hem desktop hem Pixel 7 akışında hangi çalışma merkezinin render edildiğini ve kritik kısayolları doğrular.
+
+
+## P19 Hızlı Not editörü
+
+Hızlı Not ayrı bir masaüstü çalışma alanına yükseltildi. Masaüstünde yaklaşık 1320 px genişlik, 300 px not listesi ve kalan alanı kullanan editör bulunur. Başlık textarea olarak otomatik büyür ve yatay taşma üretmez.
+
+Not içi araç çubuğu Markdown tabanlı kalın, italik, üstünü çizme, madde listesi, numaralı liste, checklist, checklist tamamlandı, H2 ve link ekleme işlemlerini destekler. Not seviyesinde Aktif/Tamamlandı durumu, not araması ve Tümü/Aktif/Tamamlandı filtreleri eklendi. Eski notlar completed:false ile geriye uyumlu biçimde açılır.
