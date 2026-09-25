@@ -197,10 +197,13 @@ test("980 px ara görünüm masaüstü kabuğuna düşmez", async ({ page }, tes
 });
 
 
-test("@mobile P22 mobil F alt navigasyonu ve özet kartları çalışır", async ({ page }, testInfo) => {
+test("@mobile P25 kişisel ana ekran ve alt navigasyon çalışır", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.includes("mobile"), "Mobil projede çalışır.");
   await page.goto("./");
-  await expect(page.locator(".p22-summary-strip")).toBeVisible();
+  await expect(page.locator(".p25-core-grid")).toBeVisible();
+  await expect(page.locator(".p25-notes")).toBeVisible();
+  await expect(page.locator(".p25-voice")).toBeVisible();
+  await expect(page.locator(".p25-plan")).toBeVisible();
   await expect(page.locator("#mobileDock button")).toHaveCount(4);
   await expect(page.locator('[data-mobile-action="today"]')).toContainText("Ana");
   await expect(page.locator('[data-mobile-action="note"]')).toContainText("Not");
@@ -270,4 +273,47 @@ test("P24 masaüstü menü gerçek SVG ikon ve okunabilir metin kullanır", asyn
     Number.parseFloat(getComputedStyle(el).fontSize)
   );
   expect(size).toBeGreaterThanOrEqual(12);
+});
+
+
+test("P25 ana ekran hızlı notu doğrudan kaydeder", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator("#p25QuickNoteInput")).toBeVisible();
+  await page.locator("#p25QuickNoteInput").fill("Ana ekrandan hızlı not");
+  await page.locator("#p25QuickNoteForm button[type=submit]").click();
+  await expect(page.locator(".p25-note-list")).toContainText("Ana ekrandan hızlı not");
+
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("kisiselaraclar:p16:notes") || "[]"));
+  expect(stored.some((item) => item.text === "Ana ekrandan hızlı not")).toBeTruthy();
+});
+
+test("P25 ana ekran günlük plan görevi tamamlayabilir", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("kisiselaraclar:p16:tasks", JSON.stringify([{
+      id: "p25-home-task",
+      title: "Ana ekran görev testi",
+      date: new Date().toISOString().slice(0, 10),
+      time: "18:00",
+      done: false,
+      createdAt: Date.now()
+    }]));
+  });
+  await page.goto("./");
+  const checkbox = page.locator('[data-p25-task-toggle="p25-home-task"]');
+  await expect(checkbox).toBeVisible();
+  await checkbox.check();
+
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("kisiselaraclar:p16:tasks") || "[]"));
+  expect(stored.find((item) => item.id === "p25-home-task")?.done).toBe(true);
+});
+
+test("P25 masaüstü ana ekranda üç ana kullanım alanı öne çıkar", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await expect(page.locator(".p25-core-grid")).toBeVisible();
+  await expect(page.locator(".p25-card")).toHaveCount(3);
+  await expect(page.locator(".p25-notes h3")).toHaveText("Not Defteri");
+  await expect(page.locator(".p25-voice h3")).toHaveText("Sesli Notlar");
+  await expect(page.locator(".p25-plan h3")).toHaveText("Günlük Plan");
+  await expect(page.locator(".p25-quick-actions")).toBeVisible();
 });
