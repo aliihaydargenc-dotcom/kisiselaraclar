@@ -144,3 +144,10 @@ Not içi araç çubuğu Markdown tabanlı kalın, italik, üstünü çizme, madd
 ## P19.1 Not Takvimi
 
 Hızlı Not sol paneline Liste / Takvim görünümü eklendi. Takvim, son düzenleme zamanı yerine notun kendi `noteDate` alanını kullanır. Eski notlar geriye uyumlu olarak son güncellenme tarihlerinden bir not tarihi kazanır. Ay görünümünde gün başına not sayısı görünür; bir güne basınca o güne ait notlar açılır ve doğrudan o güne yeni not oluşturulabilir. Editörde Not tarihi alanı ayrıca değiştirilebilir.
+
+
+## P19.2 Hızlı Not görsel bütünlük
+
+Hızlı Not, genel araç sayfasındaki büyük editorial/brutalist başlık stilinden ayrılarak tek bir çalışma alanı diline alındı. Başlık küçültüldü; teknik entegrasyon şeridi gizlendi; sol not/takvim paneli ile sağ editör aynı border, radius ve yüzey sisteminde birleştirildi.
+
+Editör CSS Grid satırları sabitlendiği için sol takvim uzadığında başlık, toolbar ve metin alanı artık dikeyde anlamsız biçimde esnemiyor. Başlık, toolbar, içerik ve alt aksiyonlar birbirine kontrollü 10px aralıklarla bağlanıyor.
