@@ -72,6 +72,13 @@ function displayShortDate(value) {
   }
 }
 
+function polishTranscript(value) {
+  const text = String(value ?? "").replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  return text
+    .replace(/(^|[.!?]\s+)([a-zçğıöşü])/g, (_, prefix, letter) => `${prefix}${letter.toLocaleUpperCase("tr-TR")}`);
+}
+
 export function localDateKey(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -344,14 +351,14 @@ function noteRows(summary) {
 }
 
 function voiceRows(summary) {
-  const list = summary.voiceNotes.slice(0, 3);
+  const list = summary.voiceNotes.slice(0, 4);
   if (!list.length) return '<div class="p25-empty compact">Henüz sesli not yok. Mikrofonu açıp ilk kaydını oluştur.</div>';
   return list.map((note) => `
-    <button type="button" class="p25-voice-row" data-tool="voice-note">
-      <span class="p25-play" aria-hidden="true">▶</span>
+    <button type="button" class="p25-voice-row" data-p25-voice-note-id="${escapeHtml(note.id)}">
+      <span class="p25-play" aria-hidden="true">✎</span>
       <span class="p25-row-copy">
-        <strong>${escapeHtml(compactText(note.text, 48) || "Sesli not")}</strong>
-        <small>${escapeHtml(displayTime(note.updatedAt) || "Metne dönüştürüldü")}</small>
+        <strong>${escapeHtml(compactText(note.text, 58) || "Sesli not")}</strong>
+        <small>${escapeHtml(displayTime(note.updatedAt) || "Metne dönüştürüldü")} · düzenlemek için aç</small>
       </span>
       <span class="p25-row-more" aria-hidden="true">›</span>
     </button>`).join("");
@@ -416,7 +423,7 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
               <span class="p25-icon p25-icon-voice" aria-hidden="true">●</span>
               <div><h3>Sesli Notlar</h3><p>Konuş, metne dönüştür ve kaydet.</p></div>
             </div>
-            <button type="button" class="p25-link" data-tool="voice-note">Tümü <span>→</span></button>
+            <button type="button" class="p25-link" data-tool="quick-note">Notlarda aç <span>→</span></button>
           </div>
 
           <button type="button" class="p25-voice-recorder" id="p25VoiceRecorder" data-p25-voice-trigger aria-pressed="false">
@@ -426,9 +433,16 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
             <strong id="p25VoiceRecorderTitle">Sesli not başlat</strong>
             <small id="p25VoiceRecorderStatus">Dokun ve konuş</small>
           </button>
-          <div class="p25-live-voice" id="p25LiveVoice" hidden aria-live="polite">
-            <span class="p25-live-dot" aria-hidden="true"></span>
-            <p id="p25VoiceTranscript">Dinliyorum…</p>
+          <div class="p27-voice-editor" id="p25VoiceEditor" hidden>
+            <div class="p27-voice-editor-head">
+              <span><i class="p25-live-dot" aria-hidden="true"></i><strong id="p25VoiceEditorLabel">Sesli not taslağı</strong></span>
+              <small id="p25VoiceEditorMeta">Konuşman burada düzenlenebilir.</small>
+            </div>
+            <textarea id="p25VoiceTranscript" rows="6" placeholder="Konuşman burada yazıya dönüşür. Kaydetmeden önce istediğin gibi düzeltebilirsin."></textarea>
+            <div class="p27-voice-editor-actions">
+              <button type="button" class="p27-voice-cancel" id="p25VoiceCancel">İptal</button>
+              <button type="button" class="p27-voice-save" id="p25VoiceSave">Sesli notu kaydet</button>
+            </div>
           </div>
 
           <div class="p25-section-label"><span>Son sesli notlar</span><strong>${summary.voiceNotes.length}</strong></div>
@@ -576,8 +590,12 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   const voiceButton = root.querySelector("#p25VoiceRecorder");
   const voiceTitle = root.querySelector("#p25VoiceRecorderTitle");
   const voiceStatus = root.querySelector("#p25VoiceRecorderStatus");
-  const liveVoice = root.querySelector("#p25LiveVoice");
+  const voiceEditor = root.querySelector("#p25VoiceEditor");
   const transcriptNode = root.querySelector("#p25VoiceTranscript");
+  const editorLabel = root.querySelector("#p25VoiceEditorLabel");
+  const editorMeta = root.querySelector("#p25VoiceEditorMeta");
+  const saveButton = root.querySelector("#p25VoiceSave");
+  const cancelButton = root.querySelector("#p25VoiceCancel");
   const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
   let recognition = null;
   let listeningRequested = false;
@@ -585,45 +603,100 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   let recognitionError = "";
   let finalTranscript = "";
   let interimTranscript = "";
+  let editingVoiceNoteId = "";
 
   const setVoiceUi = (listening, message = "") => {
     voiceButton?.classList.toggle("is-listening", listening);
     voiceButton?.setAttribute("aria-pressed", listening ? "true" : "false");
     if (voiceTitle) voiceTitle.textContent = listening ? "Dinleniyor · durdurmak için dokun" : "Sesli not başlat";
-    if (voiceStatus) voiceStatus.textContent = message || (listening ? "Konuşman anlık olarak yazıya dönüşüyor" : "Dokun ve konuş");
-    if (liveVoice) liveVoice.hidden = !listening && !finalTranscript && !recognitionError;
+    if (voiceStatus) voiceStatus.textContent = message || (listening ? "Konuşman aşağıdaki alana yazılıyor" : "Dokun ve konuş");
+    if (voiceEditor) voiceEditor.hidden = !listening && !transcriptNode?.value && !recognitionError && !editingVoiceNoteId;
+    if (transcriptNode) transcriptNode.readOnly = listening;
+    if (saveButton) saveButton.disabled = listening;
+  };
+
+  const openVoiceEditor = ({ id = "", text = "", label = "Sesli not taslağı" } = {}) => {
+    editingVoiceNoteId = id;
+    if (voiceEditor) voiceEditor.hidden = false;
+    if (transcriptNode) {
+      transcriptNode.value = polishTranscript(text);
+      transcriptNode.readOnly = false;
+    }
+    if (editorLabel) editorLabel.textContent = label;
+    if (editorMeta) editorMeta.textContent = id ? "Metni düzelt ve değişiklikleri kaydet." : "Kaydetmeden önce metni istediğin gibi düzenle.";
+    if (saveButton) {
+      saveButton.disabled = false;
+      saveButton.textContent = id ? "Değişiklikleri kaydet" : "Sesli notu kaydet";
+    }
+  };
+
+  const resetVoiceEditor = () => {
+    editingVoiceNoteId = "";
+    finalTranscript = "";
+    interimTranscript = "";
+    recognitionError = "";
+    if (transcriptNode) {
+      transcriptNode.value = "";
+      transcriptNode.readOnly = false;
+    }
+    if (voiceEditor) voiceEditor.hidden = true;
+    if (editorLabel) editorLabel.textContent = "Sesli not taslağı";
+    if (editorMeta) editorMeta.textContent = "Konuşman burada düzenlenebilir.";
+    if (saveButton) {
+      saveButton.disabled = false;
+      saveButton.textContent = "Sesli notu kaydet";
+    }
+    setVoiceUi(false);
   };
 
   const saveVoiceNote = () => {
-    const transcript = String(finalTranscript || interimTranscript || "").replace(/\s+/g, " ").trim();
-    if (!transcript) return false;
+    const transcript = polishTranscript(transcriptNode?.value || "");
+    if (!transcript) {
+      if (editorMeta) editorMeta.textContent = "Kaydedilecek metin yok.";
+      transcriptNode?.focus();
+      return false;
+    }
     const notes = storageJson(storage, NOTES_KEY, []);
     const next = Array.isArray(notes) ? [...notes] : [];
-    next.unshift({
-      id: makeId("note"),
-      title: `Sesli Not · ${displayTime(Date.now())}`,
-      text: transcript,
-      pinned: false,
-      completed: false,
-      noteDate: localDateKey(),
-      updatedAt: Date.now()
-    });
+    const now = Date.now();
+    if (editingVoiceNoteId) {
+      const index = next.findIndex((note) => String(note?.id || "") === editingVoiceNoteId);
+      if (index >= 0) {
+        next[index] = {
+          ...next[index],
+          title: String(next[index].title || "").match(/sesli\s*not/i) ? next[index].title : `Sesli Not · ${displayTime(now)}`,
+          text: transcript,
+          updatedAt: now
+        };
+      }
+    } else {
+      next.unshift({
+        id: makeId("note"),
+        title: `Sesli Not · ${displayTime(now)}`,
+        text: transcript,
+        pinned: false,
+        completed: false,
+        noteDate: localDateKey(),
+        updatedAt: now
+      });
+    }
     return writeJson(storage, NOTES_KEY, next);
   };
 
   const finishVoiceSession = () => {
-    const saved = !recognitionError && saveVoiceNote();
-    if (transcriptNode) {
-      transcriptNode.textContent = recognitionError
-        ? recognitionError
-        : saved
-          ? "Sesli not kaydedildi."
-          : "Kayıt bitti; kaydedilecek konuşma algılanmadı.";
+    const current = polishTranscript(`${finalTranscript} ${interimTranscript}`);
+    if (transcriptNode && current) transcriptNode.value = current;
+    if (recognitionError) {
+      if (editorMeta) editorMeta.textContent = recognitionError;
+      setVoiceUi(false, "Mikrofon kullanılamadı");
+      return;
     }
-    setVoiceUi(false, recognitionError ? "Mikrofon kullanılamadı" : saved ? "Notlarına kaydedildi" : "Tekrar deneyebilirsin");
-    finalTranscript = "";
-    interimTranscript = "";
-    if (saved && typeof onRefresh === "function") setTimeout(() => onRefresh(), 450);
+    if (editorLabel) editorLabel.textContent = "Sesli not taslağı";
+    if (editorMeta) editorMeta.textContent = current
+      ? "Dinleme durdu. Metni kontrol et, gerekirse düzelt ve kaydet."
+      : "Konuşma algılanmadı. Tekrar deneyebilirsin.";
+    setVoiceUi(false, current ? "Düzenlemeye hazır" : "Tekrar deneyebilirsin");
+    transcriptNode?.focus();
   };
 
   if (SpeechRecognition && voiceButton) {
@@ -634,8 +707,11 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
 
     recognition.onstart = () => {
       recognitionError = "";
+      editingVoiceNoteId = "";
+      if (voiceEditor) voiceEditor.hidden = false;
+      if (editorLabel) editorLabel.textContent = "Canlı sesli yazma";
+      if (editorMeta) editorMeta.textContent = "Bitirmek için mikrofona tekrar dokun.";
       setVoiceUi(true);
-      if (transcriptNode) transcriptNode.textContent = "Dinliyorum…";
     };
 
     recognition.onresult = (event) => {
@@ -647,8 +723,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         else interim += `${part} `;
       }
       interimTranscript = interim;
-      const current = `${finalTranscript}${interimTranscript}`.replace(/\s+/g, " ").trim();
-      if (transcriptNode) transcriptNode.textContent = current || "Dinliyorum…";
+      const current = polishTranscript(`${finalTranscript} ${interimTranscript}`);
+      if (transcriptNode) transcriptNode.value = current;
     };
 
     recognition.onerror = (event) => {
@@ -662,18 +738,15 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
             : code === "no-speech"
               ? ""
               : "Ses tanıma başlatılamadı.";
-      if (recognitionError && transcriptNode) transcriptNode.textContent = recognitionError;
     };
 
     recognition.onend = () => {
       if (listeningRequested && !manualStop && !recognitionError && root.isConnected) {
-        try {
-          setTimeout(() => {
-            if (!listeningRequested || !root.isConnected) return;
-            try { recognition.start(); } catch {}
-          }, 120);
-          return;
-        } catch {}
+        setTimeout(() => {
+          if (!listeningRequested || !root.isConnected) return;
+          try { recognition.start(); } catch {}
+        }, 120);
+        return;
       }
       listeningRequested = false;
       manualStop = false;
@@ -682,7 +755,6 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   } else if (voiceButton) {
     voiceButton.disabled = true;
     setVoiceUi(false, "Bu tarayıcı sesle yazmayı desteklemiyor");
-    if (transcriptNode) transcriptNode.textContent = "Tarayıcı konuşma tanıma özelliğini desteklemiyor.";
   }
 
   root.querySelectorAll("[data-p25-voice-trigger]").forEach((trigger) => {
@@ -693,17 +765,18 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
       if (listeningRequested) {
         listeningRequested = false;
         manualStop = true;
-        setVoiceUi(false, "Kaydediliyor…");
+        setVoiceUi(false, "Dinleme durduruluyor…");
         try { recognition.stop(); } catch { finishVoiceSession(); }
         return;
       }
       recognitionError = "";
       finalTranscript = "";
       interimTranscript = "";
+      editingVoiceNoteId = "";
+      if (transcriptNode) transcriptNode.value = "";
+      if (voiceEditor) voiceEditor.hidden = false;
       listeningRequested = true;
       manualStop = false;
-      if (liveVoice) liveVoice.hidden = false;
-      if (transcriptNode) transcriptNode.textContent = "Mikrofon hazırlanıyor…";
       voiceButton?.scrollIntoView({ behavior: "smooth", block: "center" });
       try { recognition.start(); }
       catch {
@@ -712,6 +785,38 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         finishVoiceSession();
       }
     });
+  });
+
+  root.querySelectorAll("[data-p25-voice-note-id]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (listeningRequested) return;
+      const id = String(button.dataset.p25VoiceNoteId || "");
+      const note = normalizedNotes(storage).find((item) => item.id === id);
+      if (!note) return;
+      openVoiceEditor({ id, text: note.text, label: "Sesli notu düzenle" });
+      voiceEditor?.scrollIntoView({ behavior: "smooth", block: "center" });
+      transcriptNode?.focus({ preventScroll: true });
+    });
+  });
+
+  saveButton?.addEventListener("click", () => {
+    if (!saveVoiceNote()) return;
+    if (editorMeta) editorMeta.textContent = editingVoiceNoteId ? "Değişiklikler kaydedildi." : "Sesli not kaydedildi.";
+    setTimeout(() => {
+      resetVoiceEditor();
+      if (typeof onRefresh === "function") onRefresh();
+    }, 260);
+  });
+
+  cancelButton?.addEventListener("click", () => {
+    if (listeningRequested) {
+      listeningRequested = false;
+      manualStop = true;
+      try { recognition?.stop(); } catch {}
+    }
+    resetVoiceEditor();
   });
 
   const status = root.querySelector("#p17BackupStatus");

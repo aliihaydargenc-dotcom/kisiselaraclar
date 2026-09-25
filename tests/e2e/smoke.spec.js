@@ -319,7 +319,7 @@ test("P25 masaüstü ana ekranda üç ana kullanım alanı öne çıkar", async 
 });
 
 
-test("P26 ana ekranda sesli not başka araca gitmeden kaydedilir", async ({ page }) => {
+test("P27 ana ekranda sesli not düzenlenip sonra kaydedilir", async ({ page }) => {
   await page.addInitScript(() => {
     class FakeSpeechRecognition {
       constructor() {
@@ -336,26 +336,48 @@ test("P26 ana ekranda sesli not başka araca gitmeden kaydedilir", async ({ page
 
   await page.goto("./");
   const recorder = page.locator("#p25VoiceRecorder");
-  await expect(recorder).toBeVisible();
   await recorder.click();
-
   await expect(page.locator("body")).not.toHaveClass(/tool-open/);
-  await expect(recorder).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#p25VoiceRecorderTitle")).toContainText("Dinleniyor");
+  await expect(page.locator("#p25VoiceEditor")).toBeVisible();
 
   await page.evaluate(() => {
     const rec = window.__fakeSpeechRecognition;
     rec.onresult?.({
       resultIndex: 0,
-      results: [{ 0: { transcript: "Yarın raporu kontrol et" }, isFinal: true }]
+      results: [{ 0: { transcript: "yarın raporu kontrol et" }, isFinal: true }]
     });
   });
-  await expect(page.locator("#p25VoiceTranscript")).toContainText("Yarın raporu kontrol et");
+  await expect(page.locator("#p25VoiceTranscript")).toHaveValue("Yarın raporu kontrol et");
 
   await recorder.click();
+  await expect(page.locator("#p25VoiceTranscript")).not.toHaveAttribute("readonly");
+  await page.locator("#p25VoiceTranscript").fill("Yarın raporu kontrol et ve Zehra'ya gönder.");
+  await page.locator("#p25VoiceSave").click();
+
   await expect(page.locator("body")).not.toHaveClass(/tool-open/);
-  await expect(page.locator(".p25-voice-list")).toContainText("Yarın raporu kontrol et");
+  await expect(page.locator(".p25-voice-list")).toContainText("Yarın raporu kontrol et ve Zehra'ya gönder.");
+
+  await page.locator("[data-p25-voice-note-id]").first().click();
+  await expect(page.locator("body")).not.toHaveClass(/tool-open/);
+  await expect(page.locator("#p25VoiceTranscript")).toHaveValue("Yarın raporu kontrol et ve Zehra'ya gönder.");
 
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("kisiselaraclar:p16:notes") || "[]"));
-  expect(stored.some((item) => /Sesli Not/i.test(item.title) && item.text === "Yarın raporu kontrol et")).toBeTruthy();
+  expect(stored.some((item) => /Sesli Not/i.test(item.title) && item.text === "Yarın raporu kontrol et ve Zehra'ya gönder.")).toBeTruthy();
+});
+
+test("P27 voice-note aracı kayıtlı sesli notu boş açmaz", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("kisiselaraclar:p16:notes", JSON.stringify([{
+      id: "voice-existing",
+      title: "Sesli Not · 14:30",
+      text: "Kayıtlı sesli not metni",
+      pinned: false,
+      completed: false,
+      noteDate: new Date().toISOString().slice(0, 10),
+      updatedAt: Date.now()
+    }]));
+  });
+  await page.goto("./#tool=voice-note");
+  await expect(page.locator("#p16VoiceText")).toHaveValue("Kayıtlı sesli not metni");
+  await expect(page.locator("[data-voice-note-id=voice-existing]")).toBeVisible();
 });

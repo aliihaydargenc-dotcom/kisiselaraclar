@@ -137,19 +137,24 @@ function wireTasks(root) {
 function voiceBody() {
   return `
     <div class="p16-voice">
+      <div class="p16-voice-saved-head">
+        <div><strong>Sesli notlarım</strong><small>Kaydedilmiş konuşmalarını aç ve düzenle.</small></div>
+        <button class="secondary-button" id="p16VoiceNew">＋ Yeni</button>
+      </div>
+      <div class="p16-voice-saved" id="p16VoiceSaved"></div>
       <div class="p16-mic" id="p16Mic" aria-hidden="true"><span></span></div>
       <select id="p16VoiceLang" class="text-control"><option value="tr-TR">Türkçe</option><option value="en-US">English</option></select>
       <div class="action-row">
         <button class="primary-button" id="p16VoiceStart">Dinlemeyi başlat</button>
         <button class="secondary-button" id="p16VoiceStop" disabled>Durdur</button>
       </div>
-      <textarea id="p16VoiceText" class="text-control p16-voice-text" placeholder="Konuşma burada yazıya dönüşür; istersen elle de düzenleyebilirsin."></textarea>
+      <textarea id="p16VoiceText" class="text-control p16-voice-text" placeholder="Konuşma burada yazıya dönüşür. Kaydetmeden önce metni istediğin gibi düzeltebilirsin."></textarea>
       <div class="action-row">
-        <button class="secondary-button" id="p16VoiceSave">Hızlı Not'a kaydet</button>
+        <button class="secondary-button" id="p16VoiceSave">Sesli notu kaydet</button>
         <button class="secondary-button" id="p16VoiceCopy">Kopyala</button>
       </div>
     </div>
-    ${statusLine("Mikrofon izni yalnız konuşma tanıma başladığında istenir.")}`;
+    ${statusLine("Sesli notların bu cihazda ve bulut senkronunda Notlar ile birlikte tutulur.")}`;
 }
 
 function wireVoice(root) {
@@ -158,45 +163,120 @@ function wireVoice(root) {
   const start = root.querySelector("#p16VoiceStart");
   const stop = root.querySelector("#p16VoiceStop");
   const mic = root.querySelector("#p16Mic");
+  const savedRoot = root.querySelector("#p16VoiceSaved");
+  let notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
+  let activeId = notes.find((note) => /sesli\s*not/i.test(note.title || ""))?.id || "";
+  let finalText = "";
+
+  const polish = (value) => String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/(^|[.!?]\s+)([a-zçğıöşü])/g, (_, prefix, letter) => `${prefix}${letter.toLocaleUpperCase("tr-TR")}`);
+
+  const voiceNotes = () => notes.filter((note) => /sesli\s*not/i.test(note.title || ""));
+
+  const renderSaved = () => {
+    const list = voiceNotes();
+    savedRoot.innerHTML = list.length
+      ? list.map((note) => `
+          <button type="button" class="secondary-button p16-voice-saved-item ${note.id === activeId ? "active" : ""}" data-voice-note-id="${e(note.id)}">
+            <strong>${e((note.text || "Sesli not").slice(0, 72))}${(note.text || "").length > 72 ? "…" : ""}</strong>
+            <small>${new Date(note.updatedAt).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" })}</small>
+          </button>`).join("")
+      : '<div class="p16-empty">Henüz kayıtlı sesli not yok.</div>';
+  };
+
+  const loadActive = () => {
+    const note = notes.find((item) => item.id === activeId);
+    text.value = note?.text || "";
+    finalText = text.value ? `${text.value.trim()} ` : "";
+    renderSaved();
+  };
+
+  const persist = () => putJson(P16_NOTES_KEY, notes);
+
+  savedRoot.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-voice-note-id]");
+    if (!button) return;
+    activeId = button.dataset.voiceNoteId;
+    loadActive();
+    text.focus();
+    status(root, "Sesli not düzenlemeye açıldı.");
+  });
+
+  root.querySelector("#p16VoiceNew").onclick = () => {
+    activeId = "";
+    text.value = "";
+    finalText = "";
+    renderSaved();
+    text.focus();
+    status(root, "Yeni sesli not hazır.");
+  };
+
   if (!SpeechRecognition) {
     start.disabled = true;
-    status(root, "Bu tarayıcı konuşma tanıma API'sini desteklemiyor. Metin alanını yine normal not olarak kullanabilirsin.");
-    return;
+    status(root, "Bu tarayıcı konuşma tanıma API'sini desteklemiyor. Kayıtlı sesli notlarını yine düzenleyebilirsin.");
+  } else {
+    const rec = new SpeechRecognition();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onstart = () => {
+      start.disabled = true;
+      stop.disabled = false;
+      mic.classList.add("active");
+      status(root, "Dinleniyor… Metni bitince düzenleyebilirsin.");
+    };
+    rec.onend = () => {
+      start.disabled = false;
+      stop.disabled = true;
+      mic.classList.remove("active");
+      text.value = polish(text.value);
+      status(root, "Dinleme durdu. Metni kontrol edip kaydedebilirsin.");
+    };
+    rec.onerror = (event) => status(root, `Ses tanıma hatası: ${event.error || "bilinmeyen hata"}.`);
+    rec.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const part = event.results[i][0]?.transcript || "";
+        if (event.results[i].isFinal) finalText += `${part.trim()} `;
+        else interim += part;
+      }
+      text.value = polish(`${finalText}${interim}`);
+    };
+    start.onclick = () => {
+      finalText = text.value ? `${text.value.trim()} ` : "";
+      rec.lang = root.querySelector("#p16VoiceLang").value;
+      try { rec.start(); }
+      catch { status(root, "Dinleme başlatılamadı. Mikrofon iznini ve tarayıcı desteğini kontrol et."); }
+    };
+    stop.onclick = () => rec.stop();
   }
-  const rec = new SpeechRecognition();
-  rec.continuous = true;
-  rec.interimResults = true;
-  let finalText = "";
-  rec.onstart = () => { start.disabled = true; stop.disabled = false; mic.classList.add("active"); status(root, "Dinleniyor…"); };
-  rec.onend = () => { start.disabled = false; stop.disabled = true; mic.classList.remove("active"); status(root, "Dinleme durdu."); };
-  rec.onerror = (event) => status(root, `Ses tanıma hatası: ${event.error || "bilinmeyen hata"}.`);
-  rec.onresult = (event) => {
-    let interim = "";
-    for (let i = event.resultIndex; i < event.results.length; i += 1) {
-      const part = event.results[i][0]?.transcript || "";
-      if (event.results[i].isFinal) finalText += `${part.trim()} `;
-      else interim += part;
-    }
-    text.value = `${finalText}${interim}`.trim();
-  };
-  start.onclick = () => {
-    finalText = text.value ? `${text.value.trim()} ` : "";
-    rec.lang = root.querySelector("#p16VoiceLang").value;
-    try { rec.start(); }
-    catch { status(root, "Dinleme başlatılamadı. Mikrofon iznini ve tarayıcı desteğini kontrol et."); }
-  };
-  stop.onclick = () => rec.stop();
+
   root.querySelector("#p16VoiceCopy").onclick = async () => {
     try { await navigator.clipboard.writeText(text.value); status(root, "Metin kopyalandı."); }
     catch { status(root, "Kopyalama izni verilemedi."); }
   };
+
   root.querySelector("#p16VoiceSave").onclick = () => {
-    if (!text.value.trim()) { status(root, "Kaydedilecek metin yok."); return; }
-    const notes = normalizeNotes(getJson(P16_NOTES_KEY, []));
-    notes.unshift({ id: uid("note"), title: "Sesli not", text: text.value.trim(), pinned: false, updatedAt: Date.now() });
-    const saved = putJson(P16_NOTES_KEY, notes);
-    status(root, saved ? "Metin Hızlı Not'a kaydedildi." : "Not cihazda kaydedilemedi · tarayıcı depolamasını kontrol et.");
+    const value = polish(text.value);
+    if (!value) { status(root, "Kaydedilecek metin yok."); return; }
+    const now = Date.now();
+    if (activeId) {
+      const index = notes.findIndex((note) => note.id === activeId);
+      if (index >= 0) notes[index] = { ...notes[index], text: value, updatedAt: now };
+    } else {
+      const item = { id: uid("note"), title: `Sesli Not · ${new Date(now).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`, text: value, pinned: false, completed: false, noteDate: localDateValue(), updatedAt: now };
+      notes.unshift(item);
+      activeId = item.id;
+    }
+    notes = normalizeNotes(notes);
+    const saved = persist();
+    text.value = value;
+    renderSaved();
+    status(root, saved ? "Sesli not kaydedildi." : "Sesli not cihazda kaydedilemedi.");
   };
+
+  loadActive();
 }
 
 
