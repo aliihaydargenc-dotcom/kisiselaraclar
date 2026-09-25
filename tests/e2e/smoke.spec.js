@@ -5,7 +5,8 @@ test("desktop özel çalışma alanını pazarlama hero'su yerine öne çıkarı
   await page.goto("./");
   await expect(page.locator("#desktopHomeView #p17Workspace")).toBeVisible();
   await expect(page.locator("#homeView #p17Workspace")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
+  await expect(page.locator("#toolBrowser")).toBeHidden();
+  await expect(page.locator("#desktopToolNav")).toBeVisible();
   await expect(page.locator(".site-hero-copy")).toBeHidden();
   await expect(page.locator(".ticker")).toBeHidden();
   await expect(page.locator(".site-benefits")).toBeHidden();
@@ -32,10 +33,14 @@ test("Görev ekle kısayolu görev başlığına odaklanır", async ({ page }) =
   await expect(page.locator("#p16TaskTitle")).toBeFocused();
 });
 
-test("arama düğmesi arama alanını odaklar", async ({ page }) => {
+test("arama düğmesi aktif cihaz aramasını odaklar", async ({ page }, testInfo) => {
   await page.goto("./");
   await page.locator("#headerSearchButton").click();
-  await expect(page.locator("#toolSearch")).toBeFocused();
+  if (testInfo.project.name.includes("mobile")) {
+    await expect(page.locator("#toolSearch")).toBeFocused();
+  } else {
+    await expect(page.locator("[data-desktop-tool-search-input]")).toBeFocused();
+  }
 });
 
 test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page }) => {
