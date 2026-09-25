@@ -190,3 +190,24 @@ test("980 px ara görünüm masaüstü kabuğuna düşmez", async ({ page }, tes
   }));
   expect(metrics.scroll).toBeLessThanOrEqual(metrics.inner + 1);
 });
+
+
+test("@mobile P22 mobil F alt navigasyonu ve özet kartları çalışır", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.includes("mobile"), "Mobil projede çalışır.");
+  await page.goto("./");
+  await expect(page.locator(".p22-summary-strip")).toBeVisible();
+  await expect(page.locator("#mobileDock button")).toHaveCount(4);
+  await expect(page.locator('[data-mobile-action="today"]')).toContainText("Ana");
+  await expect(page.locator('[data-mobile-action="note"]')).toContainText("Not");
+  await expect(page.locator('[data-mobile-action="task"]')).toContainText("Görev");
+  await expect(page.locator('[data-mobile-action="search"]')).toContainText("Ara");
+
+  await page.locator('[data-mobile-action="note"]').click();
+  await expect(page.locator("#p16NoteText")).toBeVisible();
+  await expect(page.locator("#p16NoteText")).toBeFocused();
+
+  await page.goto("./");
+  await page.locator('[data-mobile-action="task"]').click();
+  await expect(page.locator("#p16TaskTitle")).toBeVisible();
+  await expect(page.locator("#p16TaskTitle")).toBeFocused();
+});

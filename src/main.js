@@ -638,19 +638,22 @@ mobileDock?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-mobile-action]");
   if (!button) return;
 
-  if (button.dataset.mobileAction === "file") {
-    prepareCatalogForMobileAction();
-    const input = document.querySelector("#smartFileInput");
-    input?.click();
-    return;
-  }
-
   if (button.dataset.mobileAction === "today") {
     if (currentToolId) prepareCatalogForMobileAction();
     requestAnimationFrame(() => {
       const today = document.querySelector("#p17Workspace");
       (today || toolBrowser)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    return;
+  }
+
+  if (button.dataset.mobileAction === "note") {
+    navigateTool("quick-note", { action: "new-note" });
+    return;
+  }
+
+  if (button.dataset.mobileAction === "task") {
+    navigateTool("tasks-calendar", { action: "new-task" });
     return;
   }
 

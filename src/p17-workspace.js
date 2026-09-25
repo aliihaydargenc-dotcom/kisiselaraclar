@@ -290,10 +290,25 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
     <section class="p17-workspace" id="p17Workspace" aria-labelledby="p17Title">
       <div class="p17-workspace-head">
         <div>
-          <span class="eyebrow">BUGÜN</span>
-          <h2 id="p17Title">İşini buradan başlat.</h2>
+          <span class="eyebrow">KİŞİSEL ALAN</span>
+          <h2 id="p17Title">Bugün</h2>
         </div>
         <span class="p17-date">${escapeHtml(dateLabel(now))}</span>
+      </div>
+
+      <div class="p22-summary-strip" aria-label="Gün özeti">
+        <button type="button" data-tool="tasks-calendar">
+          <span>Bugün</span>
+          <strong>${summary.todayTasks.length}</strong>
+        </button>
+        <button type="button" data-tool="tasks-calendar">
+          <span>Açık görev</span>
+          <strong>${summary.openCount}</strong>
+        </button>
+        <button type="button" data-tool="quick-note">
+          <span>Notlar</span>
+          <strong>${summary.notes.length}</strong>
+        </button>
       </div>
 
       <div class="p17-main-grid">
@@ -301,7 +316,7 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
           <div class="p17-card-head">
             <div>
               <span>Plan</span>
-              <h3>Bugünün işleri</h3>
+              <h3>Günün planı</h3>
             </div>
             <div class="p17-metrics" aria-label="Görev özeti">
               <span><b>${summary.todayTasks.length}</b> bugün</span>
@@ -315,8 +330,8 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
         <article class="p17-actions-card">
           <div class="p17-card-head">
             <div>
-              <span>Hızlı başla</span>
-              <h3>Ne yapmak istiyorsun?</h3>
+              <span>Kısayollar</span>
+              <h3>Hızlı işlemler</h3>
             </div>
           </div>
           <div class="p17-action-grid">
