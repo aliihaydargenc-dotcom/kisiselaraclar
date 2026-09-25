@@ -176,7 +176,7 @@ test("P19.2 Hızlı Not tek tasarım dili ve sıkı editör akışı kullanır",
   expect(metrics.integrationDisplay).toBe("none");
   expect(metrics.sidebarRadius).toBeGreaterThanOrEqual(20);
   expect(metrics.editorRadius).toBeGreaterThanOrEqual(20);
-  expect(metrics.noteTitleRadius).toBeGreaterThanOrEqual(12);
+  expect(metrics.noteTitleRadius).toBe(0);
   expect(metrics.toolbarRadius).toBeGreaterThanOrEqual(10);
   expect(metrics.titleToToolbarGap).toBeLessThanOrEqual(16);
   expect(metrics.toolbarToTextGap).toBeLessThanOrEqual(16);
