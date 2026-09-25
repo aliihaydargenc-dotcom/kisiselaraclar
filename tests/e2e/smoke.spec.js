@@ -175,3 +175,18 @@ test("P20 test ortamı çalışma alanını render eder", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/auth-ready/);
   await expect(page.locator("#authGate")).toBeHidden();
 });
+
+
+test("980 px ara görünüm masaüstü kabuğuna düşmez", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop Chromium üzerinde ara viewport doğrulanır.");
+  await page.setViewportSize({ width: 980, height: 900 });
+  await page.goto("./");
+  await expect(page.locator("#homeView #p17Workspace")).toBeVisible();
+  await expect(page.locator("#desktopHomeView #p17Workspace")).toHaveCount(0);
+  await expect(page.locator(".site-page")).toBeHidden();
+  const metrics = await page.evaluate(() => ({
+    inner: window.innerWidth,
+    scroll: document.documentElement.scrollWidth
+  }));
+  expect(metrics.scroll).toBeLessThanOrEqual(metrics.inner + 1);
+});
