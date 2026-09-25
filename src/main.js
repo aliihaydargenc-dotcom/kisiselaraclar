@@ -12,9 +12,6 @@ import {
 } from "./product-ux.js";
 import { runEngine } from "./tool-engines.js";
 import { buildP17HomeMarkup, buildP17SearchMarkup, wireP17Workspace } from "./p17-workspace.js";
-import { ensurePrivateSession } from "./appwrite-cloud.js";
-
-await ensurePrivateSession();
 
 const searchInput = document.querySelector("#toolSearch");
 const categoryList = document.querySelector("#categoryList");
