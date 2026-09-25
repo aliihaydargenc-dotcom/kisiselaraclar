@@ -211,3 +211,32 @@ test("@mobile P22 mobil F alt navigasyonu ve özet kartları çalışır", async
   await expect(page.locator("#p16TaskTitle")).toBeVisible();
   await expect(page.locator("#p16TaskTitle")).toBeFocused();
 });
+
+
+test("P23 masaüstü araç çekmecesi kategoriyi sağ flyout içinde açar", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await expect(page.locator("#desktopToolNav")).toBeVisible();
+  await expect(page.locator("#toolBrowser")).toBeHidden();
+  await expect(page.locator(".smart-router")).toHaveCount(0);
+  await expect(page.locator(".quick-section")).toHaveCount(0);
+
+  await page.locator('[data-desktop-category="ocr"]').click();
+  await expect(page.locator(".desktop-tool-flyout")).toBeVisible();
+  await expect(page.locator(".desktop-tool-flyout h3")).toHaveText("OCR");
+  await expect(page.locator('.desktop-tool-item[data-desktop-tool="ocr-image"]')).toBeVisible();
+
+  await page.locator('.desktop-tool-item[data-desktop-tool="ocr-image"]').click();
+  await expect(page.locator("body")).toHaveClass(/tool-open/);
+  await expect(page.locator("#toolView")).toBeVisible();
+});
+
+test("P23 masaüstü başlık araması araç çekmecesi aramasını açar", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await page.locator("#headerSearchButton").click();
+  await expect(page.locator("[data-desktop-tool-search-input]")).toBeVisible();
+  await expect(page.locator("[data-desktop-tool-search-input]")).toBeFocused();
+  await page.locator("[data-desktop-tool-search-input]").fill("not");
+  await expect(page.locator('.desktop-tool-item[data-desktop-tool="quick-note"]')).toBeVisible();
+});
