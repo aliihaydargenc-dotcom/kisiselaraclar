@@ -22,7 +22,7 @@ const catalogView = document.querySelector("#catalogView");
 const toolView = document.querySelector("#toolView");
 const homeView = document.querySelector("#homeView");
 const desktopHomeView = document.querySelector("#desktopHomeView");
-const desktopHomeQuery = globalThis.matchMedia?.("(min-width: 901px)");
+const desktopHomeQuery = globalThis.matchMedia?.("(min-width: 1180px)");
 const toolCountSummary = document.querySelector("#toolCountSummary");
 const headerSearchButton = document.querySelector("#headerSearchButton");
 const toolBrowser = document.querySelector("#toolBrowser");
@@ -34,6 +34,7 @@ const validToolIds = tools.map((tool) => tool.id);
 let activeCategory = "all";
 let currentToolId = "";
 let smartFiles = [];
+let catalogExpanded = false;
 
 function safeStorage() {
   try {
@@ -205,6 +206,8 @@ function renderCatalog() {
 
   const homeMarkup = isHome ? buildP17HomeMarkup(safeStorage()) : "";
   const useDesktopHome = Boolean(desktopHomeQuery?.matches);
+  const compactHomeCatalog = isHome && !useDesktopHome && !catalogExpanded;
+  const visibleList = compactHomeCatalog ? list.slice(0, 8) : list;
   if (homeView) homeView.innerHTML = useDesktopHome ? "" : homeMarkup;
   if (desktopHomeView) desktopHomeView.innerHTML = useDesktopHome ? homeMarkup : "";
 
@@ -227,17 +230,25 @@ function renderCatalog() {
     <div class="catalog-head">
       <div>
         <span class="eyebrow">${activeCategory === "all" ? "HEPSİ" : categoryLabel(activeCategory).toLocaleUpperCase("tr-TR")}</span>
-        <h2><span class="catalog-count">${list.length}</span> araç</h2>
+        <h2><span class="catalog-count">${visibleList.length}</span>${visibleList.length === list.length ? "" : ` / ${list.length}`} araç</h2>
       </div>
     </div>
     <div class="tool-grid">
-      ${list.map((tool) => toolCard(tool)).join("")}
+      ${visibleList.map((tool) => toolCard(tool)).join("")}
     </div>
+    ${compactHomeCatalog && list.length > visibleList.length ? `
+      <button class="catalog-expand" id="expandCatalog" type="button">Tüm ${list.length} aracı göster <span aria-hidden="true">↓</span></button>
+    ` : ""}
     ${list.length ? "" : '<div class="empty-state">Bu aramayla eşleşen araç bulunamadı.</div>'}
   `;
   toolView.classList.add("hidden");
   catalogView.classList.remove("hidden");
   wireSmartRouter();
+  catalogView.querySelector("#expandCatalog")?.addEventListener("click", () => {
+    catalogExpanded = true;
+    renderCatalog();
+    requestAnimationFrame(() => catalogView.querySelector(".catalog-head")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  });
   const activeHomeRoot = useDesktopHome ? desktopHomeView : homeView;
   if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }));
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
