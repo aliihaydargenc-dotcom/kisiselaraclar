@@ -43,20 +43,20 @@
     box-shadow:0 14px 34px rgba(30,34,49,.08);
     overflow:hidden;pointer-events:auto;transition:width .18s ease
   }
-  .desktop-tool-nav.is-expanded .desktop-tool-rail{width:218px}
+  .desktop-tool-nav.is-expanded .desktop-tool-rail{width:244px}
   .desktop-tool-toggle,.desktop-tool-search,.desktop-tool-category{
     width:100%;border:0;background:transparent;color:#686d7b;cursor:pointer;font-family:var(--sans);
   }
   .desktop-tool-toggle,.desktop-tool-search{
-    min-height:44px;border-radius:12px;display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;
+    min-height:48px;border-radius:12px;display:grid;grid-template-columns:40px minmax(0,1fr);align-items:center;
     gap:8px;padding:4px;text-align:left
   }
   .desktop-tool-toggle:hover,.desktop-tool-search:hover,.desktop-tool-category:hover{background:#f5f6fa;color:#242832}
   .desktop-tool-toggle-icon,.desktop-tool-search>span{
-    display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#f1f2f7;color:#474c5a;font-size:15px
+    display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#f1f2f7;color:#474c5a;font-size:15px
   }
   .desktop-tool-toggle strong,.desktop-tool-search strong{
-    overflow:hidden;opacity:0;white-space:nowrap;font-size:11px;font-weight:800;transition:opacity .12s ease
+    overflow:hidden;opacity:0;white-space:nowrap;font-size:13px;font-weight:800;transition:opacity .12s ease
   }
   .desktop-tool-nav.is-expanded :is(.desktop-tool-toggle strong,.desktop-tool-search strong){opacity:1}
   .desktop-tool-search{margin-top:4px}
@@ -66,54 +66,57 @@
   }
   .desktop-tool-categories::-webkit-scrollbar{display:none}
   .desktop-tool-category{
-    min-height:42px;border-radius:11px;display:grid;grid-template-columns:36px minmax(0,1fr);
+    min-height:48px;border-radius:11px;display:grid;grid-template-columns:40px minmax(0,1fr);
     align-items:center;gap:8px;padding:3px 4px;text-align:left
   }
   .desktop-tool-category.is-active{background:#efefff;color:#5253d7}
   .desktop-tool-glyph{
-    display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#f4f5f8;
+    display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#f4f5f8;
     color:#656a77;font-size:9px;font-weight:900;letter-spacing:-.02em
   }
   .desktop-tool-category.is-active .desktop-tool-glyph{background:#5b5cf6;color:#fff}
+  .desktop-tool-svg svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .desktop-tool-item-icon svg{width:19px;height:19px}
   .desktop-tool-category-copy{
     min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;
     opacity:0;white-space:nowrap;transition:opacity .12s ease
   }
   .desktop-tool-nav.is-expanded .desktop-tool-category-copy{opacity:1}
-  .desktop-tool-category-copy strong{overflow:hidden;text-overflow:ellipsis;font-size:10.5px}
-  .desktop-tool-category-copy small{font-size:8px;color:#9b9eaa}
+  .desktop-tool-category-copy strong{overflow:hidden;text-overflow:ellipsis;font-size:12.5px;font-weight:780}
+  .desktop-tool-category-copy small{font-size:10px;color:#9b9eaa}
 
   .desktop-tool-flyout{
-    position:absolute;left:76px;top:0;bottom:0;width:330px;padding:14px;
+    position:absolute;left:80px;top:0;bottom:0;width:390px;padding:16px;
     border:1px solid #e2e5ec;border-radius:18px;background:#fff;
     box-shadow:0 18px 46px rgba(30,34,49,.13);pointer-events:auto;overflow:hidden
   }
-  .desktop-tool-nav.is-expanded .desktop-tool-flyout{left:230px}
+  .desktop-tool-nav.is-expanded .desktop-tool-flyout{left:256px}
   .desktop-tool-flyout[hidden]{display:none}
   .desktop-tool-flyout-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:2px 2px 12px}
-  .desktop-tool-flyout-head span{display:block;margin-bottom:3px;color:#9b9eaa;font-size:7px;font-weight:850;letter-spacing:.1em}
-  .desktop-tool-flyout-head h3{margin:0;font:800 18px/1.05 var(--sans);letter-spacing:-.03em;color:#20232b}
+  .desktop-tool-flyout-head span{display:block;margin-bottom:3px;color:#9b9eaa;font-size:9px;font-weight:850;letter-spacing:.1em}
+  .desktop-tool-flyout-head h3{margin:0;font:800 22px/1.05 var(--sans);letter-spacing:-.03em;color:#20232b}
   .desktop-tool-close{
     width:32px;height:32px;border:0;border-radius:9px;background:#f4f5f8;color:#6c7180;cursor:pointer;font-size:18px
   }
   .desktop-tool-search-field{display:block;margin:0 0 10px}
   .desktop-tool-search-field input{
     width:100%;height:42px;padding:0 11px;border:1px solid #dfe2e9;border-radius:10px;background:#f8f9fc;
-    outline:0;font:600 13px/1 var(--sans)
+    outline:0;font:600 14px/1 var(--sans)
   }
   .desktop-tool-search-field input:focus{border-color:#9899ef;box-shadow:0 0 0 3px rgba(91,92,246,.09)}
   .desktop-tool-list{height:calc(100% - 54px);display:grid;align-content:start;gap:5px;overflow:auto;padding-right:2px}
   .desktop-tool-search-field+.desktop-tool-list{height:calc(100% - 104px)}
   .desktop-tool-item{
-    width:100%;min-height:58px;padding:9px 10px;border:1px solid #e9ebf0;border-radius:11px;background:#fff;
-    display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;cursor:pointer
+    width:100%;min-height:68px;padding:10px 11px;border:1px solid #e9ebf0;border-radius:11px;background:#fff;
+    display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;cursor:pointer
   }
   .desktop-tool-item:hover{border-color:#cfd2dc;background:#f8f9fc}
-  .desktop-tool-item>span{min-width:0;display:grid;gap:3px}
-  .desktop-tool-item strong{font:780 11px/1.15 var(--sans);color:#292d36}
+  .desktop-tool-item-copy{min-width:0;display:grid;gap:4px}
+  .desktop-tool-item-icon{width:38px;height:38px;border-radius:10px;background:#f3f4f8;color:#666b79;display:grid;place-items:center}
+  .desktop-tool-item strong{font:780 13px/1.15 var(--sans);color:#292d36}
   .desktop-tool-item small{
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-    color:#858a97;font:500 8.5px/1.35 var(--sans)
+    color:#858a97;font:500 10.5px/1.4 var(--sans)
   }
   .desktop-tool-item i{color:#999dac;font-style:normal}
   .desktop-tool-empty{padding:18px 10px;color:#8a8f9b;font-size:11px;text-align:center}
@@ -129,53 +132,4 @@
 
 @media(min-width:1500px){
   .desktop-tool-nav{left:22px}
-}
-
-
-/* P24 — readable desktop navigation */
-@media(min-width:1180px){
-  .site-nav a{font-size:13px!important;font-weight:750!important}
-  .nav-search{font-size:12px!important;font-weight:800!important}
-  .desktop-tool-nav{width:68px}
-  .desktop-tool-rail{width:68px;padding:8px 7px}
-  .desktop-tool-nav.is-expanded .desktop-tool-rail{width:248px}
-  .desktop-tool-toggle,.desktop-tool-search{
-    min-height:48px;grid-template-columns:40px minmax(0,1fr);gap:10px
-  }
-  .desktop-tool-toggle-icon,.desktop-tool-search>span,
-  .desktop-tool-glyph{
-    width:40px;height:40px;border-radius:11px
-  }
-  .desktop-tool-svg svg{
-    width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;
-    stroke-linecap:round;stroke-linejoin:round
-  }
-  .desktop-tool-toggle strong,.desktop-tool-search strong{
-    font-size:13px
-  }
-  .desktop-tool-category{
-    min-height:48px;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:4px
-  }
-  .desktop-tool-category-copy strong{font-size:12.5px;font-weight:780}
-  .desktop-tool-category-copy small{font-size:10px}
-  .desktop-tool-flyout{
-    left:80px;width:390px;padding:16px
-  }
-  .desktop-tool-nav.is-expanded .desktop-tool-flyout{left:260px}
-  .desktop-tool-flyout-head span{font-size:9px}
-  .desktop-tool-flyout-head h3{font-size:22px}
-  .desktop-tool-search-field input{height:46px;font-size:14px}
-  .desktop-tool-item{
-    min-height:68px;padding:10px 11px;
-    grid-template-columns:38px minmax(0,1fr) auto;gap:10px
-  }
-  .desktop-tool-item-icon{
-    width:38px;height:38px;border-radius:10px;background:#f3f4f8;color:#666b79;
-    display:grid;place-items:center
-  }
-  .desktop-tool-item-icon svg{width:19px;height:19px}
-  .desktop-tool-item-copy{min-width:0;display:grid;gap:4px}
-  .desktop-tool-item strong{font-size:13px;line-height:1.15}
-  .desktop-tool-item small{font-size:10.5px;line-height:1.4}
-  .desktop-tool-item i{font-size:14px}
 }
