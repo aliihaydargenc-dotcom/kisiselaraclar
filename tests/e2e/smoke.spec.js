@@ -245,3 +245,29 @@ test("P23 masaüstü başlık araması araç çekmecesi aramasını açar", asyn
   await page.locator("[data-desktop-tool-search-input]").fill("not");
   await expect(page.locator('.desktop-tool-item[data-desktop-tool="quick-note"]')).toBeVisible();
 });
+
+
+test("P24 görev ekleme render hatası vermeden kaydeder", async ({ page }) => {
+  await page.goto("./#tool=tasks-calendar");
+  await expect(page.locator("#p16TaskTitle")).toBeVisible();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  await page.locator("#p16TaskTitle").fill("P24 test görevi");
+  await page.locator("#p16TaskAdd").click();
+
+  await expect(page.locator("#p16TaskList")).toContainText("P24 test görevi");
+  await expect(page.locator("#p16Status")).toContainText("Görev eklendi");
+  expect(errors).toEqual([]);
+});
+
+test("P24 masaüstü menü gerçek SVG ikon ve okunabilir metin kullanır", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop projede çalışır.");
+  await page.goto("./");
+  await page.locator(".desktop-tool-toggle").click();
+  await expect(page.locator('[data-desktop-category="ocr"] svg')).toBeVisible();
+  const size = await page.locator('[data-desktop-category="ocr"] .desktop-tool-category-copy strong').evaluate((el) =>
+    Number.parseFloat(getComputedStyle(el).fontSize)
+  );
+  expect(size).toBeGreaterThanOrEqual(12);
+});
