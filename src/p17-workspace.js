@@ -38,6 +38,40 @@ function compactText(value, max = 92) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
+function makeId(prefix = "item") {
+  const random = globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
+  return `${prefix}-${Date.now().toString(36)}-${random}`;
+}
+
+function writeJson(storage, key, value) {
+  if (!storage?.setItem) return false;
+  try {
+    storage.setItem(key, JSON.stringify(value));
+    try { globalThis.dispatchEvent?.(new CustomEvent("kisiselaraclar:local-change", { detail: { key } })); } catch {}
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function displayTime(timestamp) {
+  if (!timestamp) return "";
+  try {
+    return new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit" }).format(new Date(timestamp));
+  } catch {
+    return "";
+  }
+}
+
+function displayShortDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) return "";
+  try {
+    return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" }).format(new Date(`${value}T12:00:00`));
+  } catch {
+    return value;
+  }
+}
+
 export function localDateKey(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -53,6 +87,8 @@ function normalizedNotes(storage) {
         title: String(item.title || ""),
         text: String(item.text || ""),
         pinned: Boolean(item.pinned),
+        completed: Boolean(item.completed),
+        noteDate: String(item.noteDate || ""),
         updatedAt: Number(item.updatedAt) || 0
       }))
     : [];
@@ -87,16 +123,21 @@ export function buildWorkspaceSummary(storage, now = new Date()) {
   const tasks = normalizedTasks(storage);
   const meeting = meetingDraft(storage);
   const open = tasks.filter((task) => !task.done);
-  const todayTasks = open
+  const todayAllTasks = tasks
     .filter((task) => task.date === today)
     .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+  const todayTasks = todayAllTasks.filter((task) => !task.done);
+  const todayDoneCount = todayAllTasks.filter((task) => task.done).length;
   const overdueTasks = open
     .filter((task) => task.date && task.date < today)
     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || "99:99").localeCompare(b.time || "99:99"));
   const upcomingTasks = open
     .filter((task) => task.date && task.date > today)
     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || "99:99").localeCompare(b.time || "99:99"));
-  const latestNote = [...notes].sort((a, b) => b.updatedAt - a.updatedAt)[0] || null;
+  const sortedNotes = [...notes].sort((a, b) => b.updatedAt - a.updatedAt);
+  const voiceNotes = sortedNotes.filter((note) => /sesli\s*not/i.test(note.title || ""));
+  const regularNotes = sortedNotes.filter((note) => !/sesli\s*not/i.test(note.title || ""));
+  const latestNote = sortedNotes[0] || null;
   const pinnedCount = notes.filter((note) => note.pinned).length;
 
   return {
@@ -106,10 +147,14 @@ export function buildWorkspaceSummary(storage, now = new Date()) {
     meeting,
     hasMeeting: hasMeetingContent(meeting),
     openCount: open.length,
+    todayAllTasks,
     todayTasks,
+    todayDoneCount,
     overdueTasks,
     upcomingTasks,
     latestNote,
+    regularNotes,
+    voiceNotes,
     pinnedCount
   };
 }
@@ -278,113 +323,148 @@ function taskRows(summary) {
     </div>`;
 }
 
+
+function noteRows(summary) {
+  const list = summary.regularNotes.slice(0, 4);
+  if (!list.length) return '<div class="p25-empty">Henüz not yok. Yukarıdaki alandan ilk notunu ekle.</div>';
+  return list.map((note) => {
+    const title = note.title || compactText(note.text, 42) || "Adsız not";
+    const detail = compactText(note.text, 66) || (note.pinned ? "Sabitlenmiş not" : "Not");
+    return `
+      <button type="button" class="p25-note-row" data-tool="quick-note">
+        <span class="p25-row-icon" aria-hidden="true">${note.pinned ? "★" : "✎"}</span>
+        <span class="p25-row-copy">
+          <strong>${escapeHtml(title)}</strong>
+          <small>${escapeHtml(detail)}</small>
+        </span>
+        <time>${escapeHtml(displayTime(note.updatedAt))}</time>
+        <span class="p25-row-more" aria-hidden="true">›</span>
+      </button>`;
+  }).join("");
+}
+
+function voiceRows(summary) {
+  const list = summary.voiceNotes.slice(0, 3);
+  if (!list.length) return '<div class="p25-empty compact">Henüz sesli not yok. Mikrofonu açıp ilk kaydını oluştur.</div>';
+  return list.map((note) => `
+    <button type="button" class="p25-voice-row" data-tool="voice-note">
+      <span class="p25-play" aria-hidden="true">▶</span>
+      <span class="p25-row-copy">
+        <strong>${escapeHtml(compactText(note.text, 48) || "Sesli not")}</strong>
+        <small>${escapeHtml(displayTime(note.updatedAt) || "Metne dönüştürüldü")}</small>
+      </span>
+      <span class="p25-row-more" aria-hidden="true">›</span>
+    </button>`).join("");
+}
+
+function planRows(summary) {
+  const list = summary.todayAllTasks.length ? summary.todayAllTasks.slice(0, 5) : summary.upcomingTasks.slice(0, 5);
+  if (!list.length) return '<div class="p25-empty">Bugün için plan yok. Yeni görev ekleyebilirsin.</div>';
+  return list.map((task) => {
+    const meta = task.date === summary.today
+      ? (task.time || "Bugün")
+      : [displayShortDate(task.date), task.time].filter(Boolean).join(" · ");
+    return `
+      <label class="p25-plan-row ${task.done ? "is-done" : ""}">
+        <input type="checkbox" data-p25-task-toggle="${escapeHtml(task.id)}" ${task.done ? "checked" : ""} />
+        <span class="p25-check" aria-hidden="true"></span>
+        <span class="p25-row-copy"><strong>${escapeHtml(task.title)}</strong></span>
+        <time>${escapeHtml(meta)}</time>
+      </label>`;
+  }).join("");
+}
+
 export function buildP17HomeMarkup(storage, now = new Date()) {
   const summary = buildWorkspaceSummary(storage, now);
-  const latestNoteTitle = summary.latestNote
-    ? summary.latestNote.title || compactText(summary.latestNote.text, 42) || "Adsız not"
-    : "";
-  const meetingTitle = String(summary.meeting?.title || "").trim() || "Toplantı taslağı";
   const storedCount = Object.keys(collectStorageEntries(storage)).length;
+  const totalToday = summary.todayAllTasks.length;
+  const progress = totalToday ? Math.round((summary.todayDoneCount / totalToday) * 100) : 0;
 
   return `
-    <section class="p17-workspace" id="p17Workspace" aria-labelledby="p17Title">
-      <div class="p17-workspace-head">
+    <section class="p17-workspace p25-workspace" id="p17Workspace" aria-labelledby="p17Title">
+      <div class="p25-head">
         <div>
           <span class="eyebrow">KİŞİSEL ALAN</span>
           <h2 id="p17Title">Bugün</h2>
+          <p>Notlarını, sesli notlarını ve günün planını tek yerden yönet.</p>
         </div>
         <span class="p17-date">${escapeHtml(dateLabel(now))}</span>
       </div>
 
-      <div class="p22-summary-strip" aria-label="Gün özeti">
-        <button type="button" data-tool="tasks-calendar">
-          <span>Bugün</span>
-          <strong>${summary.todayTasks.length}</strong>
-        </button>
-        <button type="button" data-tool="tasks-calendar">
-          <span>Açık görev</span>
-          <strong>${summary.openCount}</strong>
-        </button>
-        <button type="button" data-tool="quick-note">
-          <span>Notlar</span>
-          <strong>${summary.notes.length}</strong>
-        </button>
-      </div>
-
-      <div class="p17-main-grid">
-        <article class="p17-focus-card">
-          <div class="p17-card-head">
-            <div>
-              <span>Plan</span>
-              <h3>Günün planı</h3>
+      <div class="p25-core-grid">
+        <article class="p25-card p25-notes">
+          <div class="p25-card-head">
+            <div class="p25-card-title">
+              <span class="p25-icon p25-icon-note" aria-hidden="true">✎</span>
+              <div><h3>Not Defteri</h3><p>Hızlıca yaz, son notlarına dön.</p></div>
             </div>
-            <div class="p17-metrics" aria-label="Görev özeti">
-              <span><b>${summary.todayTasks.length}</b> bugün</span>
-              <span class="${summary.overdueTasks.length ? "is-alert" : ""}"><b>${summary.overdueTasks.length}</b> geciken</span>
-            </div>
+            <button type="button" class="p25-link" data-tool="quick-note">Tüm notlar <span>→</span></button>
           </div>
-          ${taskRows(summary)}
-          <button type="button" class="p17-link-button" data-tool="tasks-calendar">Görev & Takvim'i aç <span aria-hidden="true">→</span></button>
+
+          <form class="p25-quick-note" id="p25QuickNoteForm">
+            <input id="p25QuickNoteInput" type="text" maxlength="280" placeholder="Hızlı not ekle..." autocomplete="off" />
+            <button type="submit" aria-label="Notu kaydet">↑</button>
+          </form>
+
+          <div class="p25-section-label"><span>Son notlar</span><strong>${summary.notes.length}</strong></div>
+          <div class="p25-note-list">${noteRows(summary)}</div>
         </article>
 
-        <article class="p17-actions-card">
-          <div class="p17-card-head">
-            <div>
-              <span>Kısayollar</span>
-              <h3>Hızlı işlemler</h3>
+        <article class="p25-card p25-voice">
+          <div class="p25-card-head">
+            <div class="p25-card-title">
+              <span class="p25-icon p25-icon-voice" aria-hidden="true">●</span>
+              <div><h3>Sesli Notlar</h3><p>Konuş, metne dönüştür ve kaydet.</p></div>
             </div>
+            <button type="button" class="p25-link" data-tool="voice-note">Tümü <span>→</span></button>
           </div>
-          <div class="p17-action-grid">
-            <button type="button" class="p17-action p17-action-file" data-p17-file>
-              <i aria-hidden="true">＋</i><span><strong>Dosyayla başla</strong><small>Türünü algıla</small></span>
-            </button>
-            <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note">
-              <i aria-hidden="true">N</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span>
-            </button>
-            <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task">
-              <i aria-hidden="true">✓</i><span><strong>Görev ekle</strong><small>Tarih ver</small></span>
-            </button>
-            <button type="button" class="p17-action" data-tool="meeting-notes" data-tool-action="meeting-focus">
-              <i aria-hidden="true">M</i><span><strong>Toplantı</strong><small>Kararları ayır</small></span>
-            </button>
-            <button type="button" class="p17-action" data-tool="document-scan">
-              <i aria-hidden="true">▱</i><span><strong>Belge tara</strong><small>Temizle, PDF yap</small></span>
-            </button>
-            <button type="button" class="p17-action" data-tool="pdf-fill-sign">
-              <i aria-hidden="true">✎</i><span><strong>PDF imzala</strong><small>Doldur ve indir</small></span>
-            </button>
+
+          <button type="button" class="p25-voice-recorder" data-tool="voice-note">
+            <span class="p25-mic-ring"><span aria-hidden="true">🎙</span></span>
+            <strong>Kayda başla</strong>
+            <small>Konuşmanı metne dönüştür</small>
+          </button>
+
+          <div class="p25-section-label"><span>Son sesli notlar</span><strong>${summary.voiceNotes.length}</strong></div>
+          <div class="p25-voice-list">${voiceRows(summary)}</div>
+        </article>
+
+        <article class="p25-card p25-plan">
+          <div class="p25-card-head">
+            <div class="p25-card-title">
+              <span class="p25-icon p25-icon-plan" aria-hidden="true">✓</span>
+              <div><h3>Günlük Plan</h3><p>Bugünün işlerini tamamla.</p></div>
+            </div>
+            <button type="button" class="p25-link" data-tool="tasks-calendar">Planlayıcı <span>→</span></button>
           </div>
+
+          <div class="p25-progress">
+            <div><span>Bugünün ilerlemesi</span><strong>${summary.todayDoneCount} / ${totalToday || 0}</strong></div>
+            <div class="p25-progress-track"><i style="width:${progress}%"></i></div>
+          </div>
+
+          <button type="button" class="p25-add-task" data-tool="tasks-calendar" data-tool-action="new-task">
+            <span>＋</span> Yeni görev ekle
+          </button>
+
+          <div class="p25-plan-list">${planRows(summary)}</div>
         </article>
       </div>
 
-      <div class="p17-continuity">
-        <div class="p17-continue-copy">
-          <span class="eyebrow">DEVAM ET</span>
-          <div class="p17-continue-items">
-            ${summary.latestNote ? `
-              <button type="button" data-tool="quick-note">
-                <span>Son not</span>
-                <strong>${escapeHtml(latestNoteTitle)}</strong>
-              </button>` : `
-              <button type="button" data-tool="quick-note">
-                <span>Notlar</span>
-                <strong>İlk notunu oluştur</strong>
-              </button>`}
-            ${summary.hasMeeting ? `
-              <button type="button" data-tool="meeting-notes">
-                <span>Toplantı taslağı</span>
-                <strong>${escapeHtml(meetingTitle)}</strong>
-              </button>` : `
-              <button type="button" data-tool="voice-note">
-                <span>Sesli not</span>
-                <strong>Konuş, metne dönüşsün</strong>
-              </button>`}
+      <div class="p25-footer-grid">
+        <section class="p25-quick-actions">
+          <div class="p25-footer-head"><div><span class="eyebrow">HIZLI ERİŞİM</span><h3>Sık kullandıkların</h3></div></div>
+          <div class="p25-action-row">
+            <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note"><i>✎</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span></button>
+            <button type="button" class="p17-action" data-tool="voice-note"><i>●</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
+            <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task"><i>✓</i><span><strong>Görev ekle</strong><small>Gününe ekle</small></span></button>
+            <button type="button" class="p17-action" data-tool="meeting-notes"><i>M</i><span><strong>Toplantı</strong><small>Not oluştur</small></span></button>
           </div>
-        </div>
+        </section>
 
-        <div class="p17-backup">
+        <aside class="p17-backup p25-backup">
           <div>
-            <span>Yerel veri</span>
+            <span>Yedekleme ve veri</span>
             <strong>${storedCount ? `${storedCount} kayıt grubu cihazında` : "Henüz kayıtlı veri yok"}</strong>
           </div>
           <div class="p17-backup-actions">
@@ -393,7 +473,7 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
             <input id="p17BackupFile" type="file" accept="application/json,.json" hidden />
           </div>
           <small id="p17BackupStatus" aria-live="polite"></small>
-        </div>
+        </aside>
       </div>
     </section>`;
 }
@@ -434,7 +514,7 @@ function downloadBackup(storage) {
   return Object.keys(payload.entries).length;
 }
 
-export function wireP17Workspace(root, storage, onOpenTool) {
+export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   if (!root) return;
 
   root._p17OpenTool = onOpenTool;
@@ -450,17 +530,47 @@ export function wireP17Workspace(root, storage, onOpenTool) {
       root._p17OpenTool(id, action);
     });
   }
+
+  const quickNoteForm = root.querySelector("#p25QuickNoteForm");
+  quickNoteForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = root.querySelector("#p25QuickNoteInput");
+    const text = String(input?.value || "").trim();
+    if (!text) {
+      input?.focus();
+      return;
+    }
+    const notes = storageJson(storage, NOTES_KEY, []);
+    const next = Array.isArray(notes) ? [...notes] : [];
+    next.unshift({
+      id: makeId("note"),
+      title: compactText(text, 48),
+      text,
+      pinned: false,
+      completed: false,
+      noteDate: localDateKey(),
+      updatedAt: Date.now()
+    });
+    if (writeJson(storage, NOTES_KEY, next)) {
+      input.value = "";
+      if (typeof onRefresh === "function") onRefresh();
+    }
+  });
+
+  root.querySelectorAll("[data-p25-task-toggle]").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      const id = String(checkbox.dataset.p25TaskToggle || "");
+      const tasks = storageJson(storage, TASKS_KEY, []);
+      if (!Array.isArray(tasks)) return;
+      const next = tasks.map((task) => String(task?.id || "") === id ? { ...task, done: checkbox.checked } : task);
+      if (writeJson(storage, TASKS_KEY, next) && typeof onRefresh === "function") onRefresh();
+    });
+  });
+
   const status = root.querySelector("#p17BackupStatus");
   const setStatus = (value) => {
     if (status) status.textContent = value;
   };
-
-  root.querySelector("[data-p17-file]")?.addEventListener("click", () => {
-    const zone = document.querySelector("#smartDropZone");
-    const input = document.querySelector("#smartFileInput");
-    zone?.scrollIntoView({ behavior: "smooth", block: "center" });
-    input?.click();
-  });
 
   root.querySelector("#p17BackupExport")?.addEventListener("click", () => {
     try {
