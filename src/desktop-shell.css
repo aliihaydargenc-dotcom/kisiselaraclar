@@ -5,8 +5,6 @@
 
 @media(min-width:1180px){
   body{background:#f6f7fb}
-  body:not(.tool-open) :is(.ticker,.site-benefits,.site-footer){display:none!important}
-
   .site-header,body.tool-open .site-header{
     position:sticky;top:0;z-index:700;
     background:#20213b;border-bottom:1px solid #393a5b;
@@ -23,18 +21,12 @@
   .nav-search,body.tool-open .nav-search{min-width:116px;height:38px;margin:0 8px;border:1px solid #555779;border-radius:9px;background:#353758;color:#fff;font-size:12px}
   .nav-search kbd{color:#fff}
 
-  body:not(.tool-open) .site-page{width:100%;background:#f6f7fb}
-  body:not(.tool-open) .site-hero{
-    width:min(1240px,calc(100% - 176px));min-height:auto;padding:24px 0 0;display:block
-  }
-  body:not(.tool-open) .site-hero::before,
-  body:not(.tool-open) :is(.site-hero-copy,.hero-grid,.hero-playground){display:none!important}
   body:not(.tool-open) .desktop-home-view{display:block;width:100%;max-width:none}
   body:not(.tool-open) .desktop-home-view .p17-workspace{width:100%}
   body:not(.tool-open) .tools-stage{background:#f6f7fb;color:var(--ink)}
   body:not(.tool-open) .workspace{width:min(1240px,calc(100% - 176px));padding:18px 0 64px}
-  body:has(.desktop-tool-nav.is-expanded) :is(.site-hero,.workspace){width:min(1240px,calc(100% - 296px));margin-left:270px;margin-right:26px}
-  body:has(.desktop-tool-nav.has-flyout) :is(.site-hero,.workspace){width:min(1240px,calc(100% - 416px));margin-left:390px;margin-right:26px}
+  body:has(.desktop-tool-nav.is-expanded) .workspace{width:min(1240px,calc(100% - 296px));margin-left:270px;margin-right:26px}
+  body:has(.desktop-tool-nav.has-flyout) .workspace{width:min(1240px,calc(100% - 416px));margin-left:390px;margin-right:26px}
   body:not(.tool-open) .home-view{display:none}
 
   /* Desktop home no longer duplicates navigation with a second catalog surface. */

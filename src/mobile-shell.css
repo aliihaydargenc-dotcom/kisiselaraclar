@@ -4,7 +4,6 @@
   :root{--m-edge:14px}
   html,body{max-width:100%;overflow-x:clip}
   body:not(.tool-open){background:#f6f7fb;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
-  body:not(.tool-open) :is(.site-page,.ticker,.site-benefits,.site-footer){display:none!important}
   .desktop-home-view{display:none!important}
   .site-header{z-index:500}
   body:not(.tool-open) .site-header{
