@@ -312,6 +312,7 @@ test("P24 görev ekleme render hatası vermeden kaydeder", async ({ page }) => {
   await page.locator("#p16TaskAdd").click();
 
   await expect(page.locator("#p16TaskList")).toContainText("P24 test görevi");
+  await expect(page.locator("#p16Status")).toContainText("Görev eklendi");
   await expect(page.locator("#p16TaskTitle")).toHaveValue("");
   expect(errors).toEqual([]);
 });

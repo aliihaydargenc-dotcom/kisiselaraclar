@@ -1,6 +1,6 @@
 .p16-panel{--p16-ink:#101114;--p16-paper:#fffdf5;--p16-acid:#dfff47;--p16-blue:#4f7cff;--p16-coral:#ff695f;--p16-line:rgba(16,17,20,.16)}
 .p16-panel .text-control{width:100%;box-sizing:border-box}
-.p16-status{margin-top:18px;padding:12px 14px;border:1px solid var(--p16-line);border-radius:14px;background:color-mix(in srgb,var(--p16-acid) 30%,transparent);font-size:.9rem}
+.p16-status{margin-top:12px;padding:10px 12px;border:1px solid var(--app-line,var(--p16-line));border-radius:10px;background:var(--app-accent-soft,#eeeeff);color:var(--app-accent-strong,#3534a6);font-size:.8rem;font-weight:700;line-height:1.4}\n.p16-status:empty{display:none}
 .p16-empty{padding:20px;border:1px dashed var(--p16-line);border-radius:14px;opacity:.65}
 .p16-danger{color:#a32620!important}
 .p16-label{display:block;margin-bottom:8px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
