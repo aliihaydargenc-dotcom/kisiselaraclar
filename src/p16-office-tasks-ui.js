@@ -1,5 +1,5 @@
 import { P16_NOTES_KEY, P16_TASKS_KEY, monthMatrix, normalizeNotes, normalizeTasks, tasksToIcs, uid } from "./p16-office-tools.js";
-import { downloadText, getJson, localDateValue, putJson, status, statusLine } from "./p16-office-ui-shared.js";
+import { downloadText, e, getJson, localDateValue, putJson, status, statusLine } from "./p16-office-ui-shared.js";
 
 function tasksBody() {
   const today = localDateValue();
