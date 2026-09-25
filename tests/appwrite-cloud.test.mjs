@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  CLOUD_SYNC_LIMIT,
   collectSyncEntries,
+  createSyncPayload,
   fitSyncPayload,
   normalizeUsername,
   syncEntriesHash,
@@ -42,7 +44,12 @@ test("sync payload longtext güvenli bütçesinde kalır", () => {
     "kisiselaraclar:extra": "y".repeat(50000)
   };
   const result = fitSyncPayload(source, 123);
-  assert.ok(Buffer.byteLength(JSON.stringify(result.payload), "utf8") <= 60000);
+  assert.ok(Buffer.byteLength(JSON.stringify(result.payload), "utf8") <= CLOUD_SYNC_LIMIT);
   assert.ok(result.dropped.length >= 1);
   assert.equal(syncEntriesHash(result.payload.entries), syncEntriesHash(result.payload.entries));
+  assert.throws(() => createSyncPayload(source, 123), (error) => {
+    assert.equal(error?.code, "SYNC_PAYLOAD_LIMIT");
+    assert.ok(error?.dropped?.length >= 1);
+    return true;
+  });
 });

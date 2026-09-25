@@ -2,7 +2,7 @@
 
 Türkçe öncelikli, tarayıcıda mümkün olduğunca yerel çalışan (local-first) günlük araçlar platformu.
 
-Bu repo **GitHub Pages üzerinde production olarak yayınlanır**. PDF, görsel, ofis, QR/barkod, arşiv, OCR ve diğer desteklenen işlemler mümkün olduğunca tarayıcı içinde çalışır.
+Bu repo **Appwrite Sites üzerinde production olarak yayınlanır**. GitHub Pages ikincil statik fallback/mirror hattıdır. PDF, görsel, ofis, QR/barkod, arşiv, OCR ve diğer desteklenen işlemler mümkün olduğunca tarayıcı içinde çalışır.
 
 ## Ürün ilkeleri
 
@@ -32,9 +32,9 @@ Araştırma sonuçları `docs/` altında tutulacak. Henüz üçüncü taraf uygu
 
 ## Hosting
 
-Ana ücretsiz production hattı GitHub Pages + GitHub Actions'tır. Vite build'i Pages için `BASE_PATH=/kisiselaraclar/` ile üretilir; normal root-domain build'lerinde varsayılan `/` kullanılmaya devam eder.
+Canonical production hattı **Appwrite Sites**'tır ve `main` dalındaki Vite build'ini yayınlar. Appwrite tarafında output directory `./dist`, fallback `index.html` ve statik adapter kullanılır.
 
-İlk kurulumda repository Pages kaynağı bir kez **GitHub Actions** olarak seçilmelidir. Sonrasında `main` push'ları otomatik quality + build + deploy hattını tetikler.
+GitHub Pages workflow'u korunur ancak production kaynağı değildir; yalnız statik fallback/mirror görevi görür ve `BASE_PATH=/kisiselaraclar/` ile ayrı build alır. Release doğrulamasında Appwrite deployment durumu ile GitHub CI sonuçları birlikte kontrol edilir.
 
 
 ## Akıllı dosya yönlendirme
@@ -151,3 +151,8 @@ Hızlı Not sol paneline Liste / Takvim görünümü eklendi. Takvim, son düzen
 Hızlı Not, genel araç sayfasındaki büyük editorial/brutalist başlık stilinden ayrılarak tek bir çalışma alanı diline alındı. Başlık küçültüldü; teknik entegrasyon şeridi gizlendi; sol not/takvim paneli ile sağ editör aynı border, radius ve yüzey sisteminde birleştirildi.
 
 Editör CSS Grid satırları sabitlendiği için sol takvim uzadığında başlık, toolbar ve metin alanı artık dikeyde anlamsız biçimde esnemiyor. Başlık, toolbar, içerik ve alt aksiyonlar birbirine kontrollü 10px aralıklarla bağlanıyor.
+
+
+## P34 stabilizasyon
+
+P34 yeni araç ekleme milestone'u değildir. Öncelik veri bütünlüğü, bulut senkron güvenliği, sesli yazma kararlılığı, SPA lifecycle temizliği, PWA güncelleme davranışı ve tarayıcı kapsamıdır. Kısmi bulut payload'ı artık başarılı senkron olarak kabul edilmez; sınır aşımında yerel veri korunur ve senkron hata durumuna geçer. Mobil platform global DOM MutationObserver yerine açık UI-render event'i kullanır. SpeechRecognition sonuçları result index bazlı işlenir. WebKit mobil smoke kapsamı CI'ye dahil edilir.

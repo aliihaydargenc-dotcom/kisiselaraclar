@@ -10,7 +10,9 @@ const CONFIG = Object.freeze({
 const PREFIX = "kisiselaraclar:";
 const META_KEY = "kisiselaraclar-cloud:last-sync";
 const CHANGE_EVENT = "kisiselaraclar:local-change";
-const LIMIT = 60000;
+export const CLOUD_SYNC_LIMIT = 60000;
+export const SYNC_STATE_EVENT = "kisiselaraclar:sync-state";
+const LIMIT = CLOUD_SYNC_LIMIT;
 let user = null;
 let lastHash = "";
 let timer = 0;
@@ -94,6 +96,16 @@ export function fitSyncPayload(entries, updatedAt = Date.now()) {
   return { payload: envelope(kept, updatedAt), dropped };
 }
 
+export function createSyncPayload(entries, updatedAt = Date.now()) {
+  const { payload, dropped } = fitSyncPayload(entries, updatedAt);
+  if (!dropped.length) return payload;
+  const error = new Error("Bulut senkron sınırı aşıldı; hiçbir kayıt kısmi olarak gönderilmedi.");
+  error.name = "SyncPayloadLimitError";
+  error.code = "SYNC_PAYLOAD_LIMIT";
+  error.dropped = dropped;
+  throw error;
+}
+
 function readMeta() {
   try { return JSON.parse(storage()?.getItem(META_KEY) || "null"); } catch { return null; }
 }
@@ -133,6 +145,15 @@ function badge(text, title = "") {
   }
 }
 
+function setSyncState(state, text, title = "") {
+  badge(text, title);
+  try {
+    globalThis.dispatchEvent?.(new CustomEvent(SYNC_STATE_EVENT, {
+      detail: { state, text, title, at: Date.now() }
+    }));
+  } catch {}
+}
+
 async function readCloudState(id) {
   const { db } = sdk();
   try {
@@ -145,7 +166,7 @@ async function readCloudState(id) {
 
 async function writeCloudState(id, entries) {
   const { db, kit } = sdk();
-  const { payload, dropped } = fitSyncPayload(entries);
+  const payload = createSyncPayload(entries);
   const role = kit.Role.user(id);
   await db.upsertRow({
     databaseId: CONFIG.databaseId,
@@ -161,7 +182,7 @@ async function writeCloudState(id, entries) {
   const localHash = syncEntriesHash(collectSyncEntries());
   writeMeta(payload.updatedAt, localHash);
   lastHash = localHash;
-  badge(dropped.length ? "Bulut · kısmi" : "Bulut ✓", dropped.length ? "Bazı büyük kayıtlar yerelde tutuluyor." : "Senkron aktif");
+  setSyncState("synced", "Bulut ✓", "Senkron tamamlandı");
 }
 
 async function hydrate(current) {
@@ -349,7 +370,7 @@ function unlock(current) {
 function schedule(delay = 700) {
   if (!user) return;
   clearTimeout(timer);
-  timer = setTimeout(() => syncNow().catch(() => {}), delay);
+  timer = setTimeout(() => { void syncNow(); }, delay);
 }
 
 export async function syncNow(force = false) {
@@ -357,10 +378,15 @@ export async function syncNow(force = false) {
   const entries = collectSyncEntries();
   const localHash = syncEntriesHash(entries);
   if (!force && localHash === lastHash) return;
-  badge("Bulut ↑", "Senkronize ediliyor");
+  setSyncState("syncing", "Bulut ↑", "Senkronize ediliyor");
   inFlight = writeCloudState(user.$id, entries)
     .catch((error) => {
-      badge("Bulut !", "Bulut erişilemiyor; yerel veri korunuyor");
+      const limit = error?.code === "SYNC_PAYLOAD_LIMIT";
+      setSyncState(
+        "error",
+        "Bulut !",
+        limit ? "Senkron sınırı aşıldı; yerel veri korunuyor" : "Bulut erişilemiyor; yerel veri korunuyor"
+      );
       console.warn("Bulut senkronu:", error);
     })
     .finally(() => { inFlight = null; });
@@ -397,9 +423,15 @@ export async function ensurePrivateSession() {
   try { await hydrate(current); }
   catch (error) {
     console.warn("İlk senkron tamamlanamadı:", error);
-    gateStatus("Bulut geçici olarak erişilemiyor; yerel kayıtlarla devam ediliyor.", "warning");
+    const limit = error?.code === "SYNC_PAYLOAD_LIMIT";
+    gateStatus(
+      limit ? "Bulut sınırı aşıldı; tüm kayıtlar güvenle bu cihazda tutuluyor." : "Bulut geçici olarak erişilemiyor; yerel kayıtlarla devam ediliyor.",
+      "warning"
+    );
+    setSyncState("error", "Bulut !", limit ? "Senkron sınırı aşıldı; yerel veri korunuyor" : "Bulut erişilemiyor; yerel veri korunuyor");
   }
   lastHash = syncEntriesHash(collectSyncEntries());
+  if (!document.querySelector("#authStatus")?.dataset?.tone) setSyncState("synced", "Bulut ✓", "Senkron tamamlandı");
   unlock(current);
   watcher();
   return current;

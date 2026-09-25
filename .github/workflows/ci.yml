@@ -48,8 +48,8 @@ jobs:
       - name: Install
         run: npm ci --no-audit --no-fund
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Browser smoke tests
         run: npm run smoke

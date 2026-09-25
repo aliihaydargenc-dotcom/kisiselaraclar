@@ -36,6 +36,11 @@ const heroSearchButton = document.querySelector("#heroSearchButton");
 const scrollProgress = document.querySelector("#scrollProgress");
 const desktopToolNavRoot = document.querySelector("#desktopToolNav");
 const validToolIds = tools.map((tool) => tool.id);
+const UI_RENDER_EVENT = "kisiselaraclar:ui-rendered";
+
+function announceUiRendered() {
+  try { globalThis.dispatchEvent(new CustomEvent(UI_RENDER_EVENT)); } catch {}
+}
 
 let activeCategory = "all";
 let currentToolId = "";
@@ -259,6 +264,7 @@ function renderCatalog() {
   const activeHomeRoot = useDesktopHome ? desktopHomeView : homeView;
   if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }), () => renderCatalog());
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
+  announceUiRendered();
 }
 
 function csvTable(result) {
@@ -379,6 +385,7 @@ function finalizeToolOpen(action = "") {
   }
   const actionHandled = applyToolOpenAction(action);
   if (!actionHandled) toolView.querySelector("#backToCatalog")?.focus({ preventScroll: true });
+  announceUiRendered();
 }
 
 function navigateCatalog({ replace = false } = {}) {

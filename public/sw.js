@@ -1,14 +1,41 @@
-const CACHE = "kisisel-araclar-p30-v1";
+const CACHE = "kisisel-araclar-p34-v2";
 const CORE = ["./", "./manifest.webmanifest", "./app-icon.svg"];
 
+async function cacheCore() {
+  const cache = await caches.open(CACHE);
+  await cache.addAll(CORE);
+}
+
+async function networkFirst(request, fallbackUrl = "") {
+  const cache = await caches.open(CACHE);
+  try {
+    const response = await fetch(request);
+    if (response.ok) await cache.put(request, response.clone());
+    return response;
+  } catch {
+    return (await cache.match(request)) || (fallbackUrl ? await cache.match(fallbackUrl) : undefined) || Response.error();
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) await cache.put(request, response.clone());
+  return response;
+}
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
+  event.waitUntil(cacheCore().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys()
-    .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
-    .then(() => self.clients.claim()));
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (event) => {
@@ -18,19 +45,16 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request)
-      .then((response) => {
-        if (response.ok) caches.open(CACHE).then((cache) => cache.put("./", response.clone()));
-        return response;
-      })
-      .catch(() => caches.match("./")));
+    event.respondWith(networkFirst(request, "./"));
     return;
   }
 
-  event.respondWith(caches.match(request).then((cached) => cached || fetch(request).then((response) => {
-    if (response.ok && ["script", "style", "image", "font", "manifest"].includes(request.destination)) {
-      caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
-    }
-    return response;
-  })));
+  if (url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/app-icon.svg")) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (url.pathname.includes("/assets/")) {
+    event.respondWith(cacheFirst(request));
+  }
 });

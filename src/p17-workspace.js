@@ -1,3 +1,6 @@
+import { SpeechTranscriptBuffer, mergeSpeechTranscript, polishTranscript } from "./speech-transcript.js";
+export { mergeSpeechTranscript } from "./speech-transcript.js";
+
 const STORAGE_PREFIX = "kisiselaraclar:";
 const NOTES_KEY = "kisiselaraclar:p16:notes";
 const TASKS_KEY = "kisiselaraclar:p16:tasks";
@@ -70,34 +73,6 @@ function displayShortDate(value) {
   } catch {
     return value;
   }
-}
-
-function polishTranscript(value) {
-  const text = String(value ?? "")
-    .replace(/\s+/g, " ")
-    .replace(/(\p{L}[\p{L}\p{N}'’-]*)(?:\s+\1){1,}/giu, "$1")
-    .trim();
-  if (!text) return "";
-  return text
-    .replace(/(^|[.!?]\s+)([a-zçğıöşü])/g, (_, prefix, letter) => `${prefix}${letter.toLocaleUpperCase("tr-TR")}`);
-}
-
-export function mergeSpeechTranscript(baseValue, segmentValue) {
-  const base = polishTranscript(baseValue);
-  const segment = polishTranscript(segmentValue);
-  if (!segment) return base;
-  if (!base) return segment;
-  const baseWords = base.split(" ");
-  const segmentWords = segment.split(" ");
-  const normalize = (word) => word.toLocaleLowerCase("tr-TR").replace(/[^a-zçğıöşü0-9]/gi, "");
-  const maxOverlap = Math.min(baseWords.length, segmentWords.length, 12);
-  let overlap = 0;
-  for (let count = maxOverlap; count > 0; count -= 1) {
-    const tail = baseWords.slice(-count).map(normalize).join(" ");
-    const head = segmentWords.slice(0, count).map(normalize).join(" ");
-    if (tail && tail === head) { overlap = count; break; }
-  }
-  return polishTranscript(`${base} ${segmentWords.slice(overlap).join(" ")}`);
 }
 
 export function localDateKey(date = new Date()) {
@@ -630,8 +605,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   let listeningRequested = false;
   let manualStop = false;
   let recognitionError = "";
-  let finalTranscript = "";
-  let interimTranscript = "";
+  let committedTranscript = "";
+  const speechBuffer = new SpeechTranscriptBuffer();
   let editingVoiceNoteId = "";
 
   const setVoiceUi = (listening, message = "") => {
@@ -661,8 +636,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
 
   const resetVoiceEditor = () => {
     editingVoiceNoteId = "";
-    finalTranscript = "";
-    interimTranscript = "";
+    committedTranscript = "";
+    speechBuffer.reset();
     recognitionError = "";
     if (transcriptNode) {
       transcriptNode.value = "";
@@ -715,7 +690,7 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
   };
 
   const finishVoiceSession = () => {
-    const current = polishTranscript(`${finalTranscript} ${interimTranscript}`);
+    const current = mergeSpeechTranscript(committedTranscript, speechBuffer.text);
     if (transcriptNode && current) transcriptNode.value = current;
     if (recognitionError) {
       if (editorMeta) editorMeta.textContent = recognitionError;
@@ -746,15 +721,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
     };
 
     recognition.onresult = (event) => {
-      let interim = "";
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const part = String(event.results[index][0]?.transcript || "").trim();
-        if (!part) continue;
-        if (event.results[index].isFinal) finalTranscript = mergeSpeechTranscript(finalTranscript, part);
-        else interim = mergeSpeechTranscript(interim, part);
-      }
-      interimTranscript = interim;
-      const current = polishTranscript(`${finalTranscript} ${interimTranscript}`);
+      const sessionText = speechBuffer.updateFromEvent(event);
+      const current = mergeSpeechTranscript(committedTranscript, sessionText);
       if (transcriptNode) transcriptNode.value = current;
     };
 
@@ -773,6 +741,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
 
     recognition.onend = () => {
       if (listeningRequested && !manualStop && !recognitionError && root.isConnected) {
+        committedTranscript = mergeSpeechTranscript(committedTranscript, speechBuffer.text);
+        speechBuffer.reset();
         setTimeout(() => {
           if (!listeningRequested || !root.isConnected) return;
           try { recognition.start(); } catch {}
@@ -801,8 +771,8 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
         return;
       }
       recognitionError = "";
-      finalTranscript = "";
-      interimTranscript = "";
+      committedTranscript = "";
+      speechBuffer.reset();
       editingVoiceNoteId = "";
       if (transcriptNode) transcriptNode.value = "";
       if (voiceEditor) voiceEditor.hidden = false;

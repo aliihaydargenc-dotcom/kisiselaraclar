@@ -1,9 +1,26 @@
 import { readFile } from "node:fs/promises";
 
+const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
+const office = await readFile(new URL("../src/p16-office.css", import.meta.url), "utf8");
 const p17 = await readFile(new URL("../src/p17-workspace.css", import.meta.url), "utf8");
 const desktop = await readFile(new URL("../src/desktop-shell.css", import.meta.url), "utf8");
 const mobile = await readFile(new URL("../src/mobile-shell.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+const importantCount = (source) => (source.match(/!important/g) || []).length;
+const importantBudget = [
+  ["styles.css", styles, 79],
+  ["p16-office.css", office, 37],
+  ["desktop-shell.css", desktop, 13],
+  ["mobile-shell.css", mobile, 149]
+];
+for (const [name, source, max] of importantBudget) {
+  const count = importantCount(source);
+  if (count > max) throw new Error(`${name} !important borcu büyüdü: ${count} > ${max}. Yeni override eklemek yerine sahipliği düzelt.`);
+}
+if (importantCount(p17) !== 0) {
+  throw new Error("p17-workspace.css !important kullanmamalı.");
+}
 
 if (/\.mobile-dock/.test(p17)) {
   throw new Error("P17 workspace CSS mobil dock stilini sahiplenmemeli; src/mobile-shell.css kullan.");

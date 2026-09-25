@@ -1,4 +1,7 @@
 const MOBILE_QUERY = "(max-width: 1179px)";
+const UI_RENDER_EVENT = "kisiselaraclar:ui-rendered";
+const SYNC_STATE_EVENT = "kisiselaraclar:sync-state";
+let lastSyncState = null;
 
 function mobileActiveAction() {
   const id = new URLSearchParams(location.hash.replace(/^#/, "")).get("tool") || "";
@@ -18,12 +21,21 @@ function updateDock(dock) {
   });
 }
 
-function updateConnection() {
+function updateConnection(syncState = lastSyncState) {
   const online = navigator.onLine !== false;
   document.querySelectorAll("[data-p30-connection]").forEach((node) => {
     node.classList.toggle("is-offline", !online);
+    node.classList.toggle("has-sync-error", online && syncState?.state === "error");
     const label = node.querySelector("strong");
-    const message = online ? "Çevrimiçi · senkron hazır" : "Çevrimdışı · cihazda çalışıyor";
+    const message = !online
+      ? "Çevrimdışı · cihazda çalışıyor"
+      : syncState?.state === "syncing"
+        ? "Senkronize ediliyor"
+        : syncState?.state === "synced"
+          ? "Bulut güncel"
+          : syncState?.state === "error"
+            ? "Senkron bekliyor"
+            : "Çevrimiçi";
     if (label && label.textContent !== message) label.textContent = message;
   });
 }
@@ -46,10 +58,21 @@ export function mountMobilePlatform({ mobileDock } = {}) {
     installPrompt = null;
     updateInstallButtons();
   });
-  addEventListener("online", updateConnection);
-  addEventListener("offline", updateConnection);
+  const refresh = () => {
+    updateDock(mobileDock);
+    updateConnection();
+    updateInstallButtons();
+  };
+
+  addEventListener("online", refresh);
+  addEventListener("offline", refresh);
   addEventListener("hashchange", () => updateDock(mobileDock));
   addEventListener("popstate", () => updateDock(mobileDock));
+  addEventListener(UI_RENDER_EVENT, refresh);
+  addEventListener(SYNC_STATE_EVENT, (event) => {
+    lastSyncState = event.detail || null;
+    updateConnection(lastSyncState);
+  });
 
   document.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-p30-install]");
@@ -60,15 +83,7 @@ export function mountMobilePlatform({ mobileDock } = {}) {
     updateInstallButtons();
   });
 
-  new MutationObserver(() => {
-    updateDock(mobileDock);
-    updateConnection();
-    updateInstallButtons();
-  }).observe(document.body, { childList: true, subtree: true });
-
-  updateDock(mobileDock);
-  updateConnection();
-  updateInstallButtons();
+  refresh();
 
   if ("serviceWorker" in navigator && import.meta.env.PROD) {
     addEventListener("load", () => {
