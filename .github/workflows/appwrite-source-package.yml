@@ -1,0 +1,44 @@
+name: P20 Appwrite Source Package
+
+on:
+  push:
+    branches:
+      - feat/p20-appwrite-private-cloud
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Build flat source archive
+        run: |
+          rm -rf /tmp/ka-src
+          mkdir -p /tmp/ka-src
+          rsync -a \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.github' \
+            --exclude 'deploy-source.tar.gz' \
+            ./ /tmp/ka-src/
+          tar -C /tmp/ka-src -czf /tmp/deploy-source.tar.gz .
+          tar -tzf /tmp/deploy-source.tar.gz | grep -qx './package.json'
+
+      - name: Publish deployment archive
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan appwrite-deploy-artifact
+          git rm -rf .
+          cp /tmp/deploy-source.tar.gz ./deploy-source.tar.gz
+          printf '%s\n' 'Generated Appwrite deployment source for Kişisel Araçlar.' > README.md
+          git add deploy-source.tar.gz README.md
+          git commit -m "chore: refresh Appwrite deployment package"
+          git push --force origin appwrite-deploy-artifact
