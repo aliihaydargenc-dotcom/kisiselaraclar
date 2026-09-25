@@ -1,6 +1,15 @@
 import { P16_NOTES_KEY, P16_TASKS_KEY, monthMatrix, normalizeNotes, normalizeTasks, tasksToIcs, uid } from "./p16-office-tools.js";
 import { downloadText, getJson, localDateValue, putJson, status, statusLine } from "./p16-office-ui-shared.js";
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function tasksBody() {
   const today = localDateValue();
   return `
@@ -55,9 +64,9 @@ function wireTasks(root) {
     const items = visible();
     list.innerHTML = items.map((task) => `
       <article class="p16-task ${task.done ? "done" : ""}">
-        <label><input type="checkbox" data-task-done="${e(task.id)}" ${task.done ? "checked" : ""}><span>${e(task.title)}</span></label>
-        <small>${task.date ? e(task.date.split("-").reverse().join(".")) : "Tarihsiz"}${task.time ? ` · ${e(task.time)}` : ""}</small>
-        <button class="text-button p16-danger" data-task-delete="${e(task.id)}">Sil</button>
+        <label><input type="checkbox" data-task-done="${escapeHtml(task.id)}" ${task.done ? "checked" : ""}><span>${escapeHtml(task.title)}</span></label>
+        <small>${task.date ? e(task.date.split("-").reverse().join(".")) : "Tarihsiz"}${task.time ? ` · ${escapeHtml(task.time)}` : ""}</small>
+        <button class="text-button p16-danger" data-task-delete="${escapeHtml(task.id)}">Sil</button>
       </article>`).join("") || `<div class="p16-empty">Bu görünümde görev yok.</div>`;
   };
   const renderCalendar = () => {
