@@ -712,7 +712,7 @@ mobileDock?.addEventListener("click", (event) => {
 
   if (button.dataset.mobileAction === "search") {
     if (currentToolId) prepareCatalogForMobileAction();
-    openMobileTools();
+    openMobileTools({ focus: false });
   }
 });
 

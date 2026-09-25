@@ -67,7 +67,6 @@ test("@mobile mobil özel çalışma alanı taşmadan açılır", async ({ page 
   await page.locator('[data-mobile-action="search"]').click();
   await expect(page.locator("#mobileToolsDrawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.getByRole("heading", { name: "Aracını bul." })).toBeVisible();
-  await expect(page.locator("#toolSearch")).toBeFocused();
 
   await page.locator("#smartFileInput").setInputFiles({
     name: "ornek.pdf",
