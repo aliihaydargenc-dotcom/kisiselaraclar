@@ -116,3 +116,86 @@ body.tool-open [data-office-mode=quick-note] :is(.primary-button,.secondary-butt
 .p16-note-calendar .p16-calendar-grid>button.selected{outline:2px solid var(--p16-ink)}.p16-note-calendar-day{padding-top:8px;border-top:1px solid var(--p16-line)}.p16-note-calendar-daylist{display:grid;gap:6px}
 .p16-note-date-label{display:flex;align-items:center;gap:5px;font-size:.68rem}.p16-note-date{width:auto!important;min-height:34px!important;margin:0!important;padding:5px!important;border-radius:8px!important}
 @media(max-width:780px){body.tool-open [data-office-mode=quick-note] .tool-title-row h2{font-size:36px}.p16-note-layout{grid-template-columns:1fr}.p16-note-editor{order:1;padding:12px}.p16-note-sidebar{order:2}.p16-note-meta-left{align-items:flex-start;flex-direction:column}body.tool-open .p16-note-title{font-size:1.15rem}body.tool-open .p16-note-text{min-height:330px;font-size:16px}.p16-note-list{max-height:420px}}
+
+
+/* P24 — desktop readability + compact task workspace */
+@media(min-width:1180px){
+  body.tool-open .tool-view[data-office-mode="tasks-calendar"]{
+    width:min(1080px,100%);
+    margin:0 auto;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .tool-title-row{
+    margin-bottom:14px;
+    padding-bottom:14px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .tool-title-row h2{
+    font-family:var(--sans);
+    font-size:36px;
+    line-height:1;
+    letter-spacing:-.035em;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .tool-title-row p{
+    max-width:720px;
+    font-size:14px;
+    line-height:1.5;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task-create{
+    grid-template-columns:minmax(280px,1fr) 170px 130px 88px;
+    gap:9px;
+    margin-top:12px;
+    padding:12px;
+    border:1px solid #e4e6ec;
+    border-radius:14px;
+    background:#fff;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task-create :is(input,button){
+    min-height:42px;
+    font-size:14px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task-layout{
+    grid-template-columns:minmax(0,1fr) 340px;
+    gap:12px;
+    margin-top:12px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task-layout>section,
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-calendar{
+    padding:13px;
+    border-radius:16px;
+    background:#fff;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-tabs button{
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:750;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task-list{
+    min-height:120px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task{
+    padding:10px 11px;
+    font-size:13px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task label span{
+    font-size:13px;
+    font-weight:700;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-task small{
+    font-size:11px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-calendar-head strong{
+    font-size:14px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-weekdays{
+    font-size:10px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-calendar-grid>button,
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-calendar-grid>span{
+    border-radius:8px;
+    font-size:12px;
+  }
+  body.tool-open [data-office-mode="tasks-calendar"] .p16-status{
+    margin-top:12px;
+    padding:10px 12px;
+    font-size:12px;
+  }
+}
