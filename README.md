@@ -118,3 +118,8 @@ Bugün çalışma merkezindeki Hızlı Başla, görev ve Devam Et kartları doğ
 ### P17.2 stabilizasyon ve geliştirici denetimi
 
 P17 çalışma merkezi geliştirici gözüyle yeniden tarandı. Tekrarlanan event listener birikimi kaldırıldı; Hızlı Başla kartları gerçek işlem niyetine bağlandı; localStorage yazma hataları artık kullanıcıya gösteriliyor; toplantı aksiyonlarının aynı görevi tekrar tekrar üretmesi engellendi; takvim günü seçimi görev başlığına odaklanıyor; yedek geri yükleme boyut ve kayıt sınırlarıyla doğrulanıyor; SVG araçları harici ağ referanslarını temizliyor.
+
+
+### P17.4 mobil görsel bütünlük
+
+Mobil ana akış ekran görüntüsü üzerinden yeniden düzenlendi. Hero yüksekliği azaltıldı; araç bulma başlığı ve arama alanı uygulama ölçeğine çekildi; boş Smart Router mobilde tekrar gösterilmiyor çünkü dosya seçimi çalışma merkezi ve dock içinde zaten mevcut. Dosya seçildiğinde Smart Router önerileri yeniden görünür. Son kullanılanlar karanlık afiş görünümünden açık, kompakt şeride taşındı; kategori şeridi pill yapıya geçti; araç listesi, footer ve mobil dock daha sakin bir tek ürün dili altında birleştirildi.
