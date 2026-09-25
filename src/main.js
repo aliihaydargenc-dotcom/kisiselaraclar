@@ -253,7 +253,7 @@ function renderCatalog() {
     requestAnimationFrame(() => catalogView.querySelector(".catalog-head")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   });
   const activeHomeRoot = useDesktopHome ? desktopHomeView : homeView;
-  if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }));
+  if (activeHomeRoot) wireP17Workspace(activeHomeRoot, safeStorage(), (id, action) => navigateTool(id, { action }), () => renderCatalog());
   if (toolCountSummary) toolCountSummary.textContent = `${tools.length} araç`;
 }
 
