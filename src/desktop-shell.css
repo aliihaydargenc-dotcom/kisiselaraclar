@@ -1,10 +1,10 @@
-/* P21 — unified desktop personal workspace */
+/* P22 — Desktop B personal workspace */
 .desktop-home-view{display:none}
 @media(min-width:1180px){
-  body:not(.tool-open){background:var(--cream)}
+  body:not(.tool-open){background:#f6f7fb}
   body:not(.tool-open) :is(.ticker,.site-benefits,.site-footer){display:none!important}
   body:not(.tool-open) .site-header{
-    position:sticky;top:0;background:rgba(247,246,241,.94);border-bottom:1px solid rgba(23,25,24,.09);
+    position:sticky;top:0;background:rgba(255,255,255,.94);border-bottom:1px solid #e8eaf0;
     -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)
   }
   body:not(.tool-open) .site-header-inner{width:min(1240px,calc(100% - 56px));height:64px}
@@ -12,17 +12,17 @@
   body:not(.tool-open) .brand-mark{width:36px;height:36px;border-radius:10px;background:var(--ink);color:#fff;box-shadow:none;transform:none}
   body:not(.tool-open) .site-nav{display:flex}
   body:not(.tool-open) .nav-search{min-width:72px;height:42px;border:1px solid #dedfd9;border-radius:11px;background:#fff;color:var(--ink)}
-  body:not(.tool-open) .site-page{width:100%;background:var(--cream)}
-  body:not(.tool-open) .site-hero{width:min(1240px,calc(100% - 56px));min-height:auto;padding:22px 0 0;display:block}
+  body:not(.tool-open) .site-page{width:100%;background:#f6f7fb}
+  body:not(.tool-open) .site-hero{width:min(1240px,calc(100% - 56px));min-height:auto;padding:24px 0 0;display:block}
   body:not(.tool-open) .site-hero::before,
   body:not(.tool-open) :is(.site-hero-copy,.hero-grid,.hero-playground){display:none!important}
   body:not(.tool-open) .desktop-home-view{display:block;width:100%;max-width:none}
   body:not(.tool-open) .desktop-home-view .p17-workspace{width:100%}
-  body:not(.tool-open) .tools-stage{background:var(--cream);color:var(--ink)}
-  body:not(.tool-open) .workspace{width:min(1240px,calc(100% - 56px));padding:22px 0 64px}
+  body:not(.tool-open) .tools-stage{background:#f6f7fb;color:var(--ink)}
+  body:not(.tool-open) .workspace{width:min(1240px,calc(100% - 56px));padding:18px 0 64px}
   body:not(.tool-open) .home-view{display:none}
 
-  body:not(.tool-open) .tool-browser{margin:0 0 18px!important;padding:0;border:0}
+  body:not(.tool-open) .tool-browser{margin:0 0 12px!important;padding:16px 18px!important;border:1px solid #e6e8ef;border-radius:18px;background:#fff;box-shadow:0 12px 32px rgba(25,29,44,.04)}
   body:not(.tool-open) .tool-browser-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,500px);align-items:end;gap:24px;margin-bottom:14px}
   body:not(.tool-open) .tool-browser-head .eyebrow{margin-bottom:4px;color:#858980;font-size:8px}
   body:not(.tool-open) .tool-browser-head h2{margin:0;font:800 28px/1 var(--sans)!important;letter-spacing:-.035em!important}
@@ -30,8 +30,8 @@
   body:not(.tool-open) .search-input{height:44px;padding:0 14px;border:1px solid #dedfd9!important;border-radius:11px!important;background:#fff!important;box-shadow:none!important;font-size:14px!important}
   body:not(.tool-open) .category-list{display:flex!important;gap:6px!important;margin:0!important;padding:0 0 2px!important;overflow-x:auto!important;scrollbar-width:none!important}
   body:not(.tool-open) .category-list::-webkit-scrollbar{display:none}
-  body:not(.tool-open) .category-button{flex:0 0 auto;min-height:34px;padding:6px 12px!important;border:1px solid #dedfd9!important;border-radius:999px!important;background:#fff!important;color:#565a53!important;box-shadow:none!important;font-size:9.5px!important}
-  body:not(.tool-open) .category-button.active{border-color:var(--ink)!important;background:var(--ink)!important;color:#fff!important}
+  body:not(.tool-open) .category-button{flex:0 0 auto;min-height:34px;padding:6px 12px!important;border:1px solid #dedfd9!important;border-radius:999px!important;background:#fff!important;color:#626776!important;box-shadow:none!important;font-size:9.5px!important}
+  body:not(.tool-open) .category-button.active{border-color:#5b5cf6!important;background:#5b5cf6!important;color:#fff!important}
 
   body:not(.tool-open) #catalogView{display:block}
   body:not(.tool-open) .smart-router{
@@ -46,9 +46,9 @@
   body:not(.tool-open) .smart-router-copy p{display:none}
   body:not(.tool-open) .smart-drop-zone{
     min-height:66px!important;padding:10px 12px!important;grid-template-columns:34px minmax(0,1fr)!important;gap:9px!important;
-    border:1px dashed #c7cac3!important;border-radius:12px!important;background:#f8f9f6!important;color:var(--ink)!important
+    border:1px dashed #c7cac3!important;border-radius:12px!important;background:#f7f8fc!important;color:var(--ink)!important
   }
-  body:not(.tool-open) .smart-drop-mark{width:34px!important;height:34px!important;border-radius:9px!important;background:#e9edf9!important;color:#315cff!important}
+  body:not(.tool-open) .smart-drop-mark{width:34px!important;height:34px!important;border-radius:9px!important;background:#e9edf9!important;color:#5b5cf6!important}
   body:not(.tool-open) .smart-drop-zone strong{font:750 11px/1.2 var(--sans)!important}
   body:not(.tool-open) .smart-drop-zone>span:last-child{font-size:8px!important;color:#8b8e87!important}
   body:not(.tool-open) .smart-detected{grid-column:1/-1}
@@ -66,7 +66,7 @@
   body:not(.tool-open) .catalog-head{margin:0 0 8px!important}
   body:not(.tool-open) .catalog-head .eyebrow{display:none!important}
   body:not(.tool-open) .catalog-head h2{margin:0!important;font:750 12px/1 var(--sans)!important;color:#666a63!important}
-  body:not(.tool-open) .catalog-count{color:#315cff!important;font-size:inherit!important}
+  body:not(.tool-open) .catalog-count{color:#5b5cf6!important;font-size:inherit!important}
   body:not(.tool-open) .tool-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;border:0!important}
   body:not(.tool-open) .tool-card{min-width:0;min-height:104px!important;padding:13px!important;border:1px solid #e0e2dc!important;border-radius:13px!important;background:#fff!important;color:var(--ink)!important;box-shadow:none!important;gap:5px!important}
   body:not(.tool-open) .tool-card::before{display:none!important}
