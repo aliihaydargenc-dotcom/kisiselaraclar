@@ -58,7 +58,7 @@ function categoryLabel(id) {
 }
 
 function setDocumentTitle(tool = null) {
-  document.title = tool ? `${tool.title} | Kişisel Araçlar` : "Kişisel Araçlar — Local-first araç kutusu";
+  document.title = tool ? `${tool.title} | Kişisel Araçlar` : "Kişisel Araçlar — özel çalışma alanı";
 }
 
 function renderCategories() {
