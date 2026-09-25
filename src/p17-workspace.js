@@ -419,11 +419,17 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
             <button type="button" class="p25-link" data-tool="voice-note">Tümü <span>→</span></button>
           </div>
 
-          <button type="button" class="p25-voice-recorder" data-tool="voice-note">
-            <span class="p25-mic-ring"><span aria-hidden="true">🎙</span></span>
-            <strong>Kayda başla</strong>
-            <small>Konuşmanı metne dönüştür</small>
+          <button type="button" class="p25-voice-recorder" id="p25VoiceRecorder" data-p25-voice-trigger aria-pressed="false">
+            <span class="p25-mic-ring" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6.5 11.5v.5a5.5 5.5 0 0 0 11 0v-.5M12 17.5V21M9 21h6"/></svg>
+            </span>
+            <strong id="p25VoiceRecorderTitle">Sesli not başlat</strong>
+            <small id="p25VoiceRecorderStatus">Dokun ve konuş</small>
           </button>
+          <div class="p25-live-voice" id="p25LiveVoice" hidden aria-live="polite">
+            <span class="p25-live-dot" aria-hidden="true"></span>
+            <p id="p25VoiceTranscript">Dinliyorum…</p>
+          </div>
 
           <div class="p25-section-label"><span>Son sesli notlar</span><strong>${summary.voiceNotes.length}</strong></div>
           <div class="p25-voice-list">${voiceRows(summary)}</div>
@@ -456,7 +462,7 @@ export function buildP17HomeMarkup(storage, now = new Date()) {
           <div class="p25-footer-head"><div><span class="eyebrow">HIZLI ERİŞİM</span><h3>Sık kullandıkların</h3></div></div>
           <div class="p25-action-row">
             <button type="button" class="p17-action" data-tool="quick-note" data-tool-action="new-note"><i>✎</i><span><strong>Yeni not</strong><small>Hızlıca yaz</small></span></button>
-            <button type="button" class="p17-action" data-tool="voice-note"><i>●</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
+            <button type="button" class="p17-action" data-p25-voice-trigger><i>●</i><span><strong>Sesli not</strong><small>Kayda başla</small></span></button>
             <button type="button" class="p17-action" data-tool="tasks-calendar" data-tool-action="new-task"><i>✓</i><span><strong>Görev ekle</strong><small>Gününe ekle</small></span></button>
             <button type="button" class="p17-action" data-tool="meeting-notes"><i>M</i><span><strong>Toplantı</strong><small>Not oluştur</small></span></button>
           </div>
@@ -564,6 +570,147 @@ export function wireP17Workspace(root, storage, onOpenTool, onRefresh) {
       if (!Array.isArray(tasks)) return;
       const next = tasks.map((task) => String(task?.id || "") === id ? { ...task, done: checkbox.checked } : task);
       if (writeJson(storage, TASKS_KEY, next) && typeof onRefresh === "function") onRefresh();
+    });
+  });
+
+  const voiceButton = root.querySelector("#p25VoiceRecorder");
+  const voiceTitle = root.querySelector("#p25VoiceRecorderTitle");
+  const voiceStatus = root.querySelector("#p25VoiceRecorderStatus");
+  const liveVoice = root.querySelector("#p25LiveVoice");
+  const transcriptNode = root.querySelector("#p25VoiceTranscript");
+  const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
+  let recognition = null;
+  let listeningRequested = false;
+  let manualStop = false;
+  let recognitionError = "";
+  let finalTranscript = "";
+  let interimTranscript = "";
+
+  const setVoiceUi = (listening, message = "") => {
+    voiceButton?.classList.toggle("is-listening", listening);
+    voiceButton?.setAttribute("aria-pressed", listening ? "true" : "false");
+    if (voiceTitle) voiceTitle.textContent = listening ? "Dinleniyor · durdurmak için dokun" : "Sesli not başlat";
+    if (voiceStatus) voiceStatus.textContent = message || (listening ? "Konuşman anlık olarak yazıya dönüşüyor" : "Dokun ve konuş");
+    if (liveVoice) liveVoice.hidden = !listening && !finalTranscript && !recognitionError;
+  };
+
+  const saveVoiceNote = () => {
+    const transcript = String(finalTranscript || interimTranscript || "").replace(/\s+/g, " ").trim();
+    if (!transcript) return false;
+    const notes = storageJson(storage, NOTES_KEY, []);
+    const next = Array.isArray(notes) ? [...notes] : [];
+    next.unshift({
+      id: makeId("note"),
+      title: `Sesli Not · ${displayTime(Date.now())}`,
+      text: transcript,
+      pinned: false,
+      completed: false,
+      noteDate: localDateKey(),
+      updatedAt: Date.now()
+    });
+    return writeJson(storage, NOTES_KEY, next);
+  };
+
+  const finishVoiceSession = () => {
+    const saved = !recognitionError && saveVoiceNote();
+    if (transcriptNode) {
+      transcriptNode.textContent = recognitionError
+        ? recognitionError
+        : saved
+          ? "Sesli not kaydedildi."
+          : "Kayıt bitti; kaydedilecek konuşma algılanmadı.";
+    }
+    setVoiceUi(false, recognitionError ? "Mikrofon kullanılamadı" : saved ? "Notlarına kaydedildi" : "Tekrar deneyebilirsin");
+    finalTranscript = "";
+    interimTranscript = "";
+    if (saved && typeof onRefresh === "function") setTimeout(() => onRefresh(), 450);
+  };
+
+  if (SpeechRecognition && voiceButton) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "tr-TR";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      recognitionError = "";
+      setVoiceUi(true);
+      if (transcriptNode) transcriptNode.textContent = "Dinliyorum…";
+    };
+
+    recognition.onresult = (event) => {
+      let interim = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const part = String(event.results[index][0]?.transcript || "").trim();
+        if (!part) continue;
+        if (event.results[index].isFinal) finalTranscript += `${part} `;
+        else interim += `${part} `;
+      }
+      interimTranscript = interim;
+      const current = `${finalTranscript}${interimTranscript}`.replace(/\s+/g, " ").trim();
+      if (transcriptNode) transcriptNode.textContent = current || "Dinliyorum…";
+    };
+
+    recognition.onerror = (event) => {
+      const code = String(event.error || "");
+      recognitionError = code === "not-allowed" || code === "service-not-allowed"
+        ? "Mikrofon izni verilmedi."
+        : code === "audio-capture"
+          ? "Mikrofon bulunamadı."
+          : code === "network"
+            ? "Ses tanıma servisine ulaşılamadı."
+            : code === "no-speech"
+              ? ""
+              : "Ses tanıma başlatılamadı.";
+      if (recognitionError && transcriptNode) transcriptNode.textContent = recognitionError;
+    };
+
+    recognition.onend = () => {
+      if (listeningRequested && !manualStop && !recognitionError && root.isConnected) {
+        try {
+          setTimeout(() => {
+            if (!listeningRequested || !root.isConnected) return;
+            try { recognition.start(); } catch {}
+          }, 120);
+          return;
+        } catch {}
+      }
+      listeningRequested = false;
+      manualStop = false;
+      finishVoiceSession();
+    };
+  } else if (voiceButton) {
+    voiceButton.disabled = true;
+    setVoiceUi(false, "Bu tarayıcı sesle yazmayı desteklemiyor");
+    if (transcriptNode) transcriptNode.textContent = "Tarayıcı konuşma tanıma özelliğini desteklemiyor.";
+  }
+
+  root.querySelectorAll("[data-p25-voice-trigger]").forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!recognition) return;
+      if (listeningRequested) {
+        listeningRequested = false;
+        manualStop = true;
+        setVoiceUi(false, "Kaydediliyor…");
+        try { recognition.stop(); } catch { finishVoiceSession(); }
+        return;
+      }
+      recognitionError = "";
+      finalTranscript = "";
+      interimTranscript = "";
+      listeningRequested = true;
+      manualStop = false;
+      if (liveVoice) liveVoice.hidden = false;
+      if (transcriptNode) transcriptNode.textContent = "Mikrofon hazırlanıyor…";
+      voiceButton?.scrollIntoView({ behavior: "smooth", block: "center" });
+      try { recognition.start(); }
+      catch {
+        listeningRequested = false;
+        recognitionError = "Dinleme başlatılamadı. Mikrofon iznini kontrol et.";
+        finishVoiceSession();
+      }
     });
   });
 
