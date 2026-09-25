@@ -179,7 +179,7 @@ function wireVoice(root) {
     const list = voiceNotes();
     savedRoot.innerHTML = list.length
       ? list.map((note) => `
-          <button type="button" class="p16-voice-saved-item ${note.id === activeId ? "active" : ""}" data-voice-note-id="${e(note.id)}">
+          <button type="button" class="secondary-button p16-voice-saved-item ${note.id === activeId ? "active" : ""}" data-voice-note-id="${e(note.id)}">
             <strong>${e((note.text || "Sesli not").slice(0, 72))}${(note.text || "").length > 72 ? "…" : ""}</strong>
             <small>${new Date(note.updatedAt).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" })}</small>
           </button>`).join("")
