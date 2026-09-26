@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="./src/p17-workspace.css" />
   <link rel="stylesheet" href="./src/desktop-shell.css" />
   <link rel="stylesheet" href="./src/mobile-shell.css" />
+  <link rel="stylesheet" href="./src/p36-design-system.css" />
   <style>
     body.auth-pending,body.auth-locked{overflow:hidden}
     body.auth-pending>:not(#authGate):not(script),body.auth-locked>:not(#authGate):not(script){visibility:hidden}
@@ -106,7 +107,6 @@
     </main>
   </div>
 
-
   <nav class="mobile-dock" id="mobileDock" aria-label="Mobil ana navigasyon">
     <button type="button" data-mobile-action="today">
       <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
@@ -127,6 +127,7 @@
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
+  <script type="module" src="/p36-motion.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>

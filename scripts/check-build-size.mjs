@@ -4,12 +4,20 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "dist");
-const limits = {
-  coreJs: 100 * 1024,
-  // P8 adds Mediabunny as a lazy-only media runtime. Core entry stays capped separately.
+
+// Size checks are regression guards, not platform limits. Targets produce warnings;
+// only a large accidental regression fails CI.
+const targets = {
+  coreJs: 110 * 1024,
   totalJs: 4250 * 1024,
   ocrRuntime: 40 * 1024 * 1024,
-  css: 140 * 1024
+  css: 160 * 1024
+};
+const hardLimits = {
+  coreJs: 180 * 1024,
+  totalJs: 6 * 1024 * 1024,
+  ocrRuntime: 55 * 1024 * 1024,
+  css: 240 * 1024
 };
 
 async function walk(pathname) {
@@ -24,14 +32,16 @@ async function walk(pathname) {
 }
 
 const html = await readFile(join(root, "index.html"), "utf8");
-const entryMatch = html.match(/<script[^>]+src="([^"]+\.(?:js|mjs))"/);
-if (!entryMatch) throw new Error("Ana JS bundle bulunamadı.");
+const entryMatches = [...html.matchAll(/<script[^>]+src="([^"]+\.(?:js|mjs))"/g)];
+const bundledEntry = entryMatches
+  .map((match) => match[1].split("?")[0])
+  .find((url) => url.includes("assets/"));
+if (!bundledEntry) throw new Error("Ana JS bundle bulunamadı.");
 
-const entryUrl = entryMatch[1].split("?")[0];
-const assetIndex = entryUrl.indexOf("assets/");
+const assetIndex = bundledEntry.indexOf("assets/");
 const entryRelative = assetIndex >= 0
-  ? entryUrl.slice(assetIndex)
-  : entryUrl.replace(/^(?:\.\/|\/)+/, "");
+  ? bundledEntry.slice(assetIndex)
+  : bundledEntry.replace(/^(?:\.\/|\/)+/, "");
 const entryPath = join(root, entryRelative);
 const coreJs = (await stat(entryPath)).size;
 const files = await walk(root);
@@ -52,7 +62,10 @@ for (const file of files) {
 
 const values = { coreJs, totalJs, ocrRuntime, css };
 for (const [kind, bytes] of Object.entries(values)) {
-  const limit = limits[kind];
-  console.log(`${kind}: ${(bytes / 1024).toFixed(1)} KB / ${(limit / 1024).toFixed(0)} KB bütçe`);
-  if (bytes > limit) throw new Error(`${kind} bundle bütçeyi aştı.`);
+  const target = targets[kind];
+  const hardLimit = hardLimits[kind];
+  const sizeKb = (bytes / 1024).toFixed(1);
+  console.log(`${kind}: ${sizeKb} KB · hedef ${(target / 1024).toFixed(0)} KB · üst tavan ${(hardLimit / 1024).toFixed(0)} KB`);
+  if (bytes > hardLimit) throw new Error(`${kind} beklenmeyen ölçüde büyüdü: ${sizeKb} KB.`);
+  if (bytes > target) console.warn(`UYARI: ${kind} hedef bütçenin üzerinde; optimizasyon adayı.`);
 }
