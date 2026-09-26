@@ -4,11 +4,22 @@
    not inflate the Vite core application bundle. */
 
 const MOTION_URL = "https://cdn.jsdelivr.net/npm/motion@13.4.4/+esm";
+const VISUAL_STYLESHEET = "/p36-visual-impact.css?v=36.1";
 const UI_RENDER_EVENT = "kisiselaraclar:ui-rendered";
 const reducedMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
 const seen = new WeakSet();
 let motionPromise = null;
 let renderTimer = 0;
+
+function ensureVisualLayer() {
+  document.documentElement.dataset.visualSystem = "p36.1";
+  if (document.querySelector('link[data-p36-visual="true"]')) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = VISUAL_STYLESHEET;
+  link.dataset.p36Visual = "true";
+  document.head.append(link);
+}
 
 function shouldAnimate() {
   if (reducedMotion?.matches) return false;
@@ -95,6 +106,7 @@ function wireDrawerState() {
 }
 
 function initMotionSystem() {
+  ensureVisualLayer();
   document.documentElement.dataset.motionSystem = shouldAnimate() ? "enhanced" : "reduced";
   wirePressFeedback();
   wireDrawerState();
