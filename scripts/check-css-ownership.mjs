@@ -1,46 +1,33 @@
 import { readFile } from "node:fs/promises";
 
-const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
-const office = await readFile(new URL("../src/p16-office.css", import.meta.url), "utf8");
-const p17 = await readFile(new URL("../src/p17-workspace.css", import.meta.url), "utf8");
-const p39 = await readFile(new URL("../src/p39-reset.css", import.meta.url), "utf8");
+const css = await readFile(new URL("../src/notes-workspace.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
-const stripCssComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, "");
-const importantCount = (source) => (stripCssComments(source).match(/!important/g) || []).length;
+const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, "");
+if ((stripComments(css).match(/!important/g) || []).length !== 0) {
+  throw new Error("Notes workspace CSS !important kullanmamalı; yeni ürün tek sahiplik katmanıyla çalışmalı.");
+}
 
-const legacyBudget = [
-  ["styles.css", styles, 79],
-  ["p16-office.css", office, 37]
+const retired = [
+  "./src/styles.css",
+  "./src/design-tools.css",
+  "./src/p14-tools.css",
+  "./src/p15-tools.css",
+  "./src/p16-office.css",
+  "./src/p17-workspace.css",
+  "./src/p39-reset.css",
+  "./src/main.js",
+  "./src/p39-shell.js"
 ];
-for (const [name, source, max] of legacyBudget) {
-  const count = importantCount(source);
-  if (count > max) throw new Error(`${name} !important borcu büyüdü: ${count} > ${max}.`);
-}
-if (importantCount(p17) !== 0) throw new Error("p17-workspace.css !important kullanmamalı.");
-if (importantCount(p39) !== 0) throw new Error("P39 reset katmanı !important kullanmamalı; yeni tasarım seçici sahipliğiyle çalışmalı.");
-
-for (const legacy of ["./src/desktop-shell.css","./src/mobile-shell.css","./src/p36-design-system.css","./src/p37-daily.css","./src/p37-actions.css"]) {
-  if (index.includes(legacy)) throw new Error(`P39 production shell eski görsel katmanı yüklememeli: ${legacy}`);
+for (const entry of retired) {
+  if (index.includes(entry)) throw new Error(`Notes-first production eski Kişisel Araçlar yüzeyini yüklememeli: ${entry}`);
 }
 
-const p17Pos = index.indexOf("./src/p17-workspace.css");
-const p39Pos = index.indexOf("./src/p39-reset.css");
-if (p17Pos < 0 || p39Pos < p17Pos) throw new Error("P39 reset CSS, gerekli işlevsel stillerden sonra son görsel sahip olmalı.");
-
-const requiredSelectors = [
-  ".p39-workspace",
-  ".p39-command-launch",
-  ".desktop-tool-nav",
-  ".mobile-dock",
-  ".p38-command",
-  ".tool-panel"
-];
-for (const selector of requiredSelectors) {
-  if (!p39.includes(selector)) throw new Error(`P39 tasarım sahipliği eksik: ${selector}`);
+for (const selector of [".app-sidebar", ".today-grid", ".notes-layout", ".note-editor-panel", ".task-sections", ".board", ".mobile-nav"]) {
+  if (!css.includes(selector)) throw new Error(`Notes workspace tasarım sahipliği eksik: ${selector}`);
 }
 
-if (!index.includes("./src/p39-shell.js")) throw new Error("P39 shell production girişine bağlı değil.");
-if (index.includes("./src/p37-daily.js")) throw new Error("P39 production shell eski P37 günlük rendererını yüklememeli.");
+if (!index.includes("./src/notes-workspace.css")) throw new Error("Notes workspace CSS production girişine bağlı değil.");
+if (!index.includes("./src/notes-workspace.js")) throw new Error("Notes workspace JS production girişine bağlı değil.");
 
-console.log("CSS ownership PASS: P39 production yüzeyinin tek görsel sahiplik katmanı.");
+console.log("CSS ownership PASS: production artık yalnız notes-first workspace yüzeyini yüklüyor.");
