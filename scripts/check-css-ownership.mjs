@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 const css = await readFile(new URL("../src/notes-workspace.css", import.meta.url), "utf8");
 const themeCss = await readFile(new URL("../src/theme.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const bootstrap = await readFile(new URL("../src/app-bootstrap.js", import.meta.url), "utf8");
 
 const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, "");
 for (const [name, source] of [["Calm Editorial", css], ["Theme", themeCss]]) {
@@ -52,7 +53,8 @@ for (const selector of [
 
 if (!index.includes("./src/notes-workspace.css")) throw new Error("Calm Editorial CSS production girişine bağlı değil.");
 if (!index.includes("./src/theme.css")) throw new Error("Tema CSS production girişine bağlı değil.");
-if (!index.includes("./src/theme-controller.js")) throw new Error("Tema kontrolcüsü production girişine bağlı değil.");
-if (!index.includes("./src/notes-workspace.js")) throw new Error("Calm Editorial JS production girişine bağlı değil.");
+if (!index.includes("./src/app-bootstrap.js")) throw new Error("P45 bootstrap production girişine bağlı değil.");
+if (!bootstrap.includes("./theme-controller.js")) throw new Error("Tema kontrolcüsü bootstrap zincirine bağlı değil.");
+if (!bootstrap.includes("./notes-workspace.js")) throw new Error("Calm Editorial JS bootstrap zincirine bağlı değil.");
 
-console.log("CSS ownership PASS: Calm Editorial + gece/gündüz tema katmanı production sahibi.");
+console.log("CSS ownership PASS: Calm Editorial + gece/gündüz tema katmanı P45 bootstrap üzerinden production sahibi.");
