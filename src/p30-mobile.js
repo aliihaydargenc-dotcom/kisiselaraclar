@@ -1,3 +1,5 @@
+import "./p38.js";
+
 const MOBILE_QUERY = "(max-width: 1179px)";
 const UI_RENDER_EVENT = "kisiselaraclar:ui-rendered";
 const SYNC_STATE_EVENT = "kisiselaraclar:sync-state";
