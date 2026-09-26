@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f5f6fa" />
+  <meta name="theme-color" content="#111316" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Kişisel Araçlar" />
   <meta name="description" content="Not, görev, toplantı ve günlük araçlarını tek özel çalışma alanında kullan." />
   <meta name="robots" content="index,follow" />
-  <title>Kişisel Araçlar — özel çalışma alanı</title>
+  <title>Kişisel Araçlar — private workspace</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./app-icon.svg" />
@@ -20,31 +20,12 @@
   <link rel="stylesheet" href="./src/p15-tools.css" />
   <link rel="stylesheet" href="./src/p16-office.css" />
   <link rel="stylesheet" href="./src/p17-workspace.css" />
-  <link rel="stylesheet" href="./src/desktop-shell.css" />
-  <link rel="stylesheet" href="./src/mobile-shell.css" />
-  <link rel="stylesheet" href="./src/p36-design-system.css" />
-  <link rel="stylesheet" href="./src/p37-daily.css" />
-  <link rel="stylesheet" href="./src/p37-actions.css" />
-  <style>
-    body.auth-pending,body.auth-locked{overflow:hidden}
-    body.auth-pending>:not(#authGate):not(script),body.auth-locked>:not(#authGate):not(script){visibility:hidden}
-    #authGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#0a0b10;color:#f4efdf;visibility:visible}
-    body.auth-ready #authGate{display:none}
-    .auth-card{width:min(100%,470px);padding:28px;border:1px solid rgba(244,239,223,.2);background:#111218;box-shadow:18px 18px 0 #4f7cff}
-    .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}.auth-brand b{display:grid;place-items:center;width:42px;height:42px;background:#d8ff5f;color:#0a0b10;font:900 13px/1 Arial;transform:rotate(-4deg);box-shadow:5px 5px 0 #4f7cff}.auth-brand span{font:800 13px/1.2 Arial,sans-serif}
-    .auth-card h1{margin:0 0 10px;font:800 clamp(34px,7vw,54px)/.95 Arial,sans-serif;letter-spacing:-.055em}.auth-card>p{margin:0 0 22px;color:#b8b7af;font:500 13px/1.55 Arial,sans-serif}
-    .auth-form{display:grid;gap:12px}.auth-form label{display:grid;gap:6px;color:#d7d4c9;font:750 11px/1.2 Arial,sans-serif;letter-spacing:.02em}.auth-form input{width:100%;min-height:48px;padding:0 13px;border:1px solid #4a4b50;border-radius:10px;outline:0;background:#18191f;color:#fff;font:600 16px/1 Arial,sans-serif}.auth-form input:focus{border-color:#7d9aff;box-shadow:0 0 0 3px rgba(79,124,255,.18)}
-    .auth-form button{min-height:48px;padding:0 15px;border:0;border-radius:10px;background:#d8ff5f;color:#0a0b10;cursor:pointer;font:900 13px/1 Arial,sans-serif}.auth-form button:disabled{opacity:.55;cursor:wait}.auth-form button span{float:right}.auth-form small{color:#979890;font:500 10px/1.5 Arial,sans-serif}
-    .auth-setup{margin-top:18px;border-top:1px solid #303138;padding-top:14px;color:#a9a8a1;font:700 11px/1.4 Arial,sans-serif}.auth-setup summary{cursor:pointer}.auth-setup .compact{margin-top:12px}
-    #authStatus{min-height:20px;margin:16px 0 0!important;color:#9fa098!important;font:650 11px/1.45 Arial,sans-serif!important}#authStatus[data-tone=error]{color:#ff8e81!important}#authStatus[data-tone=warning]{color:#f7d36a!important}
-    .cloud-sync-badge{font-size:10px;font-weight:850;color:var(--acid,#d8ff5f);white-space:nowrap}.private-logout{border:0;background:transparent;color:inherit;cursor:pointer;font:800 10px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em}
-    @media(max-width:620px){#authGate{padding:16px}.auth-card{padding:22px;box-shadow:10px 10px 0 #4f7cff}.auth-brand{margin-bottom:28px}.auth-card h1{font-size:38px}.cloud-sync-badge{display:none}}
-  </style>
+  <link rel="stylesheet" href="./src/p39-reset.css" />
 </head>
 <body class="auth-pending">
   <section id="authGate" class="auth-gate" aria-live="polite">
     <div class="auth-card">
-      <div class="auth-brand"><b>KA</b><span>Kişisel Araçlar</span></div>
+      <div class="auth-brand"><b>K</b><span>Kişisel Araçlar</span></div>
       <h1 id="authTitle">Özel alan açılıyor.</h1>
       <p id="authCopy">Oturum ve bulut bağlantısı kontrol ediliyor.</p>
       <div id="authBody"></div>
@@ -53,29 +34,23 @@
   </section>
 
   <a class="skip-link" href="#mainContent">İçeriğe geç</a>
-  <div class="visual-noise" aria-hidden="true"></div>
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <header class="site-header">
     <div class="site-header-inner">
       <a class="site-brand" href="./" aria-label="Kişisel Araçlar ana sayfa">
-        <span class="brand-mark" aria-hidden="true">KA</span>
-        <span>Kişisel Araçlar</span>
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span><strong>Kişisel Araçlar</strong><small>private workspace</small></span>
       </a>
       <div class="header-controls">
-        <button class="nav-search" id="headerSearchButton" type="button" aria-label="Araç ara">
-          <span>Araç ara</span>
-          <kbd>/</kbd>
+        <button class="nav-search" id="headerSearchButton" type="button" aria-label="Komut merkezini aç">
+          <span class="p39-search-dot" aria-hidden="true"></span><span>Her şeyi ara</span><kbd>⌘K</kbd>
         </button>
-        <nav class="site-nav" aria-label="Ana navigasyon">
-          <a href="#mainContent">Bugün</a>
-          <a href="#toolBrowser">Araçlar</a>
-        </nav>
+        <nav class="site-nav" aria-label="Oturum ve senkron durumu"></nav>
       </div>
     </div>
   </header>
 
-  <aside class="desktop-tool-nav" id="desktopToolNav" aria-label="Masaüstü araç menüsü"></aside>
+  <aside class="desktop-tool-nav" id="desktopToolNav" aria-label="Araç menüsü"></aside>
 
   <div class="tools-stage">
     <div id="desktopHomeView" class="desktop-home-view" aria-live="polite"></div>
@@ -84,53 +59,41 @@
         <div id="homeView" class="home-view"></div>
         <button class="mobile-tools-backdrop" id="mobileToolsBackdrop" type="button" aria-label="Araç menüsünü kapat" hidden></button>
         <div class="mobile-tools-drawer" id="mobileToolsDrawer" aria-hidden="true">
-        <div class="tool-browser" id="toolBrowser">
-          <div class="tool-browser-head">
-            <div>
-              <span class="eyebrow">ARAÇLAR</span>
-              <h2>Aracını bul.</h2>
+          <div class="tool-browser" id="toolBrowser">
+            <div class="tool-browser-head">
+              <div><span class="eyebrow">KÜTÜPHANE</span><h2>Araçlar.</h2></div>
+              <button class="mobile-tools-close" id="mobileToolsClose" type="button" aria-label="Araç menüsünü kapat">×</button>
+              <div class="browser-search-wrap">
+                <label class="search-label" for="toolSearch"><span>Araç ara</span><kbd>/</kbd></label>
+                <input id="toolSearch" class="search-input" type="search" placeholder="Araç adı veya işlem..." autocomplete="off" />
+              </div>
             </div>
-            <button class="mobile-tools-close" id="mobileToolsClose" type="button" aria-label="Araç menüsünü kapat">×</button>
-            <div class="browser-search-wrap">
-              <label class="search-label" for="toolSearch">
-                <span>Araç ara</span>
-                <kbd>/</kbd>
-              </label>
-              <input id="toolSearch" class="search-input" type="search" placeholder="Not, imza, belge, PDF, SVG, regex, QR..." autocomplete="off" />
-            </div>
+            <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
           </div>
-          <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
-        </div>
-
-        <div id="catalogView"></div>
+          <div id="catalogView"></div>
         </div>
         <div id="toolView" class="tool-view hidden" aria-live="polite"></div>
       </section>
     </main>
   </div>
 
-  <nav class="mobile-dock" id="mobileDock" aria-label="Mobil ana navigasyon">
+  <nav class="mobile-dock" id="mobileDock" aria-label="Mobil navigasyon">
     <button type="button" data-mobile-action="today">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
-      <strong>Ana</strong>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg></span><strong>Bugün</strong>
     </button>
     <button type="button" data-mobile-action="note">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v4h4"/><path d="M9 12h6M9 16h5"/></svg></span>
-      <strong>Not</strong>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v4h4"/><path d="M9 12h6M9 16h5"/></svg></span><strong>Notlar</strong>
     </button>
     <button type="button" data-mobile-action="task">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
-      <strong>Görev</strong>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span><strong>Görevler</strong>
     </button>
     <button type="button" data-mobile-action="search">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg></span>
-      <strong>Ara</strong>
+      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg></span><strong>Ara</strong>
     </button>
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
-  <script type="module" src="/p36-motion.js"></script>
   <script type="module" src="./src/main.js"></script>
-  <script type="module" src="./src/p37-daily.js"></script>
+  <script type="module" src="./src/p39-shell.js"></script>
 </body>
 </html>
