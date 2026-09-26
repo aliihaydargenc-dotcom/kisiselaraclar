@@ -1,6 +1,7 @@
 /* P36 — resilient motion layer
    Motion is enhancement-only: if CDN import fails or reduced-motion is enabled,
-   the application remains fully functional. */
+   the application remains fully functional. This file lives in public/ so it does
+   not inflate the Vite core application bundle. */
 
 const MOTION_URL = "https://cdn.jsdelivr.net/npm/motion@13.4.4/+esm";
 const UI_RENDER_EVENT = "kisiselaraclar:ui-rendered";
@@ -18,7 +19,7 @@ function shouldAnimate() {
 function loadMotion() {
   if (!shouldAnimate()) return Promise.resolve(null);
   if (!motionPromise) {
-    motionPromise = import(/* @vite-ignore */ MOTION_URL).catch((error) => {
+    motionPromise = import(MOTION_URL).catch((error) => {
       console.warn("P36 motion enhancement unavailable:", error);
       return null;
     });
@@ -45,11 +46,7 @@ async function reveal(selector, root, { y = 10, scale = .992, delayStep = .035, 
   motion.animate(
     nodes,
     { opacity: [0, 1], y: [y, 0], scale: [scale, 1] },
-    {
-      duration,
-      delay: motion.stagger(delayStep),
-      ease: [.16, 1, .3, 1]
-    }
+    { duration, delay: motion.stagger(delayStep), ease: [.16, 1, .3, 1] }
   );
 }
 
@@ -69,25 +66,19 @@ function scheduleScene(root = document) {
 
 function wirePressFeedback() {
   const selector = ".primary-button, .secondary-button, .p25-link, .p17-action, .tool-card, .quick-tool, .desktop-tool-item, .mobile-dock button";
-
   document.addEventListener("pointerdown", (event) => {
     if (!shouldAnimate()) return;
     const target = event.target instanceof Element ? event.target.closest(selector) : null;
     if (!(target instanceof HTMLElement) || target.matches(":disabled")) return;
-    loadMotion().then((motion) => {
-      motion?.animate(target, { scale: .982 }, { duration: .11, ease: [.2, .8, .2, 1] });
-    });
+    loadMotion().then((motion) => motion?.animate(target, { scale: .982 }, { duration: .11, ease: [.2, .8, .2, 1] }));
   }, { passive: true });
 
   const release = (event) => {
     if (!shouldAnimate()) return;
     const target = event.target instanceof Element ? event.target.closest(selector) : null;
     if (!(target instanceof HTMLElement)) return;
-    loadMotion().then((motion) => {
-      motion?.animate(target, { scale: 1 }, { duration: .24, ease: [.16, 1, .3, 1] });
-    });
+    loadMotion().then((motion) => motion?.animate(target, { scale: 1 }, { duration: .24, ease: [.16, 1, .3, 1] }));
   };
-
   document.addEventListener("pointerup", release, { passive: true });
   document.addEventListener("pointercancel", release, { passive: true });
 }
@@ -98,9 +89,7 @@ function wireDrawerState() {
     if (!records.some((record) => record.attributeName === "class")) return;
     const drawer = document.querySelector("#mobileToolsDrawer");
     if (!(drawer instanceof HTMLElement) || !document.body.classList.contains("mobile-tools-open")) return;
-    loadMotion().then((motion) => {
-      motion?.animate(drawer, { opacity: [.92, 1] }, { duration: .22, ease: [.2, .8, .2, 1] });
-    });
+    loadMotion().then((motion) => motion?.animate(drawer, { opacity: [.92, 1] }, { duration: .22, ease: [.2, .8, .2, 1] }));
   });
   observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
 }
