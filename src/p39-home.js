@@ -73,7 +73,7 @@ function markup(state){
   </div>`;
 }
 
-function captureSystemNodes(root){return[...root.querySelectorAll(".p17-backup,[data-p30-install]")].filter(node=>!node.closest("[data-p39-system-slot]"))}
+function captureSystemNodes(root){return[...root.querySelectorAll(".p17-backup")].filter(node=>!node.closest("[data-p39-system-slot]"))}
 function restoreSystemNodes(root,nodes){const slot=root.querySelector("[data-p39-system-slot]");if(!slot)return;nodes.forEach(node=>slot.append(node))}
 
 function wire(root){
