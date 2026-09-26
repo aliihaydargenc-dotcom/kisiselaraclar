@@ -7,8 +7,10 @@ function normalizeBasePath(value = "/") {
   return base;
 }
 
+const capacitorBuild = process.env.CAPACITOR_BUILD === "1";
+
 export default defineConfig({
-  base: normalizeBasePath(process.env.BASE_PATH || "/"),
+  base: capacitorBuild ? "./" : normalizeBasePath(process.env.BASE_PATH || "/"),
   build: {
     rollupOptions: {
       output: {

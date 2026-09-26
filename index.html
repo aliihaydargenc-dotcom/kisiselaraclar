@@ -30,40 +30,46 @@
 <body class="auth-pending">
   <section id="authGate" class="auth-gate" aria-live="polite">
     <div class="auth-card">
-      <div class="auth-brand"><b>N</b><span>Notlar</span></div>
+      <div class="auth-brand"><b>N</b><span>Notlar</span><small style="margin-left:auto;opacity:.55;font:700 11px/1 system-ui">P45</small></div>
       <h1 id="authTitle">Özel alan açılıyor.</h1>
       <p id="authCopy">Oturum ve notların hazırlanıyor.</p>
       <div id="authBody"></div>
-      <p id="authStatus" role="status">Hazırlanıyor…</p>
+      <p id="authStatus" role="status">P45 · HTML yüklendi.</p>
     </div>
   </section>
   <div id="app"></div>
   <script>
-    window.setTimeout(() => {
-      if (document.body.classList.contains("auth-ready")) return;
-      const body = document.querySelector("#authBody");
-      if (body?.childElementCount) return;
-      const title = document.querySelector("#authTitle");
-      const copy = document.querySelector("#authCopy");
-      const status = document.querySelector("#authStatus");
-      if (title) title.textContent = "Bağlantı gecikti.";
-      if (copy) copy.textContent = "Uygulama başlatılamadı. Bağlantıyı kontrol edip yeniden deneyebilirsin.";
-      if (status) {
-        status.textContent = "Başlatma zaman aşımına uğradı.";
-        status.dataset.tone = "warning";
-      }
-      if (body) {
-        body.innerHTML = '<button type="button" class="primary-button" id="authBootstrapRetry">Tekrar dene</button>';
-        document.querySelector("#authBootstrapRetry")?.addEventListener("click", () => location.reload());
-      }
-    }, 12000);
+    (() => {
+      window.__NOTLAR_BUILD__ = "P45";
+      const setStatus = (text, tone = "") => {
+        const status = document.querySelector("#authStatus");
+        if (!status) return;
+        status.textContent = text;
+        status.dataset.tone = tone;
+      };
+      setStatus("P45 · JavaScript aktif.");
+      window.addEventListener("error", (event) => {
+        setStatus(`P45 · JS hata: ${event.message || "bilinmeyen hata"}`, "error");
+      });
+      window.addEventListener("unhandledrejection", (event) => {
+        setStatus(`P45 · Başlatma hatası: ${event.reason?.message || String(event.reason || "bilinmeyen hata")}`, "error");
+      });
+      window.setTimeout(() => {
+        if (document.body.classList.contains("auth-ready")) return;
+        const body = document.querySelector("#authBody");
+        if (body?.childElementCount) return;
+        const title = document.querySelector("#authTitle");
+        const copy = document.querySelector("#authCopy");
+        if (title) title.textContent = "Başlatma tamamlanamadı.";
+        if (copy) copy.textContent = "P45 tanılama modu etkin. Aşağıdaki durum mesajını paylaş.";
+        setStatus("P45 · 12 saniye zaman aşımı.", "warning");
+        if (body) {
+          body.innerHTML = '<button type="button" class="primary-button" id="authBootstrapRetry">Tekrar dene</button>';
+          document.querySelector("#authBootstrapRetry")?.addEventListener("click", () => location.reload());
+        }
+      }, 12000);
+    })();
   </script>
-  <script type="module">
-    import * as Appwrite from "appwrite";
-    globalThis.Appwrite = Appwrite;
-    await import("./src/theme-controller.js");
-    await import("./src/mobile-keyboard-stability.js");
-    await import("./src/notes-workspace.js");
-  </script>
+  <script type="module" src="./src/app-bootstrap.js"></script>
 </body>
 </html>
