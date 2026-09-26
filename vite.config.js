@@ -8,5 +8,18 @@ function normalizeBasePath(value = "/") {
 }
 
 export default defineConfig({
-  base: normalizeBasePath(process.env.BASE_PATH || "/")
+  base: normalizeBasePath(process.env.BASE_PATH || "/"),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (
+            id.includes("/node_modules/appwrite/") ||
+            id.includes("/node_modules/json-bigint/") ||
+            id.includes("/node_modules/bignumber.js/")
+          ) return "appwrite-vendor";
+        }
+      }
+    }
+  }
 });
