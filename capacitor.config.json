@@ -1,0 +1,13 @@
+{
+  "appId": "com.alihaydargenc.notlar",
+  "appName": "Notlar",
+  "webDir": "dist",
+  "server": {
+    "hostname": "localhost",
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#f2efe8",
+    "allowMixedContent": false
+  }
+}

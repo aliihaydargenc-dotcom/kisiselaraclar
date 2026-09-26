@@ -1,11 +1,14 @@
 import { readFile } from "node:fs/promises";
 
 const css = await readFile(new URL("../src/notes-workspace.css", import.meta.url), "utf8");
+const themeCss = await readFile(new URL("../src/theme.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
 const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, "");
-if ((stripComments(css).match(/!important/g) || []).length !== 0) {
-  throw new Error("Calm Editorial CSS !important kullanmamalı; production yüzeyi tek sahiplik katmanıyla çalışmalı.");
+for (const [name, source] of [["Calm Editorial", css], ["Theme", themeCss]]) {
+  if ((stripComments(source).match(/!important/g) || []).length !== 0) {
+    throw new Error(`${name} CSS !important kullanmamalı; production yüzeyi seçici sahipliğiyle çalışmalı.`);
+  }
 }
 
 const retired = [
@@ -38,7 +41,18 @@ for (const selector of [
   if (!css.includes(selector)) throw new Error(`Calm Editorial tasarım sahipliği eksik: ${selector}`);
 }
 
+for (const selector of [
+  '[data-theme="dark"]',
+  ".theme-toggle",
+  ".mobile-header",
+  ".editor-sheet"
+]) {
+  if (!themeCss.includes(selector)) throw new Error(`Gece/gündüz tema sahipliği eksik: ${selector}`);
+}
+
 if (!index.includes("./src/notes-workspace.css")) throw new Error("Calm Editorial CSS production girişine bağlı değil.");
+if (!index.includes("./src/theme.css")) throw new Error("Tema CSS production girişine bağlı değil.");
+if (!index.includes("./src/theme-controller.js")) throw new Error("Tema kontrolcüsü production girişine bağlı değil.");
 if (!index.includes("./src/notes-workspace.js")) throw new Error("Calm Editorial JS production girişine bağlı değil.");
 
-console.log("CSS ownership PASS: Calm Editorial masaüstü ve mobil production yüzeyinin tek görsel sahibi.");
+console.log("CSS ownership PASS: Calm Editorial + gece/gündüz tema katmanı production sahibi.");
