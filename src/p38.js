@@ -1,12 +1,5 @@
+import "./p38-command-center.css";
 import "./p38-command-center.js";
-
-const cssHref = new URL("./p38-command-center.css", import.meta.url).href;
-if (![...document.styleSheets].some((sheet) => sheet.href === cssHref)) {
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = cssHref;
-  document.head.append(link);
-}
 
 function applyAction(action, attempt = 0) {
   if (!action || attempt > 18) return;
