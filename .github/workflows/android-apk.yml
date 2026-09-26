@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "src/app-bootstrap.js"
       - "src/theme.css"
       - "src/theme-controller.js"
       - "src/mobile-keyboard-stability.js"
@@ -43,7 +44,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build web app
-        run: npm run build
+        run: CAPACITOR_BUILD=1 npm run build
 
       - name: Install Capacitor 8
         run: npm install --no-save --no-audit --no-fund @capacitor/core@8 @capacitor/cli@8 @capacitor/android@8
@@ -53,6 +54,12 @@ jobs:
           npx cap add android
           npx cap sync android
           node scripts/configure-android.mjs
+
+      - name: Verify packaged web bootstrap
+        run: |
+          grep -q 'P45' android/app/src/main/assets/public/index.html
+          grep -Eq 'src="\./assets/|src="assets/' android/app/src/main/assets/public/index.html
+          ! grep -q 'src="/assets/' android/app/src/main/assets/public/index.html
 
       - name: Ensure Android platform SDK
         shell: bash
@@ -80,12 +87,12 @@ jobs:
           mkdir -p artifacts
           APK="$(find android/app/build/outputs/apk/debug -type f -name '*.apk' | head -1)"
           test -n "$APK"
-          cp "$APK" artifacts/Notlar-S25Plus-arm64-v8a-debug.apk
+          cp "$APK" artifacts/Notlar-P45-S25Plus-arm64-v8a-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Notlar-S25Plus-arm64-v8a
-          path: artifacts/Notlar-S25Plus-arm64-v8a-debug.apk
+          name: Notlar-P45-S25Plus-arm64-v8a
+          path: artifacts/Notlar-P45-S25Plus-arm64-v8a-debug.apk
           if-no-files-found: error
           retention-days: 14
