@@ -1,0 +1,22 @@
+@media (max-width: 760px) {
+  html.keyboard-open body {
+    padding-bottom: 0;
+  }
+
+  html.keyboard-open .mobile-nav {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(12px);
+  }
+
+  html.keyboard-open .mobile-header {
+    position: static;
+  }
+
+  html.keyboard-open .note-editor-screen,
+  html.keyboard-open .note-editor-panel,
+  html.keyboard-open .editor-sheet {
+    scroll-margin-bottom: 20px;
+  }
+}
