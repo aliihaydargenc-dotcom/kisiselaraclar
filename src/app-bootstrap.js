@@ -7,22 +7,31 @@ function stage(text, tone = "") {
   node.dataset.tone = tone;
 }
 
+function loadMobileBehaviorLater() {
+  globalThis.setTimeout(() => {
+    void import("./mobile-keyboard-stability.js").catch((error) => {
+      console.warn("P46 mobile behavior:", error);
+    });
+  }, 0);
+}
+
 async function boot() {
   try {
-    stage("P45 · Appwrite hazır.");
+    stage("P46 · Appwrite hazır.");
     globalThis.Appwrite = Appwrite;
 
-    stage("P45 · Tema yükleniyor…");
+    stage("P46 · Tema yükleniyor…");
     await import("./theme-controller.js");
 
-    stage("P45 · Mobil davranış yükleniyor…");
-    await import("./mobile-keyboard-stability.js");
+    stage("P46 · Oturum ekranı hazırlanıyor…");
+    loadMobileBehaviorLater();
 
-    stage("P45 · Notlar açılıyor…");
+    // Auth/workspace is the critical path. Optional keyboard behavior must never
+    // prevent the login form from appearing on a fresh Android install.
     await import("./notes-workspace.js");
   } catch (error) {
-    console.error("P45 bootstrap:", error);
-    stage(`P45 · Bootstrap hata: ${error?.message || String(error)}`, "error");
+    console.error("P46 bootstrap:", error);
+    stage(`P46 · Bootstrap hata: ${error?.message || String(error)}`, "error");
     const title = document.querySelector("#authTitle");
     const copy = document.querySelector("#authCopy");
     if (title) title.textContent = "Uygulama başlatılamadı.";
