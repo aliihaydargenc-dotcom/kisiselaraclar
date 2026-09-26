@@ -30,29 +30,29 @@
 <body class="auth-pending">
   <section id="authGate" class="auth-gate" aria-live="polite">
     <div class="auth-card">
-      <div class="auth-brand"><b>N</b><span>Notlar</span><small style="margin-left:auto;opacity:.55;font:700 11px/1 system-ui">P45</small></div>
+      <div class="auth-brand"><b>N</b><span>Notlar</span><small style="margin-left:auto;opacity:.55;font:700 11px/1 system-ui">P46</small></div>
       <h1 id="authTitle">Özel alan açılıyor.</h1>
       <p id="authCopy">Oturum ve notların hazırlanıyor.</p>
       <div id="authBody"></div>
-      <p id="authStatus" role="status">P45 · HTML yüklendi.</p>
+      <p id="authStatus" role="status">P46 · HTML yüklendi.</p>
     </div>
   </section>
   <div id="app"></div>
   <script>
     (() => {
-      window.__NOTLAR_BUILD__ = "P45";
+      window.__NOTLAR_BUILD__ = "P46";
       const setStatus = (text, tone = "") => {
         const status = document.querySelector("#authStatus");
         if (!status) return;
         status.textContent = text;
         status.dataset.tone = tone;
       };
-      setStatus("P45 · JavaScript aktif.");
+      setStatus("P46 · JavaScript aktif.");
       window.addEventListener("error", (event) => {
-        setStatus(`P45 · JS hata: ${event.message || "bilinmeyen hata"}`, "error");
+        setStatus(`P46 · JS hata: ${event.message || "bilinmeyen hata"}`, "error");
       });
       window.addEventListener("unhandledrejection", (event) => {
-        setStatus(`P45 · Başlatma hatası: ${event.reason?.message || String(event.reason || "bilinmeyen hata")}`, "error");
+        setStatus(`P46 · Başlatma hatası: ${event.reason?.message || String(event.reason || "bilinmeyen hata")}`, "error");
       });
       window.setTimeout(() => {
         if (document.body.classList.contains("auth-ready")) return;
@@ -61,8 +61,8 @@
         const title = document.querySelector("#authTitle");
         const copy = document.querySelector("#authCopy");
         if (title) title.textContent = "Başlatma tamamlanamadı.";
-        if (copy) copy.textContent = "P45 tanılama modu etkin. Aşağıdaki durum mesajını paylaş.";
-        setStatus("P45 · 12 saniye zaman aşımı.", "warning");
+        if (copy) copy.textContent = "P46 tanılama modu etkin. Aşağıdaki durum mesajını paylaş.";
+        setStatus("P46 · 12 saniye zaman aşımı.", "warning");
         if (body) {
           body.innerHTML = '<button type="button" class="primary-button" id="authBootstrapRetry">Tekrar dene</button>';
           document.querySelector("#authBootstrapRetry")?.addEventListener("click", () => location.reload());
