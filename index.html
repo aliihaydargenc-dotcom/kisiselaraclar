@@ -2,98 +2,30 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111316" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f4ef" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Kişisel Araçlar" />
-  <meta name="description" content="Not, görev, toplantı ve günlük araçlarını tek özel çalışma alanında kullan." />
-  <meta name="robots" content="index,follow" />
-  <title>Kişisel Araçlar — private workspace</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Notlar" />
+  <meta name="description" content="Günlük notlar, görevler ve planlama için özel çalışma alanı." />
+  <title>Notlar — günlük çalışma alanı</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./app-icon.svg" />
-  <link rel="stylesheet" href="./src/styles.css" />
-  <link rel="stylesheet" href="./src/design-tools.css" />
-  <link rel="stylesheet" href="./src/p14-tools.css" />
-  <link rel="stylesheet" href="./src/p15-tools.css" />
-  <link rel="stylesheet" href="./src/p16-office.css" />
-  <link rel="stylesheet" href="./src/p17-workspace.css" />
-  <link rel="stylesheet" href="./src/p39-reset.css" />
+  <link rel="stylesheet" href="./src/notes-workspace.css" />
 </head>
 <body class="auth-pending">
   <section id="authGate" class="auth-gate" aria-live="polite">
     <div class="auth-card">
-      <div class="auth-brand"><b>K</b><span>Kişisel Araçlar</span></div>
+      <div class="auth-brand"><b>N</b><span>Notlar</span></div>
       <h1 id="authTitle">Özel alan açılıyor.</h1>
-      <p id="authCopy">Oturum ve bulut bağlantısı kontrol ediliyor.</p>
+      <p id="authCopy">Oturum ve notların hazırlanıyor.</p>
       <div id="authBody"></div>
       <p id="authStatus" role="status">Hazırlanıyor…</p>
     </div>
   </section>
-
-  <a class="skip-link" href="#mainContent">İçeriğe geç</a>
-
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="site-brand" href="./" aria-label="Kişisel Araçlar ana sayfa">
-        <span class="brand-mark" aria-hidden="true">K</span>
-        <span><strong>Kişisel Araçlar</strong><small>private workspace</small></span>
-      </a>
-      <div class="header-controls">
-        <button class="nav-search" id="headerSearchButton" type="button" aria-label="Komut merkezini aç">
-          <span class="p39-search-dot" aria-hidden="true"></span><span>Her şeyi ara</span><kbd>⌘K</kbd>
-        </button>
-        <nav class="site-nav" aria-label="Oturum ve senkron durumu"></nav>
-      </div>
-    </div>
-  </header>
-
-  <aside class="desktop-tool-nav" id="desktopToolNav" aria-label="Araç menüsü"></aside>
-
-  <div class="tools-stage">
-    <div id="desktopHomeView" class="desktop-home-view" aria-live="polite"></div>
-    <main class="workspace" id="mainContent">
-      <section class="content">
-        <div id="homeView" class="home-view"></div>
-        <button class="mobile-tools-backdrop" id="mobileToolsBackdrop" type="button" aria-label="Araç menüsünü kapat" hidden></button>
-        <div class="mobile-tools-drawer" id="mobileToolsDrawer" aria-hidden="true">
-          <div class="tool-browser" id="toolBrowser">
-            <div class="tool-browser-head">
-              <div><span class="eyebrow">KÜTÜPHANE</span><h2>Araçlar.</h2></div>
-              <button class="mobile-tools-close" id="mobileToolsClose" type="button" aria-label="Araç menüsünü kapat">×</button>
-              <div class="browser-search-wrap">
-                <label class="search-label" for="toolSearch"><span>Araç ara</span><kbd>/</kbd></label>
-                <input id="toolSearch" class="search-input" type="search" placeholder="Araç adı veya işlem..." autocomplete="off" />
-              </div>
-            </div>
-            <div id="categoryList" class="category-list" aria-label="Araç kategorileri"></div>
-          </div>
-          <div id="catalogView"></div>
-        </div>
-        <div id="toolView" class="tool-view hidden" aria-live="polite"></div>
-      </section>
-    </main>
-  </div>
-
-  <nav class="mobile-dock" id="mobileDock" aria-label="Mobil navigasyon">
-    <button type="button" data-mobile-action="today">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg></span><strong>Bugün</strong>
-    </button>
-    <button type="button" data-mobile-action="note">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M15 4v4h4"/><path d="M9 12h6M9 16h5"/></svg></span><strong>Notlar</strong>
-    </button>
-    <button type="button" data-mobile-action="task">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span><strong>Görevler</strong>
-    </button>
-    <button type="button" data-mobile-action="search">
-      <span class="mobile-dock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg></span><strong>Ara</strong>
-    </button>
-  </nav>
-
+  <div id="app"></div>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
-  <script type="module" src="./src/main.js"></script>
-  <script type="module" src="./src/p39-shell.js"></script>
+  <script type="module" src="./src/notes-workspace.js"></script>
 </body>
 </html>
