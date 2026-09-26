@@ -23,7 +23,7 @@ for (const entry of retired) {
   if (index.includes(entry)) throw new Error(`Notes-first production eski Kişisel Araçlar yüzeyini yüklememeli: ${entry}`);
 }
 
-for (const selector of [".app-sidebar", ".today-grid", ".notes-layout", ".note-editor-panel", ".task-sections", ".board", ".mobile-nav"]) {
+for (const selector of [".app-sidebar", ".today-grid", ".notes-layout", ".editor-sheet", ".task-sections", ".board", ".mobile-nav"]) {
   if (!css.includes(selector)) throw new Error(`Notes workspace tasarım sahipliği eksik: ${selector}`);
 }
 
