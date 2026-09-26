@@ -18,7 +18,7 @@ function shouldAnimate() {
 function loadMotion() {
   if (!shouldAnimate()) return Promise.resolve(null);
   if (!motionPromise) {
-    motionPromise = import(MOTION_URL).catch((error) => {
+    motionPromise = import(/* @vite-ignore */ MOTION_URL).catch((error) => {
       console.warn("P36 motion enhancement unavailable:", error);
       return null;
     });
