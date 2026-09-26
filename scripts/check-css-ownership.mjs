@@ -8,7 +8,8 @@ const mobile = await readFile(new URL("../src/mobile-shell.css", import.meta.url
 const p36 = await readFile(new URL("../src/p36-design-system.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
-const importantCount = (source) => (source.match(/!important/g) || []).length;
+const stripCssComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, "");
+const importantCount = (source) => (stripCssComments(source).match(/!important/g) || []).length;
 const importantBudget = [
   ["styles.css", styles, 79],
   ["p16-office.css", office, 37],
