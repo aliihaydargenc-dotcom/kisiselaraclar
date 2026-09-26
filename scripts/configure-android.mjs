@@ -33,10 +33,8 @@ await replaceFile(manifestPath, (source) => {
   return source.slice(0, activityStart) + nextTag + source.slice(activityEnd);
 });
 
-await replaceFile(colorsPath, (source) => source
-  .replace(/<color name="colorPrimary">[^<]+<\/color>/, '<color name="colorPrimary">#1F5A43</color>')
-  .replace(/<color name="colorPrimaryDark">[^<]+<\/color>/, '<color name="colorPrimaryDark">#F2EFE8</color>')
-  .replace(/<color name="colorAccent">[^<]+<\/color>/, '<color name="colorAccent">#79A58A</color>'));
+await mkdir(dirname(colorsPath), { recursive: true });
+await writeFile(colorsPath, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="colorPrimary">#1F5A43</color>\n    <color name="colorPrimaryDark">#F2EFE8</color>\n    <color name="colorAccent">#79A58A</color>\n</resources>\n`);
 
 await mkdir(dirname(nightColorsPath), { recursive: true });
 await writeFile(nightColorsPath, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="colorPrimary">#79A58A</color>\n    <color name="colorPrimaryDark">#11150F</color>\n    <color name="colorAccent">#9FC2A9</color>\n</resources>\n`);
