@@ -38,9 +38,32 @@
     </div>
   </section>
   <div id="app"></div>
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
-  <script type="module" src="./src/theme-controller.js"></script>
-  <script type="module" src="./src/mobile-keyboard-stability.js"></script>
-  <script type="module" src="./src/notes-workspace.js"></script>
+  <script>
+    window.setTimeout(() => {
+      if (document.body.classList.contains("auth-ready")) return;
+      const body = document.querySelector("#authBody");
+      if (body?.childElementCount) return;
+      const title = document.querySelector("#authTitle");
+      const copy = document.querySelector("#authCopy");
+      const status = document.querySelector("#authStatus");
+      if (title) title.textContent = "Bağlantı gecikti.";
+      if (copy) copy.textContent = "Uygulama başlatılamadı. Bağlantıyı kontrol edip yeniden deneyebilirsin.";
+      if (status) {
+        status.textContent = "Başlatma zaman aşımına uğradı.";
+        status.dataset.tone = "warning";
+      }
+      if (body) {
+        body.innerHTML = '<button type="button" class="primary-button" id="authBootstrapRetry">Tekrar dene</button>';
+        document.querySelector("#authBootstrapRetry")?.addEventListener("click", () => location.reload());
+      }
+    }, 12000);
+  </script>
+  <script type="module">
+    import * as Appwrite from "appwrite";
+    globalThis.Appwrite = Appwrite;
+    await import("./src/theme-controller.js");
+    await import("./src/mobile-keyboard-stability.js");
+    await import("./src/notes-workspace.js");
+  </script>
 </body>
 </html>
