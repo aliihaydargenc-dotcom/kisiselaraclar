@@ -9,10 +9,22 @@
   <meta name="apple-mobile-web-app-title" content="Notlar" />
   <meta name="description" content="Notlar, günlük plan ve görevler için sakin kişisel çalışma alanı." />
   <title>Notlar — sakin çalışma alanı</title>
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("notlar:theme") || "system";
+        const dark = saved === "dark" || (saved === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        document.documentElement.dataset.themePreference = saved;
+        document.documentElement.style.colorScheme = dark ? "dark" : "light";
+      } catch {}
+    })();
+  </script>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./app-icon.svg" />
   <link rel="stylesheet" href="./src/notes-workspace.css" />
+  <link rel="stylesheet" href="./src/theme.css" />
   <link rel="stylesheet" href="./src/mobile-keyboard-stability.css" />
 </head>
 <body class="auth-pending">
@@ -27,6 +39,7 @@
   </section>
   <div id="app"></div>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@28.0.0"></script>
+  <script type="module" src="./src/theme-controller.js"></script>
   <script type="module" src="./src/mobile-keyboard-stability.js"></script>
   <script type="module" src="./src/notes-workspace.js"></script>
 </body>
