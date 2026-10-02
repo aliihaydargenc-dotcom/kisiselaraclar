@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>K-05 Dosya Merkezi</title>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@28.1.0"></script>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#152238;--muted:#68768d;--line:#dce4ee;--blue:#173f77;--blue2:#245a9f;--ok:#17704a;--bad:#a92d2d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:920px;margin:auto;padding:20px 14px 48px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 40px rgba(20,45,80,.08)}.login{max-width:400px;margin:10vh auto}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.head h1{font-size:23px;margin:0}.sub{color:var(--muted);margin:4px 0 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:13px;font-weight:750;margin-bottom:6px}.field input,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit}.btn{border:0;border-radius:10px;padding:12px 15px;font:inherit;font-weight:800;cursor:pointer}.primary{background:var(--blue);color:#fff}.primary:hover{background:var(--blue2)}.ghost{background:#edf2f8;color:var(--ink)}.filebox{margin-top:14px;padding:16px;border:1.5px dashed #aebbd0;border-radius:14px;background:#f9fbfe}.actions{display:flex;gap:10px;align-items:center;margin-top:14px}.msg{font-size:13px;color:var(--muted);min-height:20px}.ok{color:var(--ok)}.bad{color:var(--bad)}.hidden{display:none!important}.archive{margin-top:16px}.year{padding:12px 0;border-top:1px solid var(--line)}.year:first-child{border-top:0}.yt{font-weight:850;margin-bottom:7px}.months{display:grid;grid-template-columns:90px repeat(12,1fr);gap:5px;margin:6px 0;align-items:center}.label{font-size:12px;font-weight:750;color:var(--muted)}.m{height:28px;border-radius:6px;background:#edf1f6;color:#9ca8b7;display:grid;place-items:center;font-size:11px}.m.on{background:#e0f3e9;color:var(--ok);font-weight:850}.hint{margin-top:7px;font-size:12px;color:var(--muted)}@media(max-width:680px){.grid{grid-template-columns:1fr}.card{padding:16px}.head{align-items:flex-start}.head h1{font-size:20px}.months{grid-template-columns:70px repeat(12,22px);overflow-x:auto}.actions{flex-direction:column;align-items:stretch}.actions .btn{width:100%}.login{margin-top:5vh}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="login" class="card login">
+  <div class="head"><div><h1>K-05 Dosya Merkezi</h1><p class="sub">Yetkili kullanıcı girişi</p></div></div>
+  <form id="loginForm">
+    <div class="field"><label>Kullanıcı</label><input id="username" autocomplete="username" required></div>
+    <div class="field" style="margin-top:12px"><label>Şifre</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" style="width:100%;margin-top:15px" type="submit">Giriş yap</button>
+    <div id="loginMsg" class="msg" style="margin-top:9px"></div>
+  </form>
+</section>
+
+<main id="app" class="hidden">
+  <div class="head">
+    <div><h1>K-05 Dosya Merkezi</h1><p class="sub">Excel arşiv yükleme ekranı</p></div>
+    <button id="logout" class="btn ghost">Çıkış</button>
+  </div>
+  <section class="card">
+    <div class="grid">
+      <div class="field"><label>Yıl</label><select id="year"></select></div>
+      <div class="field"><label>Rapor türü</label><select id="type"><option value="ambar">Ambar Birim Bazlı</option><option value="temel">Temel Birim Bazlı</option></select></div>
+      <div class="field"><label>Ay</label><select id="month"></select></div>
+    </div>
+    <div class="filebox">
+      <div class="field"><label>Excel dosyası</label><input id="file" type="file" accept=".xls,.xlsx"></div>
+      <div id="hint" class="hint"></div>
+    </div>
+    <div class="actions"><button id="upload" class="btn primary">Dosyayı yükle</button><span id="uploadMsg" class="msg"></span></div>
+  </section>
+  <section class="card archive"><div class="head"><div><h1 style="font-size:18px">Arşiv durumu</h1><p class="sub">Yüklü aylar otomatik işaretlenir</p></div><button id="refresh" class="btn ghost">Yenile</button></div><div id="archive">Yükleniyor…</div></section>
+</main>
+</div>
+<script>
+const ENDPOINT='https://fra.cloud.appwrite.io/v1',PROJECT='isletme-araclari',BUCKET='k05-rapor-arsivi';
+const USER='cost2026',EMAIL='cost2026@k05.app';
+const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const {Client,Account,Storage,Query}=Appwrite;
+const client=new Client().setEndpoint(ENDPOINT).setProject(PROJECT),account=new Account(client),storage=new Storage(client);
+const $=id=>document.getElementById(id);let files=[];
+for(let y=2024;y<=new Date().getFullYear()+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===new Date().getFullYear())o.selected=true;$('year').append(o)}
+MONTHS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${i+1}. ${m}`;if(i===new Date().getMonth())o.selected=true;$('month').append(o)});
+const id=()=>`${$('year').value}-${$('type').value}-${String(+$('month').value+1).padStart(2,'0')}`;
+const folder=()=>{const y=$('year').value,t=$('type').value==='ambar'?'Ambar':'Temel';return `${y}/K-05 Rapor ${t} Birim Bazlı ${y}`};
+const fname=ext=>`${+$('month').value+1}.Ay ${MONTHS[+$('month').value]}.${ext}`;
+function hint(){const f=$('file').files[0],ext=f?.name.toLowerCase().endsWith('.xlsx')?'xlsx':'xls';$('hint').textContent=`Hedef: ${folder()}/${fname(ext)} · ${id()}`}
+['year','type','month','file'].forEach(x=>$(x).addEventListener('change',hint));hint();
+function showApp(v){$('login').classList.toggle('hidden',v);$('app').classList.toggle('hidden',!v)}
+async function session(){try{const u=await account.get();if(u.$id!==USER){await account.deleteSession({sessionId:'current'});throw 0}showApp(true);await reload()}catch{showApp(false)}}
+$('loginForm').onsubmit=async e=>{e.preventDefault();const m=$('loginMsg');m.textContent='Giriş yapılıyor…';m.className='msg';try{if($('username').value.trim()!==USER)throw new Error('Kullanıcı adı veya şifre hatalı.');try{await account.deleteSession({sessionId:'current'})}catch{}await account.createEmailPasswordSession({email:EMAIL,password:$('password').value});const u=await account.get();if(u.$id!==USER)throw new Error('Yetkisiz hesap.');m.textContent='';showApp(true);await reload()}catch(err){m.textContent=err?.message||'Giriş başarısız.';m.className='msg bad'}};
+$('logout').onclick=async()=>{try{await account.deleteSession({sessionId:'current'})}catch{}showApp(false)};
+async function getAll(){let out=[],cursor='';for(;;){const q=[Query.limit(100),...(cursor?[Query.cursorAfter(cursor)]:[])],r=await storage.listFiles({bucketId:BUCKET,queries:q});out.push(...r.files);if(r.files.length<100)return out;cursor=r.files.at(-1).$id}}
+async function reload(){const a=$('archive');a.textContent='Arşiv okunuyor…';try{files=await getAll();render()}catch(e){a.innerHTML=`<span class="bad">${e?.message||'Arşiv okunamadı.'}</span>`}}
+function render(){const years=[...new Set(files.map(f=>String(f.$id).match(/^(20\d\d)-(ambar|temel)-(\d{2})$/)?.[1]).filter(Boolean))].sort();let h='';for(const y of years){h+=`<div class="year"><div class="yt">${y}</div>`;for(const t of ['ambar','temel']){const s=new Set(files.filter(f=>f.$id.startsWith(`${y}-${t}-`)).map(f=>f.$id));h+=`<div class="months"><span class="label">${t==='ambar'?'Ambar':'Temel'}</span>`;for(let n=1;n<=12;n++){const k=`${y}-${t}-${String(n).padStart(2,'0')}`;h+=`<span class="m ${s.has(k)?'on':''}" title="${MONTHS[n-1]}">${s.has(k)?'✓':n}</span>`}h+='</div>'}h+='</div>'}$('archive').innerHTML=h||'K-05 dosyası bulunamadı.'}
+$('refresh').onclick=reload;
+$('upload').onclick=async()=>{const m=$('uploadMsg'),f=$('file').files[0];m.className='msg';if(!f){m.textContent='Önce dosya seç.';m.className='msg bad';return}const x=f.name.toLowerCase().match(/\.(xls|xlsx)$/);if(!x){m.textContent='Yalnız .xls veya .xlsx yüklenebilir.';m.className='msg bad';return}if(f.size>50000000){m.textContent='Dosya 50 MB sınırını aşıyor.';m.className='msg bad';return}const fileId=id(),ext=x[1];try{let exists=false;try{await storage.getFile({bucketId:BUCKET,fileId});exists=true}catch{}if(exists&&!confirm(`${fileId} zaten mevcut. Eski dosya yenisiyle değiştirilsin mi?`))return;if(exists){m.textContent='Eski dosya kaldırılıyor…';await storage.deleteFile({bucketId:BUCKET,fileId})}m.textContent='Yükleniyor…';const renamed=new File([f],fname(ext),{type:f.type||'application/octet-stream',lastModified:f.lastModified});await storage.createFile({bucketId:BUCKET,fileId,file:renamed,folder:folder()});m.textContent=`Yüklendi: ${fname(ext)}`;m.className='msg ok';$('file').value='';hint();await reload()}catch(e){m.textContent=e?.message||'Yükleme başarısız.';m.className='msg bad'}};
+session();
+</script>
+</body>
+</html>
