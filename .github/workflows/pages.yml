@@ -36,6 +36,11 @@ jobs:
       - name: Quality and production build
         run: npm run quality
 
+      - name: Include K-05 upload center
+        run: |
+          mkdir -p dist/k05
+          cp k05/index.html dist/k05/index.html
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
